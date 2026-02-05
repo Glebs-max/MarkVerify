@@ -1,0 +1,195 @@
+﻿<Window x:Class="WpfApp_IC.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pages="clr-namespace:WpfApp_IC.Pages"
+        xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
+        xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        mc:Ignorable="d" Title="MainWindow" FontFamily="Bahnschrift" FontSize="17"
+        Height="720" Width="1280">
+    <Window.Resources>
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <ContentPresenter x:Name="content"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="content" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="content" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="content" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="LeftColumn" Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Верхняя панель -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF6D00" Height="60">
+            <DockPanel LastChildFill="True" VerticalAlignment="Center" Margin="10,0">
+
+                <!-- Логотип -->
+                <Button DockPanel.Dock="Left"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ToolTip="Главная"
+                        Click="GoHome_Click"
+                        Focusable="False">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="OverridesDefaultStyle" Value="True"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Style>
+                    </Button.Style>
+
+                    <!-- Используем pack URI -->
+                    <Image Source="pack://application:,,,/Assets/logo.png"
+                           Height="60"
+                           Width="63"
+                           DockPanel.Dock="Left"
+                           Margin="0,0,15,0"/>
+                </Button>
+
+                <TextBlock x:Name="PathText"
+                           Text="Главная"
+                           FontSize="20"
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
+
+                <!-- Кнопки справа -->
+                <StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Right"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            Background="Transparent"
+                            Margin="0,0,20,0">
+
+                    <Button x:Name="BackButton"
+                            Width="40" Height="40"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="BackButton_Click"
+                            IsEnabled="False"
+                            Style="{StaticResource IconButtonStyle}">
+                        <Image Source="pack://application:,,,/Assets/return.png" Width="40" Height="40"/>
+                    </Button>
+
+                    <Button x:Name="ForwardButton"
+                            Width="40" Height="40"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="ForwardButton_Click"
+                            IsEnabled="False"
+                            Style="{StaticResource IconButtonStyle}">
+                        <Image Source="pack://application:,,,/Assets/Next.png" Width="40" Height="40"/>
+                    </Button>
+
+                    <Button Width="40" Height="40"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="SettingsButton_Click">
+                        <Image Source="pack://application:,,,/Assets/nastr.png" Width="40" Height="40"/>
+                    </Button>
+
+                    <Button Width="41" Height="40"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="HelpButton_Click">
+                        <Image Source="pack://application:,,,/Assets/info.png" Width="39" Height="39"/>
+                    </Button>
+
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- Левое меню -->
+        <Border Grid.Row="1" Grid.Column="0" Background="#A9A9A9" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="MenuButton" Grid.Row="0" Background="Transparent" BorderThickness="0" Click="MenuButton_Click" HorizontalContentAlignment="Left" Padding="10,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Canvas Width="24" Height="24">
+                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="4"/>
+                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="10"/>
+                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="16"/>
+                        </Canvas>
+                        <TextBlock x:Name="MenuText" Text="МЕНЮ" Foreground="White" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <StackPanel x:Name="MenuItemsPanel" Grid.Row="1" Margin="10,10,10,10">
+                    <Button Content="Камера - базовый режим" Margin="0,0,0,10" Click="CameraBasic_Click"/>
+                    <Button Content="Камера - расширенный режим" Margin="0,0,0,10" Click="CameraAdvanced_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <ContentPresenter Content="{Binding CurrentViewModel}" Grid.Row="1" Grid.Column="1">
+            <ContentPresenter.Resources>
+                <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+                    <pages:Home/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+                    <pages:Products/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
+                    <pages:LabelPreview/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:LabelPrintingViewModel}">
+                    <pages:LabelPrinting/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:CameraAdvancedViewModel}">
+                    <pages:CameraAdvanced/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:CameraBasicViewModel}">
+                    <pages:CameraBasic/>
+                </DataTemplate>
+
+
+
+            </ContentPresenter.Resources>
+        </ContentPresenter>
+    </Grid>
+</Window>

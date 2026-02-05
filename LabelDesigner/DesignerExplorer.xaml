@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerExplorer" Name="X"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LabelDesigner"
+             d:DataContext="{d:DesignInstance Type=local:DesignerViewModel}"
+             mc:Ignorable="d" Background="#F4F4F4">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label HorizontalAlignment="Stretch" Content="Обозреватель" Margin="0,0,0,7"/>
+        <DockPanel Margin="4" Grid.Row="1">
+            <Grid DockPanel.Dock="Top" Margin="0 0 0 4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Тип поля" VerticalAlignment="Center" TextAlignment="Left"/>
+                <TextBlock Grid.Column="1" Text="Название поля"  VerticalAlignment="Center" TextAlignment="Left"/>
+            </Grid>
+
+            <ListView x:Name="FieldList" ItemsSource="{Binding Fields}" SelectedItem="{Binding SelectedField, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding FieldType}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="1" Text="{Binding FieldName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerToolbox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:custom="clr-namespace:LabelDesigner.CustomControls"
+             Background="#F4F4F4">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <WrapPanel x:Name="Toolbox" Margin="6" HorizontalAlignment="Center">
+            <custom:IconTextButton Icon="/Icons/TextField.png" Text="Текст" Tag="Text" Margin="4"/>
+            <custom:IconTextButton Icon="/Icons/ImageField.png" Text="Изображение" Tag="Image" Margin="4"/>
+            <custom:IconTextButton Icon="/Icons/DateField.png" Text="Дата" Tag="Date" Margin="4"/>
+            <custom:IconTextButton Icon="/Icons/TimeField.png" Text="Время" Tag="Time" Margin="4"/>
+            <custom:IconTextButton Icon="/Icons/BarcodeField.png" Text="Штрихкод" Tag="Barcode" Margin="4"/>
+        </WrapPanel>
+    </ScrollViewer>
+</UserControl>

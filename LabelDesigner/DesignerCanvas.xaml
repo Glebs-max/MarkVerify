@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerCanvas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LabelDesigner"
+             d:DataContext="{d:DesignInstance Type=local:DesignerViewModel}"
+             mc:Ignorable="d" Focusable="True">
+    <ScrollViewer x:Name="ScrollArea" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Focusable="False">
+        <Canvas x:Name="CanvasArea" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Canvas.Width>
+                <MultiBinding Converter="{StaticResource LabelAreaConverter}">
+                    <Binding Path="LabelArea.W"/>
+                    <Binding Path="Scale"/>
+                </MultiBinding>
+            </Canvas.Width>
+            <Canvas.Height>
+                <MultiBinding Converter="{StaticResource LabelAreaConverter}">
+                    <Binding Path="LabelArea.H"/>
+                    <Binding Path="Scale"/>
+                </MultiBinding>
+            </Canvas.Height>
+            <Canvas.RenderTransform>
+                <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}"/>
+            </Canvas.RenderTransform>
+        </Canvas>
+    </ScrollViewer>
+</UserControl>

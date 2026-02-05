@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerItemProperties.ImageProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LabelDesigner"
+             xmlns:models="clr-namespace:LabelDesigner.Models"
+             d:DataContext="{d:DesignInstance Type=models:ImageField}"
+             mc:Ignorable="d" Background="#F4F4F4">
+    <StackPanel>
+        <Label Content="Параметры изображения" HorizontalContentAlignment="Center"/>
+        <Separator/>
+        <StackPanel Orientation="Vertical" Margin="4">
+            <TextBlock Text="Источник"/>
+            <TextBox Text="{Binding Source, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="SourceBox" IsEnabled="False"/>
+            <Button Content="Обзор" Width="64" HorizontalAlignment="Right" Margin="0,4,0,0" Click="Browse_Click"/>
+        </StackPanel>
+        <Grid MinWidth="150">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" Margin="4">
+                <TextBlock Text="Ширина источника (мм)" TextWrapping="Wrap"/>
+                <TextBox Text="{Binding InitialSize.Width, Converter={StaticResource UnitsConverter}, StringFormat=F2}" IsEnabled="False"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="4" Grid.Column="1">
+                <TextBlock Text="Высота источника (mm)" TextWrapping="Wrap"/>
+                <TextBox Text="{Binding InitialSize.Height, Converter={StaticResource UnitsConverter}, StringFormat=F2}" IsEnabled="False"/>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>

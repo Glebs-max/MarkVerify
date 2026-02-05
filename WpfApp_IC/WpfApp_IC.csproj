@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="Assets\info.png" />
+    <None Remove="Assets\logo.png" />
+    <None Remove="Assets\nastr.png" />
+    <None Remove="Assets\Next.png" />
+    <None Remove="Assets\return.png" />
+    <None Remove="Assets\Start.png" />
+    <None Remove="Assets\Stop.png" />
+    <None Remove="Assets\toggle_close.png" />
+    <None Remove="Assets\toggle_open.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyModbusTCP" Version="5.6.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.2" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabelDesigner\LabelDesigner.csproj" />
+    <ProjectReference Include="..\Observable\Observable.csproj" />
+  </ItemGroup>
+    <ItemGroup>
+    <Reference Include="MvCodeReaderSDK.Net">
+      <HintPath>lib\MvCodeReaderSDK.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="MvCodeReaderCtrl">
+      <HintPath>lib\MvCodeReaderCtrl.dll</HintPath>
+    </Reference>
+    <Reference Include="MvCodeReaderCtrlWrapper">
+      <HintPath>lib\MvCodeReaderCtrlWrapper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+    <ItemGroup>
+      <Resource Include="Assets\info.png" />
+      <Resource Include="Assets\logo.png" />
+      <Resource Include="Assets\nastr.png" />
+      <Resource Include="Assets\Next.png" />
+      <Resource Include="Assets\return.png" />
+      <Resource Include="Assets\Start.png" />
+      <Resource Include="Assets\Stop.png" />
+      <Resource Include="Assets\toggle_close.png" />
+      <Resource Include="Assets\toggle_open.png" />
+    </ItemGroup>
+  <!-- Копирование всех файлов из lib в bin -->
+  <ItemGroup>
+    <None Update="lib\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

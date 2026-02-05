@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerItemProperties.GeneralProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LabelDesigner"
+             xmlns:toolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:models="clr-namespace:LabelDesigner.Models"
+             d:DataContext="{d:DesignInstance Type=models:Field}"
+             mc:Ignorable="d" Background="#F4F4F4">
+    <StackPanel>
+        <Label Content="Общие параметры" HorizontalContentAlignment="Center"/>
+        <Separator/>
+        <TextBlock Text="Позиция &amp; размеры" TextAlignment="Center"/>
+        <Grid MinWidth="150">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Orientation="Vertical" Margin="4">
+                <TextBlock Text="Позиция X (мм)"/>
+                <toolkit:DoubleUpDown Value="{Binding X, Mode=TwoWay, Converter={StaticResource UnitsConverter}}" FormatString="F2" Increment="0.25" DefaultValue="5"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="4" Grid.Column="1">
+                <TextBlock Text="Позиция Y (мм)"/>
+                <toolkit:DoubleUpDown Value="{Binding Y, Mode=TwoWay, Converter={StaticResource UnitsConverter}}" FormatString="F2" Increment="0.25" DefaultValue="5"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="4" Grid.Row="1">
+                <TextBlock Text="Ширина (мм)"/>
+                <toolkit:DoubleUpDown Value="{Binding W, Mode=TwoWay, Converter={StaticResource UnitsConverter}}" FormatString="F2" Increment="0.25" DefaultValue="5"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="4" Grid.Row="1" Grid.Column="1">
+                <TextBlock Text="Высота (мм)"/>
+                <toolkit:DoubleUpDown Value="{Binding H, Mode=TwoWay, Converter={StaticResource UnitsConverter}}" FormatString="F2" Increment="0.25" DefaultValue="5"/>
+            </StackPanel>
+        </Grid>
+        <CheckBox IsChecked="{Binding KeepAspectRatio, Mode=TwoWay}" Content="Сохранять пропорции" Margin="4" Grid.Row="2"/>
+        <StackPanel Orientation="Vertical" Margin="4" Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="Ориентация"/>
+            <ComboBox SelectedValue="{Binding Orientation, Mode=TwoWay}" SelectedValuePath="Tag">
+                <ComboBoxItem Tag="0" Content="0"/>
+                <ComboBoxItem Tag="90" Content="90"/>
+                <ComboBoxItem Tag="180" Content="180"/>
+                <ComboBoxItem Tag="270" Content="270"/>
+            </ComboBox>
+        </StackPanel>
+        <TextBlock Text="Дополнительные опции" TextAlignment="Center"/>
+        <Grid MinWidth="150">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox IsChecked="{Binding Inverted, Mode=TwoWay}" Content="Инверсия" Margin="4"/>
+            <CheckBox IsChecked="{Binding Transparent, Mode=TwoWay}" Content="Прозрачность" Margin="4" Grid.Column="1"/>
+            <CheckBox IsChecked="{Binding MirrorX, Mode=TwoWay}" Content="Отзеркалить X" Margin="4" Grid.Row="1"/>
+            <CheckBox IsChecked="{Binding MirrorY, Mode=TwoWay}" Content="Отзеркалить Y" Margin="4" Grid.Row="1" Grid.Column="1"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

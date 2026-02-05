@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerItemProperties.DataTypeProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LabelDesigner"
+             xmlns:models="clr-namespace:LabelDesigner.Models"
+             d:DataContext="{d:DesignInstance Type=models:Field}"
+             mc:Ignorable="d" Background="#F4F4F4">
+    <StackPanel>
+        <Label Content="Параметры данных" HorizontalContentAlignment="Center"/>
+        <Separator/>
+        <StackPanel Orientation="Vertical" Margin="4">
+            <TextBlock Text="Тип данных"/>
+            <ContentPresenter Content="{Binding}">
+                <ContentPresenter.Resources>
+                    <DataTemplate DataType="{x:Type models:TextField}">
+                        <ComboBox x:Name="DataTypeBox" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                            <ComboBoxItem Tag="Fixed" Content="Фиксированное значение"/>
+                            <ComboBoxItem Tag="Input" Content="Ввод пользователя"/>
+                        </ComboBox>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type models:ImageField}">
+                        <ComboBox x:Name="DataTypeBox" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                            <ComboBoxItem Tag="Fixed" Content="Фиксированное значение"/>
+                            <ComboBoxItem Tag="Input" Content="Ввод пользователя"/>
+                        </ComboBox>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type models:BarcodeField}">
+                        <ComboBox x:Name="DataTypeBox" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                            <ComboBoxItem Tag="Fixed" Content="Фиксированное значение"/>
+                            <ComboBoxItem Tag="Input" Content="Ввод пользователя"/>
+                            <ComboBoxItem Tag="Database" Content="База данных"/>
+                        </ComboBox>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type models:DateField}">
+                        <ComboBox x:Name="DataTypeBox" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                            <ComboBoxItem Tag="Fixed" Content="Фиксированное значение"/>
+                            <ComboBoxItem Tag="Input" Content="Ввод пользователя"/>
+                            <ComboBoxItem Tag="Current" Content="Текущая дата"/>
+                            <ComboBoxItem Tag="Calculated" Content="Рассчитываемая дата"/>
+                        </ComboBox>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type models:TimeField}">
+                        <ComboBox x:Name="DataTypeBox" SelectedValue="{Binding DataType}" SelectedValuePath="Tag">
+                            <ComboBoxItem Tag="Current" Content="Текущее время"/>
+                        </ComboBox>
+                    </DataTemplate>
+                </ContentPresenter.Resources>
+            </ContentPresenter>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="4">
+            <TextBlock Text="Название поля"/>
+            <TextBox Text="{Binding FieldName, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

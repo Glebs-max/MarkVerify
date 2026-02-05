@@ -1,0 +1,19 @@
+﻿<Application x:Class="LabelDesigner.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:LabelDesigner.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <converters:UnitsConverter x:Key="UnitsConverter"/>
+            <converters:LabelAreaConverter x:Key="LabelAreaConverter"/>
+            <converters:TextInputConverter x:Key="TextInputConverter"/>
+            <converters:DateInputConverter x:Key="DateInputConverter"/>
+            <converters:DateOffsetConverter x:Key="DateOffsetConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="LabelDesigner.DesignerItemProperties.DateProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:toolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:local="clr-namespace:LabelDesigner"
+             xmlns:models="clr-namespace:LabelDesigner.Models"
+             d:DataContext="{d:DesignInstance Type=models:DateField}"
+             mc:Ignorable="d" Background="#F4F4F4">
+    <StackPanel>
+        <Label Content="Параметры даты" HorizontalContentAlignment="Center"/>
+        <Separator/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical" Margin="4">
+                <TextBlock Text="Формат даты"/>
+                <ComboBox x:Name="DateFormatBox" SelectedValue="{Binding DateFormat, Mode=TwoWay}" SelectedValuePath="Tag"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="4" Grid.Column="1">
+                <TextBlock Text="Разделитель"/>
+                <ComboBox x:Name="SeparatorBox" SelectedValue="{Binding Separator, Mode=TwoWay}" SelectedValuePath="Tag"/>
+            </StackPanel>
+        </Grid>
+        <StackPanel x:Name="DateInput" Orientation="Vertical" Margin="4" Visibility="{Binding DataType, Converter={StaticResource DateInputConverter}}">
+            <TextBlock Text="Дата"/>
+            <DatePicker SelectedDate="{Binding Date, Mode=TwoWay}"/>
+        </StackPanel>
+        <StackPanel x:Name="DateOffset" Orientation="Vertical" Margin="4" Visibility="{Binding DataType, Converter={StaticResource DateOffsetConverter}}">
+            <TextBlock Text="Сдвиг даты" TextAlignment="Center"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Margin="4">
+                    <TextBlock Text="Дни"/>
+                    <toolkit:IntegerUpDown Value="{Binding DateCalculation.DayOffset, Mode=TwoWay}" Minimum="-9999" Maximum="9999"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="4" Grid.Column="1">
+                    <TextBlock Text="Месяцы"/>
+                    <toolkit:IntegerUpDown Value="{Binding DateCalculation.MonthOffset, Mode=TwoWay}" Minimum="-9999" Maximum="9999"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="4" Grid.Column="2">
+                    <TextBlock Text="Года"/>
+                    <toolkit:IntegerUpDown Value="{Binding DateCalculation.YearOffset, Mode=TwoWay}" Minimum="-9999" Maximum="9999"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

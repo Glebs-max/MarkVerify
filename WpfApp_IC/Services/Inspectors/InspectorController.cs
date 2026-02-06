@@ -206,8 +206,6 @@ namespace WpfApp_IC.Services.Inspectors
             //_modbus.Disconnect();
         }
 
-
-
         public void Dispose()
         {
             Stop();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Observable;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -17,7 +18,7 @@ namespace WpfApp_IC.Services.Inspectors
     /// Работает через абстракции датчика и отбраковщика.
     /// Не зависит от Modbus, OPC UA или других протоколов.
     /// </summary>
-    public class InspectorController : IInspectorController
+    public class InspectorController : ObservableObject, IInspectorController
     {
         private readonly ICameraService _camera;
         private readonly ISensor _sensor;
@@ -50,7 +51,7 @@ namespace WpfApp_IC.Services.Inspectors
         public event Action<int>? SignalChanged;
         public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string>? ErrorOccurred;
-        public event Action<BitmapSource>? FrameReceived;
+        public event Action<string?, BitmapSource>? FrameReceived;
         public event Action<string, string?, bool>? CodeChecked;
 
         public InspectorController(
@@ -125,7 +126,7 @@ namespace WpfApp_IC.Services.Inspectors
                                 var (dm, frame) = _camera.TriggerAndRead();
 
                                 if (frame != null)
-                                    FrameReceived?.Invoke(frame);
+                                    FrameReceived?.Invoke(dm?.Normalized, frame);
 
                                 HandleDataMatrix(dm);
                             }
@@ -182,7 +183,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary>
         /// Активация отбраковщика с задержкой.
         /// </summary>
-        private void RejectWithDelay()
+        public void RejectWithDelay()
         {
             Task.Run(() =>
             {

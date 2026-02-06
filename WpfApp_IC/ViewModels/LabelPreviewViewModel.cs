@@ -1,6 +1,7 @@
 ﻿using LabelDesigner;
 using WpfApp_IC.Models;
 using Observable;
+using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -23,6 +24,7 @@ namespace WpfApp_IC.ViewModels
         public void PrintLabel()
         {
             LabelPrintingViewModel model = mainViewModel.GetViewModel<LabelPrintingViewModel>();
+            model.CameraBasicViewModel = new(mainViewModel.InspectorController);
             model.DesignerViewModel = DesignerViewModel;
             model.DesignerViewModel.Scale = 3.0;
             model.GTIN = GTIN;

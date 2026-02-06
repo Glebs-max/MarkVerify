@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
+             xmlns:pages="clr-namespace:WpfApp_IC.Pages"
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=vm:LabelPrintingViewModel}"
              mc:Ignorable="d" Background="#F4F4F4" FontSize="24">
@@ -62,7 +63,7 @@
                           Background="MediumVioletRed"
                           Width="5"/>
             <designer:DesignerCanvas x:Name="LabelArea" Background="White" Preview="True" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
-            
+            <pages:CameraBasic Grid.Column="2" DataContext="{Binding CameraBasicViewModel}"/>
         </Grid>
         <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" Margin="25,20">

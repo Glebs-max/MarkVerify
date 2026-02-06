@@ -5,6 +5,7 @@ using WpfApp_IC.Data;
 using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
+using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -27,6 +28,7 @@ namespace WpfApp_IC.ViewModels
         private ErrorStatus _errorStatus;
         private gtin _gtin = new();
         private DesignerViewModel _designerViewModel = new();
+        private CameraBasicViewModel _cameraBasicViewModel = new(mainViewModel.InspectorController);
         private int _verified = 0, _rejected = 0;
 
         public PrintingStatus PrintingStatus
@@ -65,6 +67,11 @@ namespace WpfApp_IC.ViewModels
             get => _designerViewModel;
             set => Set(ref _designerViewModel, value);
         }
+        public CameraBasicViewModel CameraBasicViewModel
+        {
+            get => _cameraBasicViewModel;
+            set => Set(ref _cameraBasicViewModel, value);
+        }
         public int Verified
         {
             get => _verified;
@@ -76,6 +83,7 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _rejected, value);
         }
         public VideojetPrinter VideojetPrinter => videojetPrinter;
+        public IInspectorController InspectorController => mainViewModel.InspectorController;
 
         private BarcodeField? DataMatrix => DesignerViewModel.Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);
 
@@ -115,6 +123,15 @@ namespace WpfApp_IC.ViewModels
                             ErrorStatus = ErrorStatus.Faults;
                             break;
                     }
+                };
+                InspectorController.FrameReceived += (dm, frame) =>
+                {
+                    if (dm != null)
+                    {
+                        
+                    }
+                    if (InspectorController is InspectorController inspector)
+                        inspector.RejectWithDelay();
                 };
 
                 PrintingStatus = PrintingStatus.Printing;

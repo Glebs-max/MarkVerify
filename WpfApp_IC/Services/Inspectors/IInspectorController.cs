@@ -16,7 +16,7 @@ namespace WpfApp_IC.Services.Inspectors
         event Action<int>? SignalChanged;
         event Action<DataMatrixResult>? DataMatrixRead;
         event Action<string>? ErrorOccurred;
-        event Action<BitmapSource>? FrameReceived;
+        event Action<string?, BitmapSource>? FrameReceived;
         event Action<string, string?, bool>? CodeChecked;
 
         void Start();

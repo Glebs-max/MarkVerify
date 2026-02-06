@@ -53,10 +53,7 @@ namespace WpfApp_IC
         }
 
         // КНОПКА ДОМОЙ
-        private void GoHome_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+        private void GoHome_Click(object sender, RoutedEventArgs e) => _vm.CurrentViewModel = _vm.GetViewModel<HomeViewModel>();
 
         // ПОМОЩЬ
         private void HelpButton_Click(object sender, RoutedEventArgs e)

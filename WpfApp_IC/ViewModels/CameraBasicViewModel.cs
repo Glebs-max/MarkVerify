@@ -33,7 +33,7 @@ namespace WpfApp_IC.ViewModels
                 });
             };
 
-            _controller.FrameReceived += frame =>
+            _controller.FrameReceived += (dm, frame) =>
             {
                 if (frame != null)
                 {

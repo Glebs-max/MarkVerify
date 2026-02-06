@@ -22,6 +22,16 @@
     <None Remove="Assets\toggle_close.png" />
     <None Remove="Assets\toggle_open.png" />
     <None Remove="Assets\warning.png" />
+    <None Remove="lib\CodeReaderSdkConfig.ini" />
+    <None Remove="lib\hlog.dll" />
+    <None Remove="lib\hpr.dll" />
+    <None Remove="lib\log4cxx.properties" />
+    <None Remove="lib\msvcr90.dll" />
+    <None Remove="lib\MvCodeReaderCtrl.dll" />
+    <None Remove="lib\MvCodeReaderCtrlWrapper.dll" />
+    <None Remove="lib\MvCodeReaderSDK.Net.dll" />
+    <None Remove="lib\MvZip.dll" />
+    <None Remove="lib\VirXMLParse.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +46,36 @@
     </Content>
     <Content Include="Assets\warning.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\CodeReaderSdkConfig.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\hlog.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\hpr.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\log4cxx.properties">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\msvcr90.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\MvCodeReaderCtrl.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\MvCodeReaderCtrlWrapper.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\MvCodeReaderSDK.Net.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\MvZip.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\VirXMLParse.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

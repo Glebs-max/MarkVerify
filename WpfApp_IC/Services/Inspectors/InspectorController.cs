@@ -161,7 +161,7 @@ namespace WpfApp_IC.Services.Inspectors
             if (dm == null)
             {
                 CodeChecked?.Invoke("<NO READ>", ExpectedCode, false);
-                ErrorOccurred?.Invoke("DataMatrix not read, activating rejector");
+                ErrorOccurred?.Invoke("DataMatrix не считан!!!");
                 RejectWithDelay();
                 return;
             }
@@ -172,7 +172,7 @@ namespace WpfApp_IC.Services.Inspectors
 
             if (!ok)
             {
-                ErrorOccurred?.Invoke("DataMatrix mismatch, activating rejector");
+                ErrorOccurred?.Invoke("DataMatrix не найден в отправленных на печать ");
                 RejectWithDelay();
             }
 
@@ -184,12 +184,15 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         private void RejectWithDelay()
         {
-            _ = Task.Run(async () =>
+            Task.Run(() =>
             {
-                await Task.Delay(RejectDelayMs);
+                Thread.Sleep(RejectDelayMs);
+                ErrorOccurred?.Invoke("Rejector ACTIVATING");
                 _rejector.Activate();
+                ErrorOccurred?.Invoke("Rejector DONE");
             });
         }
+
 
         /// <summary>
         /// Остановка инспекции.
@@ -200,7 +203,7 @@ namespace WpfApp_IC.Services.Inspectors
             Thread.Sleep(100);
 
             _camera.Close();
-            _modbus.Disconnect();
+            //_modbus.Disconnect();
         }
 
 
@@ -208,6 +211,7 @@ namespace WpfApp_IC.Services.Inspectors
         public void Dispose()
         {
             Stop();
+            _modbus?.Disconnect();
             _camera.Dispose();
         }
     }

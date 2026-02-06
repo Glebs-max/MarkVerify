@@ -19,10 +19,14 @@
     <None Remove="Assets\Stop.png" />
     <None Remove="Assets\toggle_close.png" />
     <None Remove="Assets\toggle_open.png" />
+    <None Remove="Device\IoModuleConfig.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Device\IoModuleConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

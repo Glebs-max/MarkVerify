@@ -15,13 +15,25 @@ namespace WpfApp_IC.Device
         public int SignalCoil { get; set; } = 0;
         public int RejectCoil { get; set; } = 1;
 
-        public static IoModuleConfig Load(string path = "IoModuleConfig.json")
+        public static IoModuleConfig Load(string path = null)
         {
+            // Если путь не передан — строим абсолютный путь к Device/IoModuleConfig.json
+            if (path == null)
+                path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Device", "IoModuleConfig.json");
+
             if (!File.Exists(path))
                 return new IoModuleConfig();
 
             string json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<IoModuleConfig>(json) ?? new IoModuleConfig();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true
+            };
+
+            return JsonSerializer.Deserialize<IoModuleConfig>(json, options) ?? new IoModuleConfig();
         }
+
     }
 }

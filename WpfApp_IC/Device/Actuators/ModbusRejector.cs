@@ -1,5 +1,6 @@
 ﻿using WpfApp_IC.Services.ModbusT;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace WpfApp_IC.Device.Actuators
 {
@@ -10,19 +11,36 @@ namespace WpfApp_IC.Device.Actuators
     {
         private readonly IModbusService _modbus;
         private readonly int _coil;
+        public event Action<string>? ErrorOccurred;
 
         public ModbusRejector(IModbusService modbus, IoModuleConfig config)
         {
             _modbus = modbus;
             _coil = config.RejectCoil;
         }
-
-        public async void Activate()
+        /// <summary>
+        /// Раньше был асинхронным, сделала синхронным, чтобы не терялся сигнал 
+        /// </summary>
+        public void Activate()
         {
-            _modbus.WriteCoil(_coil, true);
-            await Task.Delay(300);
-            _modbus.WriteCoil(_coil, false);
+            try
+            {
+                Debug.WriteLine("ACTIVATE START");
+
+                _modbus.WriteCoil(_coil, true);
+                Thread.Sleep(500);
+                _modbus.WriteCoil(_coil, false);
+
+                Debug.WriteLine("ACTIVATE END");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ACTIVATE ERROR: " + ex.Message);
+                // здесь можно пробросить в UI, если нужно:
+                // Log?.Invoke("Rejector ERROR: " + ex.Message);
+            }
         }
+
     }
 
 }

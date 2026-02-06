@@ -53,13 +53,23 @@ namespace WpfApp_IC
                     services.AddSingleton<VideojetPrinter>();
                     //services.AddSingleton<ExpectedCodesService>();
 
-                    services.AddSingleton(ioConfig);
+
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
-                    services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
-                    services.AddSingleton<ISensor, ModbusSensor>();
-                    services.AddSingleton<IRejector, ModbusRejector>();
+                    services.AddSingleton<ISensor>(sp =>
+                    {
+                        var modbus = sp.GetRequiredService<IModbusService>();
+                        var config = sp.GetRequiredService<IoModuleConfig>();
+                        return new ModbusSensor(modbus, config);
+                    });
+                    services.AddSingleton<IRejector>(sp =>
+                    {
+                        var modbus = sp.GetRequiredService<IModbusService>();
+                        var config = sp.GetRequiredService<IoModuleConfig>();
+                        return new ModbusRejector(modbus, config);
+                    });
+
 
 
                     services.AddTransient<CameraBasicViewModel>();

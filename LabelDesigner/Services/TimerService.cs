@@ -12,8 +12,13 @@ namespace LabelDesigner.Services
         {
             Interval = TimeSpan.FromMilliseconds(300)
         };
+        private static readonly DispatcherTimer _queueSizeTimer = new()
+        {
+            Interval = TimeSpan.FromMilliseconds(1000)
+        };
 
         public static DispatcherTimer DesignerCanvasTimer => _designerCanvasTimer;
         public static DispatcherTimer PrintTimer => _printTimer;
+        public static DispatcherTimer QueueSizeTimer => _queueSizeTimer;
     }
 }

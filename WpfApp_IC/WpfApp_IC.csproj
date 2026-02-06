@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="Assets\fault.png" />
+    <None Remove="Assets\good.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\logo.png" />
     <None Remove="Assets\nastr.png" />
@@ -19,11 +21,21 @@
     <None Remove="Assets\Stop.png" />
     <None Remove="Assets\toggle_close.png" />
     <None Remove="Assets\toggle_open.png" />
+    <None Remove="Assets\warning.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fault.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\good.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\warning.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -55,20 +67,43 @@
     </Reference>
   </ItemGroup>
     <ItemGroup>
-      <Resource Include="Assets\info.png" />
-      <Resource Include="Assets\logo.png" />
-      <Resource Include="Assets\nastr.png" />
-      <Resource Include="Assets\Next.png" />
-      <Resource Include="Assets\return.png" />
-      <Resource Include="Assets\Start.png" />
-      <Resource Include="Assets\Stop.png" />
-      <Resource Include="Assets\toggle_close.png" />
-      <Resource Include="Assets\toggle_open.png" />
+      <Resource Include="Assets\info.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\logo.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\nastr.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\Next.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\return.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\Start.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\Stop.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\toggle_close.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Assets\toggle_open.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
   <!-- Копирование всех файлов из lib в bin -->
   <ItemGroup>
     <None Update="lib\**\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="label.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

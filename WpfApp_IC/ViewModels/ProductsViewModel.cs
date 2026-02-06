@@ -1,5 +1,4 @@
-﻿using LabelDesigner;
-using LabelDesigner.Services;
+﻿using LabelDesigner.Services;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,7 @@ namespace WpfApp_IC.ViewModels
 
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             //model.DesignerViewModel = DesignerService.LoadLabel(product.TemplateLabel ?? string.Empty) ?? new();
-            model.DesignerViewModel = DesignerService.LoadLabel("C:\\Users\\dvornikov.ga\\Desktop\\label.xml") ?? new();
+            model.DesignerViewModel = DesignerService.LoadLabel("label.xml") ?? new();
             model.GTIN = product;
             mainViewModel.CurrentViewModel = model;
         }

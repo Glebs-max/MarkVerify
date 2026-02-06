@@ -31,7 +31,6 @@ namespace WpfApp_IC
     {
         private readonly TcpClient _textComms = new(), _zplEmulation = new();
         private CancellationTokenSource _cts = new();
-        private PrinterState _state;
         private bool _connected;
         private string _ip = ip;
         private int _portTextComms = portTextComms, _portZplEmulation = portZplEmulation, _queueSize, _maxQueueSize = 20;
@@ -42,11 +41,6 @@ namespace WpfApp_IC
         public event Action<QueueStatus>? QueueStatusChanged;
         public event Action<ErrorState>? ErrorStateChanged;
 
-        public PrinterState State
-        {
-            get => _state;
-            private set => Set(ref _state, value);
-        }
         public bool Connected
         {
             get => _connected;
@@ -97,11 +91,12 @@ namespace WpfApp_IC
                 _streamTextComms.WriteTimeout = _streamTextComms.ReadTimeout = 5000;
                 _streamZplEmulation = _zplEmulation.GetStream();
                 _streamZplEmulation.WriteTimeout = _streamZplEmulation.ReadTimeout = 5000;
-
                 _cts = new();
                 _listenTask = Task.Run(() => ListenAsync(_streamTextComms, _cts.Token));
 
                 Connected = true;
+
+                await GetStateAsync();
                 await GetQueueSize();
             }
             catch { }
@@ -120,15 +115,6 @@ namespace WpfApp_IC
 
             Connected = false;
         }
-        public async Task GetQueueSize()
-        {
-            if (!Connected || _streamTextComms == null)
-                throw new InvalidOperationException("Нет соединения с принтером");
-
-            StreamWriter _writer = new(_streamTextComms, Encoding.ASCII) { AutoFlush = true };
-
-            await _writer.WriteAsync("QSZ\r");
-        }
         public async Task SendZplAsync(string zpl)
         {
             if (!Connected || _streamZplEmulation == null)
@@ -138,49 +124,23 @@ namespace WpfApp_IC
 
             await _streamZplEmulation.WriteAsync(bytes);
             await _streamZplEmulation.FlushAsync();
-            await GetQueueSize();
         }
-        public async Task ClearQueueAsync()
+        public async Task GetStateAsync() => await SendCommandAsync("GST\r");
+        public async Task GetQueueSize() => await SendCommandAsync("QSZ\r");
+        public async Task ClearQueueAsync() => await SendCommandAsync("CQI\r");
+        public async Task PrintAsync() => await SendCommandAsync("PRN\r");
+        public async Task StartAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Running}|\r");
+        public async Task StopAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Offline}|\r");
+
+        private async Task SendCommandAsync(string command)
         {
             if (!Connected || _streamTextComms == null)
                 throw new InvalidOperationException("Нет соединения с принтером");
 
             StreamWriter _writer = new(_streamTextComms, Encoding.ASCII) { AutoFlush = true };
 
-            await _writer.WriteAsync("CQI\r");
-            await GetQueueSize();
+            await _writer.WriteAsync(command);
         }
-        public async Task PrintAsync()
-        {
-            if (!Connected || _streamTextComms == null)
-                throw new InvalidOperationException("Нет соединения с принтером");
-
-            StreamWriter _writer = new(_streamTextComms, Encoding.ASCII) { AutoFlush = true };
-            
-            await _writer.WriteAsync("PRN\r");
-            await GetQueueSize();
-        }
-        public async Task StartAsync()
-        {
-            if (!Connected || _streamTextComms == null)
-                throw new InvalidOperationException("Нет соединения с принтером");
-
-            StreamWriter _writer = new(_streamTextComms, Encoding.ASCII) { AutoFlush = true };
-
-            if (State == PrinterState.Offline)
-                await _writer.WriteAsync($"SST|{(int)PrinterState.Running}|\r");
-        }
-        public async Task StopAsync()
-        {
-            if (!Connected || _streamTextComms == null)
-                throw new InvalidOperationException("Нет соединения с принтером");
-
-            StreamWriter _writer = new(_streamTextComms, Encoding.ASCII) { AutoFlush = true };
-
-            if (State == PrinterState.Running)
-                await _writer.WriteAsync($"SST|{(int)PrinterState.Offline}|\r");
-        }
-
         private async Task ListenAsync(NetworkStream streamTextComms, CancellationToken token)
         {
             try
@@ -221,16 +181,22 @@ namespace WpfApp_IC
             switch (split[0])
             {
                 case "STS":
-                    StateChanged?.Invoke(State = Enum.Parse<PrinterState>(split[1]));
+                    if (Enum.TryParse(split[1], out PrinterState sts1))
+                        StateChanged?.Invoke(sts1);
+                    if (Enum.TryParse(split[2], out ErrorState sts2))
+                        ErrorStateChanged?.Invoke(sts2);
                     break;
                 case "ERS":
-                    ErrorStateChanged?.Invoke(Enum.Parse<ErrorState>(split[1]));
+                    if (Enum.TryParse(split[1], out ErrorState ers))
+                        ErrorStateChanged?.Invoke(ers);
                     break;
                 case "OUT":
-                    QueueStatusChanged?.Invoke(Enum.Parse<QueueStatus>(split[1]));
+                    if (Enum.TryParse(split[1], out QueueStatus qst))
+                        QueueStatusChanged?.Invoke(qst);
                     break;
                 case "QSZ":
-                    QueueSize = int.Parse(split[1]);
+                    if (int.TryParse(split[1], out int qsz))
+                        QueueSize = qsz;
                     break;
             }
         }

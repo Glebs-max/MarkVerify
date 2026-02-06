@@ -14,8 +14,39 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <TextBlock x:Name="StatusBar" Background="LightGreen" Text="Печать" TextAlignment="Center" Padding="6" FontSize="32" FontFamily="Bahnschrift"/>
+        <Grid>
+            <Grid.Tag>
+                <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
+                    <Binding Path="PrintingStatus"/>
+                    <Binding Path="ErrorStatus"/>
+                </MultiBinding>
+            </Grid.Tag>
+            <Grid.Background>
+                <Binding Path="Tag.StatusColor" RelativeSource="{RelativeSource Self}"/>
+            </Grid.Background>
+            <TextBlock x:Name="StatusBar" TextAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="32" FontFamily="Bahnschrift">
+                <TextBlock.Tag>
+                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
+                        <Binding Path="PrintingStatus"/>
+                        <Binding Path="ErrorStatus"/>
+                    </MultiBinding>
+                </TextBlock.Tag>
+                <TextBlock.Text>
+                    <Binding Path="Tag.StatusText" RelativeSource="{RelativeSource Self}"/>
+                </TextBlock.Text>
+            </TextBlock>
+            <Image Height="50" Margin="5,5,20,5" HorizontalAlignment="Right" Cursor="Hand">
+                <Image.Tag>
+                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
+                        <Binding Path="PrintingStatus"/>
+                        <Binding Path="ErrorStatus"/>
+                    </MultiBinding>
+                </Image.Tag>
+                <Image.Source>
+                    <Binding Path="Tag.StatusIcon" RelativeSource="{RelativeSource Self}"/>
+                </Image.Source>
+            </Image>
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -35,8 +66,8 @@
         </Grid>
         <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" Margin="25,20">
-                <TextBlock Text="В очереди: "/>
-                <TextBlock Text="{Binding QueueSize}"/>
+                <TextBlock Text="Очередь: "/>
+                <TextBlock Text="{Binding VideojetPrinter.QueueSize}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="25,20">
                 <TextBlock Text="Остаток: "/>

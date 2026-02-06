@@ -1,7 +1,4 @@
-﻿using WpfApp_IC.Models;
-using WpfApp_IC.ViewModels;
-using Microsoft.Win32;
-using System.IO;
+﻿using WpfApp_IC.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,8 +17,8 @@ namespace WpfApp_IC.Pages
 
         private void Pause_Click(object sender, RoutedEventArgs e)
         {
-            VM.Active = !VM.Active;
-            Pause.Content = VM.Active ? "Пауза" : "Возобновить";
+            VM.PrintingStatus = VM.PrintingStatus == PrintingStatus.Printing ? PrintingStatus.Paused : PrintingStatus.Printing;
+            Pause.Content = VM.PrintingStatus == PrintingStatus.Printing ? "Пауза" : "Возобновить";
         }
         private async void Stop_Click(object sender, RoutedEventArgs e)
         {

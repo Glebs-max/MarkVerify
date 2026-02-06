@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DesignerViewModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Scale>4</Scale>
+  <LabelArea>
+    <MinWidth>18.89644746787604</MinWidth>
+    <MinHeight>18.89644746787604</MinHeight>
+    <W>113.37868480725625</W>
+    <H>75.58578987150416</H>
+    <GridStepX>18.89644746787604</GridStepX>
+    <GridStepY>18.89644746787604</GridStepY>
+    <Grid>true</Grid>
+  </LabelArea>
+  <Fields>
+    <Field xsi:type="BarcodeField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Database</DataType>
+      <FieldName>Честный знак</FieldName>
+      <InitialSize>
+        <Width>324</Width>
+        <Height>324</Height>
+      </InitialSize>
+      <X>3.7792894935752077</X>
+      <Y>3.7792894935752077</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>44.99304610733183</W>
+      <H>44.99304610733183</H>
+      <BarcodeData>Default Data</BarcodeData>
+    </Field>
+    <Field xsi:type="DateField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Current</DataType>
+      <FieldName>Дата изготовления</FieldName>
+      <InitialSize>
+        <Width>160.15333333333334</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>52.91005291005291</X>
+      <Y>3.7792894935752077</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>52.910052910052904</W>
+      <H>12.156559840029846</H>
+      <Text>13.01.2026</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+      <Date>2026-01-13T17:35:05.4289859+05:00</Date>
+      <DateFormat>dd$MM$yyyy</DateFormat>
+      <Separator>46</Separator>
+    </Field>
+    <Field xsi:type="DateField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Calculated</DataType>
+      <FieldName>Срок годности</FieldName>
+      <InitialSize>
+        <Width>160.15333333333334</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>52.91005291005291</X>
+      <Y>15.11715797430083</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>52.910052910052904</W>
+      <H>12.156559840029846</H>
+      <Text>13.01.2027</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+      <Date>2027-01-13T17:33:09.2766715+05:00</Date>
+      <DateFormat>dd$MM$yyyy</DateFormat>
+      <Separator>46</Separator>
+      <DateCalculation>
+        <DayOffset>0</DayOffset>
+        <MonthOffset>12</MonthOffset>
+        <YearOffset>0</YearOffset>
+      </DateCalculation>
+    </Field>
+    <Field xsi:type="TimeField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Current</DataType>
+      <FieldName>Время изготовления</FieldName>
+      <InitialSize>
+        <Width>81.84333333333333</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>78.4448223733938</X>
+      <Y>26.455026455026456</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>27.06704608144956</W>
+      <H>12.16931216931217</H>
+      <Text>17:35</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+      <Time>2026-01-13T17:35:05.4299132+05:00</Time>
+      <TimeFormat>HH$mm</TimeFormat>
+      <Separator>58</Separator>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Номер автомата и линии</FieldName>
+      <InitialSize>
+        <Width>35.593333333333334</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>52.91005291005291</X>
+      <Y>26.455026455026456</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>11.771348432277865</W>
+      <H>12.16931216931217</H>
+      <Text>15</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Номер смены</FieldName>
+      <InitialSize>
+        <Width>17.796666666666667</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>65.19274376417233</X>
+      <Y>26.455026455026456</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>5.885674216138932</W>
+      <H>12.16931216931217</H>
+      <Text>1</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Код завода</FieldName>
+      <InitialSize>
+        <Width>18.5</Width>
+        <Height>36.28</Height>
+      </InitialSize>
+      <X>52.91005291005291</X>
+      <Y>37.79289493575208</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>6.205410009158632</W>
+      <H>12.169312169312171</H>
+      <Text>Z</Text>
+      <TextFontFamily>Franklin Gothic</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Код региона</FieldName>
+      <InitialSize>
+        <Width>17.796666666666667</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>65.19274376417233</X>
+      <Y>37.79289493575208</Y>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>5.885674216138932</W>
+      <H>12.16931216931217</H>
+      <Text>1</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+  </Fields>
+</DesignerViewModel>

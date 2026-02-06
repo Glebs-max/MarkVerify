@@ -1,15 +1,17 @@
 ﻿<Application x:Class="WpfApp_IC.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:LabelDesigner.Converters;assembly=LabelDesigner">
+             xmlns:designerconverters="clr-namespace:LabelDesigner.Converters;assembly=LabelDesigner"
+             xmlns:converters="clr-namespace:WpfApp_IC.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:UnitsConverter x:Key="UnitsConverter"/>
-            <converters:LabelAreaConverter x:Key="LabelAreaConverter"/>
+            <converters:PrintingStatusConverter x:Key="PrintingStatusConverter"/>
+            <designerconverters:UnitsConverter x:Key="UnitsConverter"/>
+            <designerconverters:LabelAreaConverter x:Key="LabelAreaConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

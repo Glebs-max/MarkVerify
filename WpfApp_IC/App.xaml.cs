@@ -45,6 +45,7 @@ namespace WpfApp_IC
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<ProductsViewModel>();
+
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
 
@@ -73,6 +74,7 @@ namespace WpfApp_IC
 
 
                     services.AddTransient<CameraBasicViewModel>();
+                    services.AddTransient<CameraViewModel>();
                     services.AddTransient<CameraAdvancedViewModel>();
                 })
                 .Build();

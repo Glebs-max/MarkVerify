@@ -142,6 +142,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Device\IoModuleConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="label.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

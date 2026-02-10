@@ -24,7 +24,7 @@ namespace WpfApp_IC.ViewModels
         public void PrintLabel()
         {
             LabelPrintingViewModel model = mainViewModel.GetViewModel<LabelPrintingViewModel>();
-            model.CameraBasicViewModel = new(mainViewModel.InspectorController);
+            //уmodel.CameraBasicViewModel = new(mainViewModel.InspectorController);
             model.DesignerViewModel = DesignerViewModel;
             model.DesignerViewModel.Scale = 3.0;
             model.GTIN = GTIN;

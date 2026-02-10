@@ -22,13 +22,13 @@ namespace WpfApp_IC.ViewModels
         Faults
     }
 
-    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, VideojetPrinter videojetPrinter) : ObservableObject
+    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, VideojetPrinter videojetPrinter, CameraViewModel cameraViewModel) : ObservableObject
     {
         private PrintingStatus _printingStatus;
         private ErrorStatus _errorStatus;
         private gtin _gtin = new();
         private DesignerViewModel _designerViewModel = new();
-        private CameraBasicViewModel _cameraBasicViewModel = new(mainViewModel.InspectorController);
+       // private CameraViewModel _cameraViewModel = new(mainViewModel.InspectorController);
         private int _verified = 0, _rejected = 0;
 
         public PrintingStatus PrintingStatus
@@ -67,11 +67,7 @@ namespace WpfApp_IC.ViewModels
             get => _designerViewModel;
             set => Set(ref _designerViewModel, value);
         }
-        public CameraBasicViewModel CameraBasicViewModel
-        {
-            get => _cameraBasicViewModel;
-            set => Set(ref _cameraBasicViewModel, value);
-        }
+        public CameraViewModel CameraViewModel { get; } = cameraViewModel;
         public int Verified
         {
             get => _verified;
@@ -94,6 +90,8 @@ namespace WpfApp_IC.ViewModels
                 await ClearQueueAsync();
                 await QueueLabel();
                 await StartPrinter();
+                InspectorController.Start(); 
+                CameraViewModel.AddLog("Инспекция запущена");
 
                 TimerService.PrintTimer.Tick += async (s, e) => await PrintAsync();
                 TimerService.QueueSizeTimer.Tick += async (s, e) => await GetQueueSize();
@@ -124,15 +122,15 @@ namespace WpfApp_IC.ViewModels
                             break;
                     }
                 };
-                InspectorController.FrameReceived += (dm, frame) =>
-                {
-                    if (dm != null)
-                    {
+                //InspectorController.FrameReceived += (dm, frame) =>
+                //{
+                //    if (dm != null)
+                //    {
                         
-                    }
-                    if (InspectorController is InspectorController inspector)
-                        inspector.RejectWithDelay();
-                };
+                //    }
+                //    if (InspectorController is InspectorController inspector)
+                //        inspector.RejectWithDelay();
+                //};
 
                 PrintingStatus = PrintingStatus.Printing;
             }

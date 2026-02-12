@@ -16,17 +16,19 @@ using WpfApp_IC.ViewModels;
 
 namespace WpfApp_IC.Pages
 {
-    public partial class Home : UserControl
+    public partial class VideojetErrors : UserControl
     {
-        public Home()
+        public VideojetErrors()
         {
             InitializeComponent();
         }
 
-        private HomeViewModel VM => (HomeViewModel)DataContext;
+        private VideojetPrinter VM => (VideojetPrinter)DataContext;
 
-        private void Start_Click(object sender, RoutedEventArgs e) => VM.Start();
-        private void Settings_Click(object sender, RoutedEventArgs e) => VM.Settings();
-        private void CameraBasic_Click(object sender, RoutedEventArgs e) => VM.CameraBasic();
+        private async void ClearErrors_Click(object sender, RoutedEventArgs e)
+        {
+            await VM.ClearAllFaultsAsync();
+            await VM.ClearAllWarningsAsync();
+        }
     }
 }

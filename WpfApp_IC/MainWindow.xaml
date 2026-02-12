@@ -18,9 +18,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <ContentPresenter x:Name="content"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                            <ContentPresenter x:Name="content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
@@ -46,7 +44,6 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="LeftColumn" Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -132,39 +129,11 @@
                             Click="HelpButton_Click">
                         <Image Source="pack://application:,,,/Assets/info.png" Width="39" Height="39"/>
                     </Button>
-
                 </StackPanel>
-
             </DockPanel>
         </Border>
 
-        <!-- Левое меню -->
-        <Border Grid.Row="1" Grid.Column="0" Background="#A9A9A9" Padding="10">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Button x:Name="MenuButton" Grid.Row="0" Background="Transparent" BorderThickness="0" Click="MenuButton_Click" HorizontalContentAlignment="Left" Padding="10,0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Canvas Width="24" Height="24">
-                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="4"/>
-                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="10"/>
-                            <Rectangle Fill="White" Width="20" Height="2" Canvas.Top="16"/>
-                        </Canvas>
-                        <TextBlock x:Name="MenuText" Text="МЕНЮ" Foreground="White" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <StackPanel x:Name="MenuItemsPanel" Grid.Row="1" Margin="10,10,10,10">
-                    <Button Content="Камера - базовый режим" Margin="0,0,0,10" Click="CameraBasic_Click"/>
-                    <Button Content="Камера - расширенный режим" Margin="0,0,0,10" Click="CameraAdvanced_Click"/>
-                </StackPanel>
-            </Grid>
-        </Border>
-        
-        <ContentPresenter Content="{Binding CurrentViewModel}" Grid.Row="1" Grid.Column="1">
+        <ContentPresenter Content="{Binding CurrentViewModel}" Grid.Row="1">
             <ContentPresenter.Resources>
                 <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                     <pages:Home/>

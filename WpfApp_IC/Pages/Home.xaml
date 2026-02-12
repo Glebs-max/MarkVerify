@@ -9,22 +9,22 @@
              mc:Ignorable="d">
     <Border Padding="20" Background="#DCDCDC" Cursor="">
         <Grid>
-
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-
                 <Button Content="Старт"
-                    Width="250"
-                    Height="50"
-                    FontSize="18"
-                    Margin="0,0,0,20" Click="Start_Click"/>
-
+                        Width="250"
+                        Height="50"
+                        FontSize="18"
+                        Margin="0,0,0,20" Click="Start_Click"/>
+                <Button Content="Камера (базовый режим)"
+                        Width="250"
+                        Height="50"
+                        FontSize="18"
+                        Margin="0,0,0,20" Click="CameraBasic_Click"/>
                 <Button Content="Настройки"
-                    Width="250"
-                    Height="50"
-                    FontSize="18" Click="Settings_Click"/>
-
+                        Width="250"
+                        Height="50"
+                        FontSize="18" Click="Settings_Click"/>
             </StackPanel>
-
         </Grid>
     </Border>
 </UserControl>

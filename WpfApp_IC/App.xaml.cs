@@ -2,29 +2,21 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Device;
 using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
-using WpfApp_IC.Pages;
-using WpfApp_IC.Services.Camera;     // CameraService
+using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
-using WpfApp_IC.Services.ModbusT;     // ModbusService
-using WpfApp_IC.Services.Products;   // ExpectedCodesService
+using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.ViewModels;
-
-
 
 namespace WpfApp_IC
 {
     public partial class App : Application
     {
         public static IHost? AppHost { get; private set; }
-
-        // Глобальный доступ к очереди DataMatrix
-       // public static ExpectedCodesService ExpectedCodes => AppHost.Services.GetRequiredService<ExpectedCodesService>();
 
         public App()
         {
@@ -45,16 +37,13 @@ namespace WpfApp_IC
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<ProductsViewModel>();
-
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
-
-                    services.AddSingleton<MainWindow>();
+                    services.AddTransient<CameraBasicViewModel>();
+                    services.AddTransient<CameraViewModel>();
+                    services.AddTransient<CameraAdvancedViewModel>();
 
                     services.AddSingleton<VideojetPrinter>();
-                    //services.AddSingleton<ExpectedCodesService>();
-
-
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
@@ -71,11 +60,7 @@ namespace WpfApp_IC
                         return new ModbusRejector(modbus, config);
                     });
 
-
-
-                    services.AddTransient<CameraBasicViewModel>();
-                    services.AddTransient<CameraViewModel>();
-                    services.AddTransient<CameraAdvancedViewModel>();
+                    services.AddSingleton<MainWindow>();
                 })
                 .Build();
         }

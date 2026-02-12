@@ -1,34 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Observable;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    /// <summary>
+    /// Базовая модель приложения
+    /// </summary>
+    public class MainViewModel(IServiceProvider provider, VideojetPrinter videojetPrinter, IInspectorController inspector) : ObservableObject
     {
-        private readonly IServiceProvider _provider;
         private string _machineName = "Машина 1";
         private ObservableObject? _currentViewModel = null;
-        private VideojetPrinter _videojetPrinter;
-        private IInspectorController _inspectorController;
-
-        public MainViewModel(IServiceProvider provider, VideojetPrinter videojetPrinter, IInspectorController inspector)
-        {
-            _provider = provider;
-            _videojetPrinter = videojetPrinter;
-            _inspectorController = inspector;
-        }
 
         public string MachineName
         {
             get => _machineName;
             set => Set(ref _machineName, value);
         }
+        /// <summary>
+        /// Текущая ViewModel - определяет текущую страницу приложения
+        /// </summary>
         public ObservableObject? CurrentViewModel
         {
             get => _currentViewModel;
@@ -36,15 +27,18 @@ namespace WpfApp_IC.ViewModels
         }
         public VideojetPrinter VideojetPrinter
         {
-            get => _videojetPrinter;
-            set => Set(ref _videojetPrinter, value);
+            get => videojetPrinter;
+            set => Set(ref videojetPrinter, value);
         }
         public IInspectorController InspectorController
         {
-            get => _inspectorController;
-            set => Set(ref _inspectorController, value);
+            get => inspector;
+            set => Set(ref inspector, value);
         }
 
-        public T GetViewModel<T>() where T : ObservableObject => _provider.GetRequiredService<T>();
+        /// <summary>
+        /// Получение требуемой ViewModel, зарегистрированной в App()
+        /// </summary>
+        public T GetViewModel<T>() where T : ObservableObject => provider.GetRequiredService<T>();
     }
 }

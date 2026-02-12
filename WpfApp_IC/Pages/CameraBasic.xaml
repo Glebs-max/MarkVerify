@@ -5,26 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
              xmlns:conv="clr-namespace:WpfApp_IC.Converters"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=viewmodels:CameraBasicViewModel}">
-
-
-
-    <Grid Margin="10">
+             d:DataContext="{d:DesignInstance Type=viewmodels:CameraBasicViewModel}"
+             mc:Ignorable="d" FontSize="14">
+    <Grid Grid.Column="2">
         <Grid.RowDefinitions>
+            <!-- Панель -->
             <RowDefinition Height="Auto"/>
+            <!-- DataMatrix -->
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="2*"/>
+            <!-- Изображение -->
+            <RowDefinition Height="*"/>
+            <!-- Сплиттер -->
+            <RowDefinition Height="5"/>
+            <!-- Логи -->
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Панель управления -->
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="0"
-                    Margin="0,0,0,10">
-
+        <!-- Панель -->
+        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,5">
             <!-- Старт / Стоп -->
-            <Button Width="40" Height="30"
+            <Button Width="30"
+                    Height="30"
+                    Margin="10,0"
+                    HorizontalAlignment="Center"
                     Background="Transparent"
                     BorderThickness="0"
                     Click="StartStop_Click">
@@ -35,40 +38,43 @@
 
             <!-- Показать / скрыть изображение -->
             <CheckBox Style="{StaticResource ImageToggleStyle}"
-                      Margin="20,0,0,0"
+                      HorizontalAlignment="Center"
+                      Margin="10,0"
                       IsChecked="{Binding ShowImage}"/>
 
             <!-- Показать / скрыть лог -->
             <CheckBox Style="{StaticResource LogToggleStyle}"
-                      Margin="20,0,0,0"
+                      HorizontalAlignment="Center"
+                      Margin="10,0"
                       IsChecked="{Binding ShowLog}"/>
-        </StackPanel>
+        </WrapPanel>
 
         <!-- DataMatrix -->
         <TextBox Grid.Row="1"
-                 Height="30"
-                 FontSize="19"
-                 IsReadOnly="True"
-                 VerticalContentAlignment="Center"
-                 Background="#FFF9F9F9"
-                 Margin="0,0,0,10"
-                 Text="{Binding DataMatrix}"
-                 Foreground="{Binding DataMatrixBrush}"/>
+         Height="30"
+         Margin="10,5"
+         FontSize="19"
+         IsReadOnly="True"
+         VerticalContentAlignment="Center"
+         Background="#FFF9F9F9"
+         Text="{Binding DataMatrix}"
+         Foreground="{Binding DataMatrixBrush}"/>
 
         <!-- Изображение -->
-        <Border Grid.Row="2"
-                BorderBrush="#CCC"
-                BorderThickness="1"
-                Margin="0,0,0,10"
-                Visibility="{Binding ShowImage, Converter={StaticResource BoolToVisibility}}">
-            <Image Stretch="Uniform"
-                   Source="{Binding Frame}"/>
+        <Border Grid.Row="2" Margin="10,5" BorderBrush="#CCC" BorderThickness="1" Visibility="{Binding ShowImage, Converter={StaticResource BoolToVisibility}}">
+            <Image Stretch="Uniform" Source="{Binding Frame}"/>
         </Border>
 
-        <!-- Лог -->
-        <Border Grid.Row="3"
-                Background="#1E1E1E"
-                Visibility="{Binding ShowLog, Converter={StaticResource BoolToVisibility}}">
+        <!-- Горизонтальный сплиттер -->
+        <GridSplitter Grid.Row="3"
+                      Height="5"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Center"
+                      Background="MediumVioletRed"
+                      ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Логи -->
+        <Border Grid.Row="4" Background="#1E1E1E" Visibility="{Binding ShowLog, Converter={StaticResource BoolToVisibility}}">
             <ListBox ItemsSource="{Binding Log}"
                      Foreground="LightGreen"
                      Background="Transparent"

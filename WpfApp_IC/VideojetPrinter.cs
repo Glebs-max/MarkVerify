@@ -1,4 +1,5 @@
 ﻿using Observable;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -25,6 +26,19 @@ namespace WpfApp_IC
         None,
         Warnings,
         Faults
+    }
+    public enum ErrorType
+    {
+        Warning,
+        Fault
+    }
+
+    public struct VideojetPrinterError
+    {
+        public ErrorType ErrorType;
+        public string Code { get; set; }
+        public bool Clearable { get; set; }
+        public string Title { get; set; }
     }
 
     public class VideojetPrinter(string ip = "192.168.10.2", int portTextComms = 9100, int portZplEmulation = 1000) : ObservableObject, IDisposable
@@ -71,6 +85,7 @@ namespace WpfApp_IC
             get => _maxQueueSize;
             private set => Set(ref _maxQueueSize, value);
         }
+        public ObservableCollection<VideojetPrinterError> Errors { get; set; } = [];
 
         public void Dispose()
         {
@@ -95,9 +110,6 @@ namespace WpfApp_IC
                 _listenTask = Task.Run(() => ListenAsync(_streamTextComms, _cts.Token));
 
                 Connected = true;
-
-                await GetStateAsync();
-                await GetQueueSize();
             }
             catch { }
         }
@@ -115,6 +127,9 @@ namespace WpfApp_IC
 
             Connected = false;
         }
+        /// <summary>
+        /// Отправка в очередь принтера изображения в формате ZPL
+        /// </summary>
         public async Task SendZplAsync(string zpl)
         {
             if (!Connected || _streamZplEmulation == null)
@@ -126,12 +141,19 @@ namespace WpfApp_IC
             await _streamZplEmulation.FlushAsync();
         }
         public async Task GetStateAsync() => await SendCommandAsync("GST\r");
-        public async Task GetQueueSize() => await SendCommandAsync("QSZ\r");
+        public async Task GetQueueSizeAsync() => await SendCommandAsync("QSZ\r");
+        public async Task GetAllFaultsAsync() => await SendCommandAsync("GFT\r");
+        public async Task GetAllWarningsAsync() => await SendCommandAsync("GWN\r");
         public async Task ClearQueueAsync() => await SendCommandAsync("CQI\r");
+        public async Task ClearAllFaultsAsync() => await SendCommandAsync("CAF\r");
+        public async Task ClearAllWarningsAsync() => await SendCommandAsync("CAW\r");
         public async Task PrintAsync() => await SendCommandAsync("PRN\r");
         public async Task StartAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Running}|\r");
         public async Task StopAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Offline}|\r");
 
+        /// <summary>
+        /// Отправка текстовой команды принтеру (протокол TextComms)
+        /// </summary>
         private async Task SendCommandAsync(string command)
         {
             if (!Connected || _streamTextComms == null)
@@ -141,6 +163,9 @@ namespace WpfApp_IC
 
             await _writer.WriteAsync(command);
         }
+        /// <summary>
+        /// Слушание и обработка сообщений от принтера
+        /// </summary>
         private async Task ListenAsync(NetworkStream streamTextComms, CancellationToken token)
         {
             try
@@ -157,6 +182,9 @@ namespace WpfApp_IC
             }
             catch { }
         }
+        /// <summary>
+        /// Чтение сообщения до символа <CR>
+        /// </summary>
         private static async Task<string> ReadMessage(StreamReader reader, CancellationToken token)
         {
             StringBuilder sb = new();
@@ -174,6 +202,9 @@ namespace WpfApp_IC
 
             return sb.ToString();
         }
+        /// <summary>
+        /// Обработка полученных сообщений от принтера
+        /// </summary>
         private void ProcessMessage(string message)
         {
             string[] split = message.Split('|');
@@ -197,6 +228,31 @@ namespace WpfApp_IC
                 case "QSZ":
                     if (int.TryParse(split[1], out int qsz))
                         QueueSize = qsz;
+                    break;
+                case "FLT":
+                case "WRN":
+                    if (int.TryParse(split[1], out int count))
+                    {
+                        ErrorType errorType = split[0] switch
+                        {
+                            "FLT" => ErrorType.Fault,
+                            "WRN" => ErrorType.Warning,
+                            _ => ErrorType.Fault
+                        };
+
+                        List<VideojetPrinterError> errors = [.. Errors.Where(e => e.ErrorType == errorType)];
+                        foreach (VideojetPrinterError error in errors) Errors.Remove(error);
+
+                        split = [.. split.Skip(2)];
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            string[] error = [.. split.Take(3)];
+                            VideojetPrinterError e = new() { ErrorType = errorType, Code = $"#{error[0]}", Clearable = bool.TryParse(error[1], out bool c) && c, Title = error[2] };
+                            Errors.Add(e);
+                            split = [.. split.Skip(3)];
+                        }
+                    }
                     break;
             }
         }

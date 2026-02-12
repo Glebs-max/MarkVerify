@@ -7,13 +7,10 @@ namespace WpfApp_IC.ViewModels
     {
         private readonly IInspectorController _controller;
 
-        public CameraBasicViewModel(IInspectorController controller)
-            : base(controller)
+        public CameraBasicViewModel(IInspectorController controller) : base(controller)
         {
             _controller = controller;
         }
-
-       
 
         public void StartStop()
         {

@@ -16,37 +16,6 @@ namespace WpfApp_IC
             Loaded += async (s, e) => await _vm.VideojetPrinter.ConnectAsync();
         }
 
-        // ЛЕВОЕ МЕНЮ
-        private void MenuButton_Click(object sender, RoutedEventArgs e)
-        {
-            _isMenuExpanded = !_isMenuExpanded;
-
-            if (_isMenuExpanded)
-            {
-                LeftColumn.Width = new GridLength(220);
-                MenuItemsPanel.Visibility = Visibility.Visible;
-                MenuText.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                LeftColumn.Width = new GridLength(60);
-                MenuItemsPanel.Visibility = Visibility.Collapsed;
-                MenuText.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        // ПУНКТЫ МЕНЮ
-        private void CameraBasic_Click(object sender, RoutedEventArgs e)
-        {
-            var vm = (MainViewModel)DataContext;
-            vm.CurrentViewModel = vm.GetViewModel<CameraBasicViewModel>();
-        }
-
-        private void CameraAdvanced_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
 

@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 
 namespace WpfApp_IC.ViewModels
 {
+    /// <summary>
+    /// Модель просмотра и выбора продукции для печати
+    /// </summary>
     public class ProductsViewModel(MainViewModel mainViewModel, AppDbContext db) : ObservableObject
     {
         public ObservableCollection<gtin> GTINs { get; } = [];

@@ -5,6 +5,9 @@ using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
+    /// <summary>
+    /// Модель предпросмотра шаблонов этикеток
+    /// </summary>
     public class LabelPreviewViewModel(MainViewModel mainViewModel) : ObservableObject
     {
         private gtin _gtin = new();
@@ -24,7 +27,6 @@ namespace WpfApp_IC.ViewModels
         public void PrintLabel()
         {
             LabelPrintingViewModel model = mainViewModel.GetViewModel<LabelPrintingViewModel>();
-            //уmodel.CameraBasicViewModel = new(mainViewModel.InspectorController);
             model.DesignerViewModel = DesignerViewModel;
             model.DesignerViewModel.Scale = 3.0;
             model.GTIN = GTIN;

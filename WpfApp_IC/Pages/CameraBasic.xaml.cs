@@ -1,6 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using System.Windows.Controls;
 using WpfApp_IC.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace WpfApp_IC.Pages
 {
@@ -11,12 +12,8 @@ namespace WpfApp_IC.Pages
         public CameraBasic()
         {
             InitializeComponent();
-
-            // Получаем VM из DI вручную
-            DataContext = App.AppHost!.Services.GetRequiredService<CameraBasicViewModel>();
         }
 
-        private void StartStop_Click(object sender, System.Windows.RoutedEventArgs e)
-            => VM.StartStop();
+        private void StartStop_Click(object sender, RoutedEventArgs e) => VM.StartStop();
     }
 }

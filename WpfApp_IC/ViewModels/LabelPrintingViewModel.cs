@@ -25,7 +25,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель печати и проверки маркировок
     /// </summary>
-    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraViewModel cameraViewModel) : ObservableObject
+    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraBasicViewModel cameraViewModel) : ObservableObject
     {
         private PrintingStatus _printingStatus = PrintingStatus.Paused;
         private ErrorStatus _errorStatus = ErrorStatus.None;
@@ -42,7 +42,10 @@ namespace WpfApp_IC.ViewModels
                 switch (_printingStatus)
                 {
                     case PrintingStatus.Printing:
-                        TimerService.PrintTimer.Start();
+                        if (VideojetPrinter.PrinterState != PrinterState.Running || ErrorStatus == ErrorStatus.Faults)
+                            _printingStatus = PrintingStatus.Paused;
+                        else
+                            TimerService.PrintTimer.Start();
                         break;
                     case PrintingStatus.Paused:
                     case PrintingStatus.Finished:
@@ -99,23 +102,24 @@ namespace WpfApp_IC.ViewModels
             try
             {
                 //InspectorController.Start();
-                CameraViewModel.AddLog("Инспекция запущена");
 
-                db.printer_tasks.Add(CurrentTask);
-                await db.SaveChangesAsync();
+                //db.printer_tasks.Add(CurrentTask);
+                //await db.SaveChangesAsync();
 
+                await VideojetPrinter.GetStateAsync();
                 await VideojetPrinter.ClearQueueAsync();
-                await QueueLabel();
                 await VideojetPrinter.StartAsync();
+                await QueueLabel();
 
-                //TimerService.PrintTimer.Tick += async (s, e) => await VideojetPrinter.PrintAsync();
+                TimerService.PrintTimer.Tick += async (s, e) => await VideojetPrinter.PrintAsync();
                 TimerService.QueueSizeTimer.Tick += async (s, e) => await VideojetPrinter.GetQueueSizeAsync();
                 TimerService.QueueSizeTimer.Start();
 
-                VideojetPrinter.StateChanged += (state) =>
+                VideojetPrinter.StateChanged += async (state) =>
                 {
-                    if (state != PrinterState.Running)
-                        PrintingStatus = PrintingStatus.Paused;
+                    PrintingStatus = PrintingStatus.Paused;
+                    await VideojetPrinter.GetAllFaultsAsync();
+                    await VideojetPrinter.GetAllWarningsAsync();
                 };
                 VideojetPrinter.QueueStatusChanged += async (status) =>
                 {
@@ -154,8 +158,6 @@ namespace WpfApp_IC.ViewModels
 
                     CameraViewModel.Frame = frame;
                 };
-
-                PrintingStatus = PrintingStatus.Printing;
             }
             catch { }
         }

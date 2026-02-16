@@ -12,13 +12,14 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Конвертеры -->
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
             <converters:PrintingStatusConverter x:Key="PrintingStatusConverter"/>
+            <converters:ErrorTypeConverter x:Key="ErrorTypeConverter"/>
+            <converters:StartStopColorConverter x:Key="StartStopColorConverter"/>
+            <converters:StartStopGeometryConverter x:Key="StartStopGeometryConverter"/>
+            <converters:VideojetErrorsConverter x:Key="VideojetErrorsConverter"/>
             <designerconverters:UnitsConverter x:Key="UnitsConverter"/>
             <designerconverters:LabelAreaConverter x:Key="LabelAreaConverter"/>
-
-            <conv:StartStopColorConverter x:Key="StartStopColorConverter"/>
-            <conv:StartStopGeometryConverter x:Key="StartStopGeometryConverter"/>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 
             <!-- === СТИЛЬ ДЛЯ ПОКАЗА/СКРЫТИЯ ИЗОБРАЖЕНИЯ (ГЛАЗ) === -->
             <Style x:Key="ImageToggleStyle" TargetType="CheckBox">

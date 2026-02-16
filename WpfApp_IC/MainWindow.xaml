@@ -39,7 +39,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -48,8 +48,8 @@
         </Grid.ColumnDefinitions>
 
         <!-- Верхняя панель -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF6D00" Height="60">
-            <DockPanel LastChildFill="True" VerticalAlignment="Center" Margin="10,0">
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF6D00" Height="50">
+            <DockPanel LastChildFill="True" VerticalAlignment="Center">
 
                 <!-- Логотип -->
                 <Button DockPanel.Dock="Left"
@@ -76,17 +76,9 @@
 
                     <!-- Используем pack URI -->
                     <Image Source="pack://application:,,,/Assets/logo.png"
-                           Height="60"
-                           Width="63"
                            DockPanel.Dock="Left"
-                           Margin="0,0,15,0"/>
+                           Margin="20,0,0,0"/>
                 </Button>
-
-                <TextBlock x:Name="PathText"
-                           Text="Главная"
-                           FontSize="20"
-                           VerticalAlignment="Center"
-                           Foreground="White"/>
 
                 <!-- Кнопки справа -->
                 <StackPanel Orientation="Horizontal"

@@ -75,7 +75,7 @@
                 <!-- === ЭТИКЕТКА === -->
                 <designer:DesignerCanvas x:Name="LabelPreview" Grid.Row="1" Visibility="Visible" Background="White" Preview="True" DataContext="{Binding DesignerViewModel}"/>
                 <!-- === ОШИБКИ === -->
-                <pages:VideojetErrors x:Name="VideojetErrors" Grid.Row="1" Visibility="Collapsed" DataContext="{Binding VideojetPrinter}"/>
+                <pages:VideojetErrors x:Name="VideojetErrors" Grid.Row="1" Visibility="Hidden" DataContext="{Binding VideojetPrinter}"/>
             </Grid>
             
             <!-- Вертикальный сплиттер -->

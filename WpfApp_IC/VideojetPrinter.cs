@@ -35,7 +35,7 @@ namespace WpfApp_IC
 
     public struct VideojetPrinterError
     {
-        public ErrorType ErrorType;
+        public ErrorType ErrorType { get; set; }
         public string Code { get; set; }
         public bool Clearable { get; set; }
         public string Title { get; set; }
@@ -45,7 +45,8 @@ namespace WpfApp_IC
     {
         private readonly TcpClient _textComms = new(), _zplEmulation = new();
         private CancellationTokenSource _cts = new();
-        private bool _connected;
+        private bool _connected = false;
+        private PrinterState _printerState = PrinterState.Shutdown;
         private string _ip = ip;
         private int _portTextComms = portTextComms, _portZplEmulation = portZplEmulation, _queueSize, _maxQueueSize = 20;
         private NetworkStream? _streamTextComms, _streamZplEmulation;
@@ -55,6 +56,11 @@ namespace WpfApp_IC
         public event Action<QueueStatus>? QueueStatusChanged;
         public event Action<ErrorState>? ErrorStateChanged;
 
+        public PrinterState PrinterState
+        {
+            get => _printerState;
+            set => Set(ref _printerState, value);
+        }
         public bool Connected
         {
             get => _connected;
@@ -213,7 +219,10 @@ namespace WpfApp_IC
             {
                 case "STS":
                     if (Enum.TryParse(split[1], out PrinterState sts1))
+                    {
+                        PrinterState = sts1;
                         StateChanged?.Invoke(sts1);
+                    }
                     if (Enum.TryParse(split[2], out ErrorState sts2))
                         ErrorStateChanged?.Invoke(sts2);
                     break;
@@ -248,8 +257,15 @@ namespace WpfApp_IC
                         for (int i = 0; i < count; i++)
                         {
                             string[] error = [.. split.Take(3)];
-                            VideojetPrinterError e = new() { ErrorType = errorType, Code = $"#{error[0]}", Clearable = bool.TryParse(error[1], out bool c) && c, Title = error[2] };
-                            Errors.Add(e);
+
+                            Errors.Add(new()
+                            {
+                                ErrorType = errorType,
+                                Code = $"E{error[0]}",
+                                Clearable = bool.TryParse(error[1], out bool c) && c,
+                                Title = error[2]
+                            });
+
                             split = [.. split.Skip(3)];
                         }
                     }

@@ -1,0 +1,18 @@
+[2026-02-13 16:37:40:0866] | Info     | Manager.cpp         -L0318: ---------------------Start PROGRAM--------------------
+[2026-02-13 16:37:40:0915] | Error    | CameraModule.cpp    -L0683: camera module MV_CC_OpenDevice fail [0x80000203]
+[2026-02-13 16:37:40:0915] | Error    | Manager.cpp         -L1070: open camera failed, [0x80020203]
+[2026-02-13 16:37:56:0701] | Info     | Manager.cpp         -L0318: ---------------------Start PROGRAM--------------------
+[2026-02-13 16:37:59:0738] | Info     | Manager.cpp         -L1268: open cam[00DA4541011], GevMessageChannelCnt channelNum[1] gvmp[0] server set hostIp[0xac132b96] hostPort[11973]
+[2026-02-13 16:38:01:0880] | Info     | Manager.cpp         -L1481: GetEnumValue RUNNING_MODE [0]
+[2026-02-13 16:38:01:0880] | Info     | Manager.cpp         -L1348: camera module GetIntValue PayloadSize[1786024]
+[2026-02-13 16:38:01:0917] | Info     | CodeReaderGvmp.cpp  -L0312: sdk:TcpRecvThreadProc nIndex is [0] nSocket is [1460]!
+[2026-02-13 16:38:02:0113] | Error    | CodeReaderGvmp.cpp  -L0369: The TCP Data Length is 0, so contine!
+[2026-02-13 16:38:04:0945] | Info     | CodeReaderGvmp.cpp  -L0323: sdk: gvmp client disconnect!
+[2026-02-13 16:38:06:0773] | Info     | Manager.cpp         -L1481: GetEnumValue RUNNING_MODE [0]
+[2026-02-13 16:38:06:0775] | Info     | Manager.cpp         -L1348: camera module GetIntValue PayloadSize[1786024]
+[2026-02-13 16:38:06:0795] | Info     | CodeReaderGvmp.cpp  -L0312: sdk:TcpRecvThreadProc nIndex is [1] nSocket is [1476]!
+[2026-02-13 16:38:08:0114] | Error    | CodeReaderGvmp.cpp  -L0369: The TCP Data Length is 0, so contine!
+[2026-02-13 16:38:11:0114] | Error    | CodeReaderGvmp.cpp  -L0369: The TCP Data Length is 0, so contine!
+[2026-02-13 16:38:13:0274] | Info     | CodeReaderGvmp.cpp  -L0588: sdk: recv cam[00DA4541011] package[0] frame[58933] imageCost[0] channelID[0] result: noread! eventID [50006]!
+[2026-02-13 16:38:13:0278] | Info     | Manager.cpp         -L2178: app recv: camera[00DA4541011] main packageid[0] trigger index[47] channelID[0] framenum[58933] width[1280] height[1024] imageCost[0] framelen[53452] barcodenum[0] eventID[50006] ocrallnum[0]
+[2026-02-13 16:38:19:0253] | Error    | CodeReaderGvmp.cpp  -L0369: The TCP Data Length is 0, so contine!

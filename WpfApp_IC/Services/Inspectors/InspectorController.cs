@@ -37,13 +37,13 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary>
         /// Задержка перед активацией отбраковщика.
         /// </summary>
-        public int RejectDelayMs { get; set; } = 500;
+        public int RejectDelayMs { get; set; } = 200;
 
         // Фильтрация дребезга сигнала
         private int _stableSignal = -1;
         private int _previousSignal = -1;
         private int _sameCount = 0;
-        private const int FILTER_COUNT = 3;
+        private const int FILTER_COUNT = 2;
 
         private bool _triggerInProgress = false;
 
@@ -139,7 +139,7 @@ namespace WpfApp_IC.Services.Inspectors
                         }
                     }
 
-                    await Task.Delay(50, token);
+                    await Task.Delay(10, token);
                 }
                 catch (TaskCanceledException)
                 {

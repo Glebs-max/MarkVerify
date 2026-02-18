@@ -101,7 +101,8 @@ namespace WpfApp_IC.ViewModels
         {
             try
             {
-                //InspectorController.Start();
+                InspectorController.Start();
+                CameraViewModel.AddLog("Инспекция запущена");
 
                 //db.printer_tasks.Add(CurrentTask);
                 //await db.SaveChangesAsync();

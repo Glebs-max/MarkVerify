@@ -28,9 +28,10 @@
     <None Remove="lib\log4cxx.properties" />
     <None Remove="lib\msvcr90.dll" />
     <None Remove="lib\MvCodeReaderCtrl.dll" />
-    <None Remove="lib\MvCodeReaderCtrlWrapper.dll" />
     <None Remove="lib\MvCodeReaderSDK.Net.dll" />
+    <None Remove="lib\MvCodeReaderSdk_00.log" />
     <None Remove="lib\MvZip.dll" />
+    <None Remove="lib\VirCodeReaderSdkConfig.ini" />
     <None Remove="lib\VirXMLParse.dll" />
   </ItemGroup>
 
@@ -65,13 +66,17 @@
     <Content Include="lib\MvCodeReaderCtrl.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="lib\MvCodeReaderCtrlWrapper.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+   
     <Content Include="lib\MvCodeReaderSDK.Net.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\MvCodeReaderSdk_00.log">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\MvZip.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\VirCodeReaderSdkConfig.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\VirXMLParse.dll">
@@ -102,9 +107,7 @@
     <Reference Include="MvCodeReaderCtrl">
       <HintPath>lib\MvCodeReaderCtrl.dll</HintPath>
     </Reference>
-    <Reference Include="MvCodeReaderCtrlWrapper">
-      <HintPath>lib\MvCodeReaderCtrlWrapper.dll</HintPath>
-    </Reference>
+   
   </ItemGroup>
     <ItemGroup>
       <Resource Include="Assets\info.png">

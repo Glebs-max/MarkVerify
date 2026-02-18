@@ -25,10 +25,5 @@ namespace WpfApp_IC.Pages
         private async void Stop_Click(object sender, RoutedEventArgs e) => await VM.PrintTerminate();
         private void StatusBar_Click(object sender, MouseButtonEventArgs e) => (LabelPreview.Visibility, VideojetErrors.Visibility) = (VideojetErrors.Visibility, LabelPreview.Visibility);
         private void Exit_Click(object sender, RoutedEventArgs e) => VM.Exit();
-
-        private void CameraBasic_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

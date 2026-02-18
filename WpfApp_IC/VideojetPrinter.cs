@@ -48,7 +48,7 @@ namespace WpfApp_IC
         private bool _connected = false;
         private PrinterState _printerState = PrinterState.Shutdown;
         private string _ip = ip;
-        private int _portTextComms = portTextComms, _portZplEmulation = portZplEmulation, _queueSize, _maxQueueSize = 20;
+        private int _portTextComms = portTextComms, _portZplEmulation = portZplEmulation, _queueSize, _maxQueueSize = 10;
         private NetworkStream? _streamTextComms, _streamZplEmulation;
         private Task? _listenTask;
 
@@ -174,19 +174,19 @@ namespace WpfApp_IC
         /// </summary>
         private async Task ListenAsync(NetworkStream streamTextComms, CancellationToken token)
         {
-            try
-            {
-                StreamReader reader = new(streamTextComms, Encoding.ASCII);
+            StreamReader reader = new(streamTextComms, Encoding.ASCII);
 
-                while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested)
+            {
+                try
                 {
                     string message = await ReadMessage(reader, token);
 
                     if (!string.IsNullOrEmpty(message))
                         ProcessMessage(message);
                 }
+                catch { }
             }
-            catch { }
         }
         /// <summary>
         /// Чтение сообщения до символа <CR>

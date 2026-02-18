@@ -22,7 +22,6 @@ namespace LabelDesigner.Models
         public BarcodeField()
         {
             DataType = DataType.Database;
-            BarcodeData = _barcodeData;
         }
 
         public new ImageVisual Visual => (ImageVisual)base.Visual;
@@ -31,15 +30,15 @@ namespace LabelDesigner.Models
         public string BarcodeData
         {
             get => _barcodeData;
-            set => Set(ref _barcodeData, value, () => Visual.Content.Source = DisplayBarcode());
+            set => Set(ref _barcodeData, value, () => Visual.Content.Source = BarcodeToBitmap());
         }
 
-        protected override ImageVisual InitializeVisual() => new(DisplayBarcode());
+        protected override ImageVisual InitializeVisual() => new(BarcodeToBitmap());
         protected override void InvertField()
         {
             (_options.ForeColor, _options.BackColor) = (_options.BackColor, _options.ForeColor);
-            DisplayBarcode();
+            Visual.Content.Source = BarcodeToBitmap();
         }
-        private BitmapSource DisplayBarcode() => Imaging.CreateBitmapSourceFromHBitmap(_dataMatrix.EncodeImage(string.IsNullOrEmpty(BarcodeData) ? "Default Data" : BarcodeData, _options).GetHbitmap(), nint.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        private BitmapSource BarcodeToBitmap() => Imaging.CreateBitmapSourceFromHBitmap(_dataMatrix.EncodeImage(string.IsNullOrEmpty(BarcodeData) ? "Default Data" : BarcodeData, _options).GetHbitmap(), nint.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
     }
 }

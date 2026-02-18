@@ -6,6 +6,7 @@ using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
 using WpfApp_IC.Services.Inspectors;
+using System.Windows;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -27,6 +28,7 @@ namespace WpfApp_IC.ViewModels
     /// </summary>
     public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraBasicViewModel cameraViewModel) : ObservableObject
     {
+        private readonly List<printer_base> _printedCodes = [];
         private PrintingStatus _printingStatus = PrintingStatus.Paused;
         private ErrorStatus _errorStatus = ErrorStatus.None;
         private gtin _gtin = new();
@@ -101,7 +103,7 @@ namespace WpfApp_IC.ViewModels
         {
             try
             {
-                InspectorController.Start();
+                //InspectorController.Start();
                 CameraViewModel.AddLog("Инспекция запущена");
 
                 //db.printer_tasks.Add(CurrentTask);
@@ -112,20 +114,25 @@ namespace WpfApp_IC.ViewModels
                 await VideojetPrinter.StartAsync();
                 await QueueLabel();
 
-                TimerService.PrintTimer.Tick += async (s, e) => await VideojetPrinter.PrintAsync();
+                //TimerService.PrintTimer.Tick += async (s, e) => await VideojetPrinter.PrintAsync();
                 TimerService.QueueSizeTimer.Tick += async (s, e) => await VideojetPrinter.GetQueueSizeAsync();
                 TimerService.QueueSizeTimer.Start();
 
                 VideojetPrinter.StateChanged += async (state) =>
                 {
-                    PrintingStatus = PrintingStatus.Paused;
                     await VideojetPrinter.GetAllFaultsAsync();
                     await VideojetPrinter.GetAllWarningsAsync();
                 };
                 VideojetPrinter.QueueStatusChanged += async (status) =>
                 {
                     if (status == QueueStatus.QLOW)
-                        await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
+                    {
+                        await VideojetPrinter.GetQueueSizeAsync();
+                        await Application.Current.Dispatcher.InvokeAsync(async () =>
+                        {
+                            await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
+                        });
+                    }
                 };
                 VideojetPrinter.ErrorStateChanged += async (state) =>
                 {
@@ -147,14 +154,15 @@ namespace WpfApp_IC.ViewModels
                 };
                 InspectorController.FrameReceived += (dm, frame) =>
                 {
-                    if (!db.printer_bases.Where(c => c.Code == dm && c.StatusId == 1).Any() && InspectorController is InspectorController inspector)
-                    { 
-                        inspector.RejectWithDelay();
-                        Rejected++;
+                    if (_printedCodes.Find(c => c.Code == dm) is printer_base code)
+                    {
+                        _printedCodes.Remove(code);
+                        Verified++;
                     }
                     else
                     {
-                        Verified++;
+                        (InspectorController as InspectorController)?.RejectWithDelay();
+                        Rejected++;
                     }
 
                     CameraViewModel.Frame = frame;
@@ -195,9 +203,11 @@ namespace WpfApp_IC.ViewModels
                     code.OperatorName = mainViewModel.MachineName;
                     code.task = CurrentTask;
                     code.code_number = ++Count;
+
+                    _printedCodes.Add(code);
                 }
 
-                await db.SaveChangesAsync();
+                //await db.SaveChangesAsync();
             }
         }
         /// <summary>

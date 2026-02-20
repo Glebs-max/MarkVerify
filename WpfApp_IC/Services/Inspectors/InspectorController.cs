@@ -6,33 +6,35 @@ using System.Windows.Media.Imaging;
 using WpfApp_IC.Device;
 using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
-using WpfApp_IC.Services;
 using WpfApp_IC.Services.Camera;
-using WpfApp_IC.Services.Inspectors;
 using WpfApp_IC.Services.ModbusT;
 
 namespace WpfApp_IC.Services.Inspectors
 {
     /// <summary>
     /// Главный контроллер инспекции.
-    /// Работает через абстракции датчика и отбраковщика.
-    /// Не зависит от Modbus, OPC UA или других протоколов.
+    /// Управляет камерой, датчиком, отбраковщиком и выполняет проверку DataMatrix.
+    /// Не зависит от UI и не содержит логики отображения.
     /// </summary>
-    public class InspectorController : ObservableObject, IInspectorController
+    public class InspectorController : ObservableObject, IInspectorController, IDisposable
     {
         private readonly ICameraService _camera;
         private readonly ISensor _sensor;
-        private readonly IModbusService _modbus; 
+        private readonly IModbusService _modbus;
         private readonly IoModuleConfig _config;
         private readonly IRejector _rejector;
-        public ulong CurrentGtinId { get; set; }
-
+        private readonly IDataMatrixValidator _validator;
 
         private CancellationTokenSource? _cts;
 
         /// <summary>
-        /// Ожидаемый DataMatrix-код, который должен быть считан.
-        /// Устанавливается UI перед запуском инспекции.
+        /// Текущий GTIN, по которому выполняется проверка.
+        /// Устанавливается ViewModel.
+        /// </summary>
+        public ulong CurrentGtinId { get; set; }
+
+        /// <summary>
+        /// Ожидаемый код (если используется прямое сравнение).
         /// </summary>
         public string? ExpectedCode { get; set; }
 
@@ -41,7 +43,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         public int RejectDelayMs { get; set; } = 200;
 
-        // Фильтрация дребезга сигнала
+        // Фильтрация дребезга
         private int _stableSignal = -1;
         private int _previousSignal = -1;
         private int _sameCount = 0;
@@ -49,30 +51,37 @@ namespace WpfApp_IC.Services.Inspectors
 
         private bool _triggerInProgress = false;
 
-        // События для UI
+        // События для ViewModel
         public event Action<int>? SignalChanged;
         public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string>? ErrorOccurred;
         public event Action<string?, BitmapSource>? FrameReceived;
         public event Action<string, string?, bool>? CodeChecked;
 
+        /// <summary>
+        /// Событие результата проверки DataMatrix.
+        /// ViewModel подписывается на него для подсчёта OK/BRK.
+        /// </summary>
+        public event Action<ValidationResult>? CodeValidated;
+
         public InspectorController(
             ICameraService camera,
             ISensor sensor,
             IRejector rejector,
             IModbusService modbus,
-            IoModuleConfig config)
+            IoModuleConfig config,
+            IDataMatrixValidator validator)
         {
             _camera = camera;
             _sensor = sensor;
             _rejector = rejector;
             _modbus = modbus;
             _config = config;
+            _validator = validator;
         }
 
-
         /// <summary>
-        /// Запуск инспекции: открытие камеры, запуск цикла чтения сигнала.
+        /// Запускает инспекцию: подключает Modbus, открывает камеру и запускает цикл чтения датчика.
         /// </summary>
         public void Start()
         {
@@ -85,14 +94,11 @@ namespace WpfApp_IC.Services.Inspectors
             _triggerInProgress = false;
 
             _cts = new CancellationTokenSource();
-            var token = _cts.Token;
-
-            Task.Run(() => Loop(token), token);
+            Task.Run(() => Loop(_cts.Token));
         }
 
         /// <summary>
-        /// Основной цикл инспекции.
-        /// Читает сигнал датчика, фильтрует дребезг, вызывает триггер камеры.
+        /// Основной цикл: читает датчик, фильтрует дребезг, вызывает триггер камеры.
         /// </summary>
         private async Task Loop(CancellationToken token)
         {
@@ -104,9 +110,7 @@ namespace WpfApp_IC.Services.Inspectors
 
                     // Фильтрация дребезга
                     if (rawSignal == _stableSignal)
-                    {
                         _sameCount++;
-                    }
                     else
                     {
                         _sameCount = 0;
@@ -120,7 +124,6 @@ namespace WpfApp_IC.Services.Inspectors
                             _previousSignal = _stableSignal;
                             SignalChanged?.Invoke(_stableSignal);
 
-                            // Сигнал = 1 → делаем триггер
                             if (_stableSignal == 1 && !_triggerInProgress)
                             {
                                 _triggerInProgress = true;
@@ -129,13 +132,12 @@ namespace WpfApp_IC.Services.Inspectors
 
                                 if (frame != null)
                                     FrameReceived?.Invoke(dm?.Raw, frame);
+
+                                _ = HandleDataMatrixAsync(dm);
                             }
 
-                            // Сигнал = 0 → сбрасываем флаг
                             if (_stableSignal == 0)
-                            {
                                 _triggerInProgress = false;
-                            }
                         }
                     }
 
@@ -143,68 +145,59 @@ namespace WpfApp_IC.Services.Inspectors
                 }
                 catch (TaskCanceledException)
                 {
-                    return; // завершение
+                    return;
                 }
                 catch (Exception ex)
                 {
                     ErrorOccurred?.Invoke(ex.Message);
                 }
-
             }
         }
 
         /// <summary>
-        /// Обработка считанного DataMatrix-кода.
-        /// Сравнение с ожидаемым кодом и активация отбраковщика.
+        /// Обрабатывает считанный DataMatrix: вызывает валидатор и генерирует события.
         /// </summary>
-        private void HandleDataMatrix(DataMatrixResult? dm)
+        private async Task HandleDataMatrixAsync(DataMatrixResult? dm)
         {
-            if (dm == null)
+            if (dm != null)
+                DataMatrixRead?.Invoke(dm);
+
+            var result = await _validator.ValidateAsync(dm?.Raw, CurrentGtinId);
+
+            CodeValidated?.Invoke(result);
+
+            bool ok = result.IsOk &&
+                      (ExpectedCode == null || dm?.Normalized == ExpectedCode);
+
+            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", ExpectedCode, ok);
+
+            if (!result.IsOk)
             {
-                CodeChecked?.Invoke("<NO READ>", ExpectedCode, false);
-                ErrorOccurred?.Invoke("DataMatrix не считан!!!");
-                //RejectWithDelay();
-                return;
+                RejectWithDelay();
+                ErrorOccurred?.Invoke(result.ErrorMessage ?? "Ошибка проверки DataMatrix");
             }
-
-            bool ok = ExpectedCode != null && dm.Normalized == ExpectedCode;
-
-            CodeChecked?.Invoke(dm.Normalized, ExpectedCode, ok);
-
-            if (!ok)
-            {
-                //ErrorOccurred?.Invoke("DataMatrix не найден в отправленных на печать ");
-                //RejectWithDelay();
-            }
-
-            DataMatrixRead?.Invoke(dm);
         }
 
         /// <summary>
-        /// Активация отбраковщика с задержкой.
+        /// Активирует отбраковщик с задержкой.
         /// </summary>
         public void RejectWithDelay()
         {
             Task.Run(() =>
             {
                 Thread.Sleep(RejectDelayMs);
-                ErrorOccurred?.Invoke("Rejector ACTIVATING");
                 _rejector.Activate();
-                ErrorOccurred?.Invoke("Rejector DONE");
             });
         }
 
-
         /// <summary>
-        /// Остановка инспекции.
+        /// Останавливает инспекцию.
         /// </summary>
         public void Stop()
         {
             _cts?.Cancel();
             Thread.Sleep(100);
-
             _camera.Close();
-            //_modbus.Disconnect();
         }
 
         public void Dispose()

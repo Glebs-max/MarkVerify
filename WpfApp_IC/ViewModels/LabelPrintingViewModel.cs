@@ -104,15 +104,11 @@ namespace WpfApp_IC.ViewModels
         {
             try
             {
-                //db.printer_tasks.Add(CurrentTask);
-                //await db.SaveChangesAsync();
-
                 await VideojetPrinter.GetStateAsync();
                 await VideojetPrinter.ClearQueueAsync();
                 await VideojetPrinter.StartAsync();
                 await QueueLabel();
 
-                //TimerService.PrintTimer.Tick += async (s, e) => await VideojetPrinter.PrintAsync();
                 TimerService.QueueSizeTimer.Tick += async (s, e) => await VideojetPrinter.GetQueueSizeAsync();
                 TimerService.QueueSizeTimer.Start();
 
@@ -121,6 +117,7 @@ namespace WpfApp_IC.ViewModels
                     await VideojetPrinter.GetAllFaultsAsync();
                     await VideojetPrinter.GetAllWarningsAsync();
                 };
+
                 VideojetPrinter.QueueStatusChanged += async (status) =>
                 {
                     if (status == QueueStatus.QLOW)
@@ -132,6 +129,7 @@ namespace WpfApp_IC.ViewModels
                         });
                     }
                 };
+
                 VideojetPrinter.ErrorStateChanged += async (state) =>
                 {
                     switch (state)
@@ -150,30 +148,32 @@ namespace WpfApp_IC.ViewModels
                     await VideojetPrinter.GetAllFaultsAsync();
                     await VideojetPrinter.GetAllWarningsAsync();
                 };
-                InspectorController.FrameReceived += async (dm, frame) =>
+
+
+                InspectorController.CodeValidated += result =>
                 {
-                    if (db.printer_bases.FirstOrDefault(c => c.Code == dm && c.GtinId == GTIN.GtinId && c.StatusId == 1) is printer_base code)
+                    if (result.IsOk)
                     {
-                        code.StatusId = 77;
                         Verified++;
                         CameraViewModel.DataMatrixBrush = Brushes.LimeGreen;
                     }
                     else
                     {
-                        (InspectorController as InspectorController)?.RejectWithDelay();
                         Rejected++;
                         CameraViewModel.DataMatrixBrush = Brushes.Red;
-                        CameraViewModel.AddLog(string.IsNullOrEmpty(dm) ? "DataMatrix не считан" : "Неверный код");
+                        CameraViewModel.AddLog(result.ErrorMessage ?? "Ошибка проверки");
                     }
+                };
 
-                    await db.SaveChangesAsync();
-
+                InspectorController.FrameReceived += (dm, frame) =>
+                {
                     CameraViewModel.Frame = frame;
                     CameraViewModel.DataMatrix = dm ?? "<NO READ>";
                 };
             }
             catch { }
         }
+
         public async Task PrintTerminate()
         {
             try

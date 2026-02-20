@@ -46,6 +46,7 @@ namespace WpfApp_IC
                     services.AddSingleton<VideojetPrinter>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
+                    services.AddSingleton<IDataMatrixValidator, DataMatrixValidator>();
                     services.AddSingleton<IInspectorController, InspectorController>();
                     services.AddSingleton<ISensor>(sp =>
                     {

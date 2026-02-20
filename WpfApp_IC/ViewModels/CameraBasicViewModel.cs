@@ -19,18 +19,18 @@ namespace WpfApp_IC.ViewModels
                 try
                 {
                     _controller.Start();
-                    AddLog("Инспекция запущена");
+                    AddLog("Инспекция запущена. Запущен тестовый режим. Отсутствует проверка с БД");
                     IsRunning = true;
                 }
                 catch (Exception ex)
                 {
-                    AddLog("Ошибка запуска инспекции: " + ex.Message);
+                    AddLog("Ошибка запуска инспекции (ТР): " + ex.Message);
                 }
             }
             else
             {
                 _controller.Stop();
-                AddLog("Инспекция остановлена");
+                AddLog("Инспекция остановлена (ТР)");
                 IsRunning = false;
             }
         }

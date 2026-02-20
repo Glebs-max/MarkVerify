@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Observable;
 using WpfApp_IC.Services.Inspectors;
 using System.Windows;
+using System.Windows.Media;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -103,9 +104,6 @@ namespace WpfApp_IC.ViewModels
         {
             try
             {
-                //InspectorController.Start();
-                CameraViewModel.AddLog("Инспекция запущена");
-
                 //db.printer_tasks.Add(CurrentTask);
                 //await db.SaveChangesAsync();
 
@@ -152,20 +150,26 @@ namespace WpfApp_IC.ViewModels
                     await VideojetPrinter.GetAllFaultsAsync();
                     await VideojetPrinter.GetAllWarningsAsync();
                 };
-                InspectorController.FrameReceived += (dm, frame) =>
+                InspectorController.FrameReceived += async (dm, frame) =>
                 {
-                    if (_printedCodes.Find(c => c.Code == dm) is printer_base code)
+                    if (db.printer_bases.FirstOrDefault(c => c.Code == dm && c.GtinId == GTIN.GtinId && c.StatusId == 1) is printer_base code)
                     {
-                        _printedCodes.Remove(code);
+                        code.StatusId = 77;
                         Verified++;
+                        CameraViewModel.DataMatrixBrush = Brushes.LimeGreen;
                     }
                     else
                     {
                         (InspectorController as InspectorController)?.RejectWithDelay();
                         Rejected++;
+                        CameraViewModel.DataMatrixBrush = Brushes.Red;
+                        CameraViewModel.AddLog(string.IsNullOrEmpty(dm) ? "DataMatrix не считан" : "Неверный код");
                     }
 
+                    await db.SaveChangesAsync();
+
                     CameraViewModel.Frame = frame;
+                    CameraViewModel.DataMatrix = dm ?? "<NO READ>";
                 };
             }
             catch { }
@@ -199,6 +203,7 @@ namespace WpfApp_IC.ViewModels
                     await VideojetPrinter.SendZplAsync(DesignerViewModel.ConvertToZpl());
 
                     code.StatusId = 1;
+                    InspectorController.CurrentGtinId = GTIN.GtinId;
                     code.DatePrint = DateTime.Now;
                     code.OperatorName = mainViewModel.MachineName;
                     code.task = CurrentTask;
@@ -207,7 +212,7 @@ namespace WpfApp_IC.ViewModels
                     _printedCodes.Add(code);
                 }
 
-                //await db.SaveChangesAsync();
+                await db.SaveChangesAsync();
             }
         }
         /// <summary>

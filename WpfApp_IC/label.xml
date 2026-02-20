@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DesignerViewModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Scale>4</Scale>
+  <Scale>5.5499999999999945</Scale>
   <LabelArea>
     <MinWidth>18.89644746787604</MinWidth>
     <MinHeight>18.89644746787604</MinHeight>
-    <W>113.37868480725625</W>
-    <H>75.58578987150416</H>
+    <W>83.14436885865459</W>
+    <H>45.3514739229025</H>
     <GridStepX>18.89644746787604</GridStepX>
     <GridStepY>18.89644746787604</GridStepY>
     <Grid>true</Grid>
@@ -20,16 +20,16 @@
         <Width>324</Width>
         <Height>324</Height>
       </InitialSize>
-      <X>3.7792894935752077</X>
-      <Y>3.7792894935752077</Y>
+      <X>1.8896447467876039</X>
+      <Y>1.8896447467876039</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>44.99304610733183</W>
-      <H>44.99304610733183</H>
+      <W>32.53809115237688</W>
+      <H>32.53809115237688</H>
       <BarcodeData>Default Data</BarcodeData>
     </Field>
     <Field xsi:type="DateField">
@@ -41,20 +41,20 @@
         <Width>160.15333333333334</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>52.91005291005291</X>
-      <Y>3.7792894935752077</Y>
+      <X>37.79289493575208</X>
+      <Y>1.8896447467876039</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>52.910052910052904</W>
-      <H>12.156559840029846</H>
-      <Text>13.01.2026</Text>
+      <W>37.79289493575208</W>
+      <H>8.683257028592749</H>
+      <Text>18.02.2026</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-01-13T17:35:05.4289859+05:00</Date>
+      <Date>2026-02-18T14:48:14.7566765+05:00</Date>
       <DateFormat>dd$MM$yyyy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -67,20 +67,20 @@
         <Width>160.15333333333334</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>52.91005291005291</X>
-      <Y>15.11715797430083</Y>
+      <X>37.79289493575208</X>
+      <Y>10.393046107331822</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>52.910052910052904</W>
-      <H>12.156559840029846</H>
-      <Text>13.01.2027</Text>
+      <W>37.79289493575208</W>
+      <H>8.683257028592749</H>
+      <Text>18.02.2027</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-01-13T17:33:09.2766715+05:00</Date>
+      <Date>2027-02-18T14:48:14.7568284+05:00</Date>
       <DateFormat>dd$MM$yyyy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -98,20 +98,20 @@
         <Width>81.84333333333333</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>78.4448223733938</X>
-      <Y>26.455026455026456</Y>
+      <X>55.93348450491308</X>
+      <Y>18.89644746787604</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>27.06704608144956</W>
-      <H>12.16931216931217</H>
-      <Text>17:35</Text>
+      <W>19.333604343892542</W>
+      <H>8.692365835222978</H>
+      <Text>14:48</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-01-13T17:35:05.4299132+05:00</Time>
+      <Time>2026-02-18T14:48:14.7568636+05:00</Time>
       <TimeFormat>HH$mm</TimeFormat>
       <Separator>58</Separator>
     </Field>
@@ -124,16 +124,16 @@
         <Width>35.593333333333334</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>52.91005291005291</X>
-      <Y>26.455026455026456</Y>
+      <X>37.79289493575208</X>
+      <Y>18.89644746787604</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>11.771348432277865</W>
-      <H>12.16931216931217</H>
+      <W>8.408106023055618</W>
+      <H>8.692365835222978</H>
       <Text>15</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
@@ -147,16 +147,16 @@
         <Width>17.796666666666667</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>65.19274376417233</X>
-      <Y>26.455026455026456</Y>
+      <X>47.241118669690096</X>
+      <Y>18.89644746787604</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>5.885674216138932</W>
-      <H>12.16931216931217</H>
+      <W>4.204053011527809</W>
+      <H>8.692365835222978</H>
       <Text>1</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
@@ -170,16 +170,16 @@
         <Width>18.5</Width>
         <Height>36.28</Height>
       </InitialSize>
-      <X>52.91005291005291</X>
-      <Y>37.79289493575208</Y>
+      <X>37.79289493575208</X>
+      <Y>27.399848828420257</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>6.205410009158632</W>
-      <H>12.169312169312171</H>
+      <W>4.432435720827593</W>
+      <H>8.692365835222978</H>
       <Text>Z</Text>
       <TextFontFamily>Franklin Gothic</TextFontFamily>
       <Bold>true</Bold>
@@ -193,16 +193,16 @@
         <Width>17.796666666666667</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>65.19274376417233</X>
-      <Y>37.79289493575208</Y>
+      <X>47.241118669690096</X>
+      <Y>27.399848828420257</Y>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>5.885674216138932</W>
-      <H>12.16931216931217</H>
+      <W>4.204053011527809</W>
+      <H>8.692365835222978</H>
       <Text>1</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>

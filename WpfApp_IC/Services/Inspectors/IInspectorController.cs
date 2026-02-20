@@ -12,6 +12,7 @@ namespace WpfApp_IC.Services.Inspectors
     {
         string? ExpectedCode { get; set; }
         int RejectDelayMs { get; set; }
+        ulong CurrentGtinId { get; set; } 
 
         event Action<int>? SignalChanged;
         event Action<DataMatrixResult>? DataMatrixRead;

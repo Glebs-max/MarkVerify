@@ -25,6 +25,8 @@ namespace WpfApp_IC.Services.Inspectors
         private readonly IModbusService _modbus; 
         private readonly IoModuleConfig _config;
         private readonly IRejector _rejector;
+        public ulong CurrentGtinId { get; set; }
+
 
         private CancellationTokenSource? _cts;
 
@@ -126,9 +128,7 @@ namespace WpfApp_IC.Services.Inspectors
                                 var (dm, frame) = _camera.TriggerAndRead();
 
                                 if (frame != null)
-                                    FrameReceived?.Invoke(dm?.Normalized, frame);
-
-                                HandleDataMatrix(dm);
+                                    FrameReceived?.Invoke(dm?.Raw, frame);
                             }
 
                             // Сигнал = 0 → сбрасываем флаг
@@ -163,7 +163,7 @@ namespace WpfApp_IC.Services.Inspectors
             {
                 CodeChecked?.Invoke("<NO READ>", ExpectedCode, false);
                 ErrorOccurred?.Invoke("DataMatrix не считан!!!");
-                RejectWithDelay();
+                //RejectWithDelay();
                 return;
             }
 
@@ -173,8 +173,8 @@ namespace WpfApp_IC.Services.Inspectors
 
             if (!ok)
             {
-                ErrorOccurred?.Invoke("DataMatrix не найден в отправленных на печать ");
-                RejectWithDelay();
+                //ErrorOccurred?.Invoke("DataMatrix не найден в отправленных на печать ");
+                //RejectWithDelay();
             }
 
             DataMatrixRead?.Invoke(dm);

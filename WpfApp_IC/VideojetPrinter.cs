@@ -41,7 +41,7 @@ namespace WpfApp_IC
         public string Title { get; set; }
     }
 
-    public class VideojetPrinter(string ip = "192.168.10.2", int portTextComms = 9100, int portZplEmulation = 1000) : ObservableObject, IDisposable
+    public class VideojetPrinter(string ip = "192.168.0.5", int portTextComms = 3003, int portZplEmulation = 1000) : ObservableObject, IDisposable
     {
         private readonly TcpClient _textComms = new(), _zplEmulation = new();
         private CancellationTokenSource _cts = new();

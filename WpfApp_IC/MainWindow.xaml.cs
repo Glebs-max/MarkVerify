@@ -6,14 +6,11 @@ namespace WpfApp_IC
     public partial class MainWindow : Window
     {
         private readonly MainViewModel _vm;
-        private bool _isMenuExpanded;
 
         public MainWindow(MainViewModel vm)
         {
             InitializeComponent();
             DataContext = _vm = vm;
-
-            Loaded += async (s, e) => await _vm.VideojetPrinter.ConnectAsync();
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)

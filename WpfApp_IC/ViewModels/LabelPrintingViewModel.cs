@@ -1,71 +1,27 @@
 ﻿using LabelDesigner;
 using LabelDesigner.Models;
-using LabelDesigner.Services;
-using WpfApp_IC.Data;
-using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
-using WpfApp_IC.Services.Inspectors;
 using System.Windows;
-using System.Windows.Media;
+using System.Windows.Threading;
+using WpfApp_IC.Data;
+using WpfApp_IC.Models;
+using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
-    public enum PrintingStatus
-    {
-        Printing,
-        Paused,
-        Finished
-    }
-    public enum ErrorStatus
-    {
-        None,
-        Warnings,
-        Faults
-    }
-
     /// <summary>
     /// Модель печати и проверки маркировок
     /// </summary>
-    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraBasicViewModel cameraViewModel) : ObservableObject
+    public class LabelPrintingViewModel(MainViewModel mainViewModel, CameraBasicViewModel cameraViewModel, VideojetErrorsViewModel videojetErrorsViewModel, VideojetPrinter videojetPrinter, IInspectorController inspectorController, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
-        private readonly List<printer_base> _printedCodes = [];
-        private PrintingStatus _printingStatus = PrintingStatus.Paused;
-        private ErrorStatus _errorStatus = ErrorStatus.None;
-        private gtin _gtin = new();
+        private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(1000) };
+
         private DesignerViewModel _designerViewModel = new();
+        private gtin _gtin = new();
         private printer_task _currentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now };
         private int _verified = 0, _rejected = 0, _count = 0;
 
-        public PrintingStatus PrintingStatus
-        {
-            get => _printingStatus;
-            set => Set(ref _printingStatus, value, () =>
-            {
-                switch (_printingStatus)
-                {
-                    case PrintingStatus.Printing:
-                        if (VideojetPrinter.PrinterState != PrinterState.Running || ErrorStatus == ErrorStatus.Faults)
-                            _printingStatus = PrintingStatus.Paused;
-                        else
-                            TimerService.PrintTimer.Start();
-                        break;
-                    case PrintingStatus.Paused:
-                    case PrintingStatus.Finished:
-                        TimerService.PrintTimer.Stop();
-                        break;
-                }
-            });
-        }
-        public ErrorStatus ErrorStatus
-        {
-            get => _errorStatus;
-            set => Set(ref _errorStatus, value, () =>
-            {
-                if (_errorStatus == ErrorStatus.Faults)
-                    PrintingStatus = PrintingStatus.Paused;
-            });
-        }
         public gtin GTIN
         {
             get => _gtin;
@@ -96,93 +52,53 @@ namespace WpfApp_IC.ViewModels
             get => _count;
             set => Set(ref _count, value);
         }
-        public CameraViewModel CameraViewModel { get => cameraViewModel; }
-        public VideojetPrinter VideojetPrinter { get => mainViewModel.VideojetPrinter; }
-        public IInspectorController InspectorController { get => mainViewModel.InspectorController; }
+        public CameraBasicViewModel CameraViewModel => cameraViewModel;
+        public VideojetErrorsViewModel VideojetErrorsViewModel => videojetErrorsViewModel;
+        public VideojetPrinter VideojetPrinter => videojetPrinter;
+        public IInspectorController InspectorController => inspectorController;
 
         public async Task PrintInitiate()
         {
             try
             {
+                //InspectorController.Start();
+
+                VideojetPrinter.Connect();
+
+                await using var db = await dbContextFactory.CreateDbContextAsync();
+                db.printer_tasks.Add(CurrentTask);
+                await db.SaveChangesAsync();
+
                 await VideojetPrinter.GetStateAsync();
                 await VideojetPrinter.ClearQueueAsync();
-                await VideojetPrinter.StartAsync();
                 await QueueLabel();
 
-                TimerService.QueueSizeTimer.Tick += async (s, e) => await VideojetPrinter.GetQueueSizeAsync();
-                TimerService.QueueSizeTimer.Start();
-
-                VideojetPrinter.StateChanged += async (state) =>
+                _printerStatusCheck.Tick += async (s, e) =>
                 {
+                    await VideojetPrinter.GetQueueSizeAsync();
+                    await VideojetPrinter.GetStateAsync();
                     await VideojetPrinter.GetAllFaultsAsync();
                     await VideojetPrinter.GetAllWarningsAsync();
                 };
+                _printerStatusCheck.Start();
 
-                VideojetPrinter.QueueStatusChanged += async (status) =>
+                VideojetPrinter.QueueSizeChanged += async (size) =>
                 {
-                    if (status == QueueStatus.QLOW)
-                    {
-                        await VideojetPrinter.GetQueueSizeAsync();
-                        await Application.Current.Dispatcher.InvokeAsync(async () =>
-                        {
-                            await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
-                        });
-                    }
+                    if (size <= VideojetPrinter.MaxQueueSize / 3)
+                        await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
                 };
 
-                VideojetPrinter.ErrorStateChanged += async (state) =>
-                {
-                    switch (state)
-                    {
-                        case ErrorState.None:
-                            ErrorStatus = ErrorStatus.None;
-                            break;
-                        case ErrorState.Warnings:
-                            ErrorStatus = ErrorStatus.Warnings;
-                            break;
-                        case ErrorState.Faults:
-                            ErrorStatus = ErrorStatus.Faults;
-                            break;
-                    }
-
-                    await VideojetPrinter.GetAllFaultsAsync();
-                    await VideojetPrinter.GetAllWarningsAsync();
-                };
-
-
-                InspectorController.CodeValidated += result =>
+                InspectorController.CodeValidated += (result) =>
                 {
                     if (result.IsOk)
-                    {
                         Verified++;
-                        CameraViewModel.DataMatrixBrush = Brushes.LimeGreen;
-                    }
                     else
-                    {
                         Rejected++;
-                        CameraViewModel.DataMatrixBrush = Brushes.Red;
-                        CameraViewModel.AddLog(result.ErrorMessage ?? "Ошибка проверки");
-                    }
-                };
-
-                InspectorController.FrameReceived += (dm, frame) =>
-                {
-                    CameraViewModel.Frame = frame;
-                    CameraViewModel.DataMatrix = dm ?? "<NO READ>";
                 };
             }
             catch { }
         }
-
-        public async Task PrintTerminate()
-        {
-            try
-            {
-                PrintingStatus = PrintingStatus.Finished;
-                await VideojetPrinter.StopAsync();
-            }
-            catch { }
-        }
+        public void PrintTerminate() => VideojetPrinter.Disconnect();
         public void Exit() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
 
         /// <summary>
@@ -190,34 +106,33 @@ namespace WpfApp_IC.ViewModels
         /// </summary>
         private async Task QueueLabel(int? count = null)
         {
+            if (VideojetPrinter.PrinterState == PrinterState.Disconnected || VideojetPrinter.PrinterState == PrinterState.Connecting)
+                return;
+
             BarcodeField? DataMatrix = DesignerViewModel.Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);
 
             if (DataMatrix != null)
             {
-                List<printer_base> codes = await LoadCodesAsync(count ?? VideojetPrinter.MaxQueueSize);
+                await using var db = await dbContextFactory.CreateDbContextAsync();
+                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
 
                 foreach (printer_base code in codes)
                 {
-                    DataMatrix.BarcodeData = code.Code;
-
-                    await VideojetPrinter.SendZplAsync(DesignerViewModel.ConvertToZpl());
+                    await VideojetPrinter.SendZplAsync(await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        DataMatrix.BarcodeData = code.Code;
+                        return DesignerViewModel.ConvertToZpl();
+                    }));
 
                     code.StatusId = 1;
-                    InspectorController.CurrentGtinId = GTIN.GtinId;
                     code.DatePrint = DateTime.Now;
                     code.OperatorName = mainViewModel.MachineName;
                     code.task = CurrentTask;
                     code.code_number = ++Count;
-
-                    _printedCodes.Add(code);
                 }
 
-                await db.SaveChangesAsync();
+                //await db.SaveChangesAsync();
             }
         }
-        /// <summary>
-        /// Загрузка кодов для DataMatrix из БД
-        /// </summary>
-        private async Task<List<printer_base>> LoadCodesAsync(int count) => await db.printer_bases.Where(c => c.GtinId == GTIN.GtinId && c.StatusId == 0).Take(count).ToListAsync();
     }
 }

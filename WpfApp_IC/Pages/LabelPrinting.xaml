@@ -36,8 +36,8 @@
                 <Grid x:Name="StatusBar" Height="60" Cursor="Hand" MouseDown="StatusBar_Click">
                     <Grid.Tag>
                         <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                            <Binding Path="PrintingStatus"/>
-                            <Binding Path="ErrorStatus"/>
+                            <Binding Path="VideojetPrinter.PrinterState"/>
+                            <Binding Path="VideojetPrinter.ErrorState"/>
                         </MultiBinding>
                     </Grid.Tag>
 
@@ -48,8 +48,8 @@
                     <TextBlock TextAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="28" FontFamily="Bahnschrift">
                         <TextBlock.Tag>
                             <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                                <Binding Path="PrintingStatus"/>
-                                <Binding Path="ErrorStatus"/>
+                                <Binding Path="VideojetPrinter.PrinterState"/>
+                                <Binding Path="VideojetPrinter.ErrorState"/>
                             </MultiBinding>
                         </TextBlock.Tag>
 
@@ -61,8 +61,8 @@
                     <Image Height="50" Margin="5,5,20,5" HorizontalAlignment="Right">
                         <Image.Tag>
                             <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                                <Binding Path="PrintingStatus"/>
-                                <Binding Path="ErrorStatus"/>
+                                <Binding Path="VideojetPrinter.PrinterState"/>
+                                <Binding Path="VideojetPrinter.ErrorState"/>
                             </MultiBinding>
                         </Image.Tag>
 
@@ -75,7 +75,7 @@
                 <!-- === ЭТИКЕТКА === -->
                 <designer:DesignerCanvas x:Name="LabelPreview" Grid.Row="1" Visibility="Visible" Background="White" Preview="True" DataContext="{Binding DesignerViewModel}"/>
                 <!-- === ОШИБКИ === -->
-                <pages:VideojetErrors x:Name="VideojetErrors" Grid.Row="1" Visibility="Hidden" DataContext="{Binding VideojetPrinter}"/>
+                <pages:VideojetErrors x:Name="VideojetErrors" Grid.Row="1" Visibility="Collapsed" DataContext="{Binding VideojetErrorsViewModel}"/>
             </Grid>
             
             <!-- Вертикальный сплиттер -->

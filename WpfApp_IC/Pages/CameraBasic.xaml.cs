@@ -7,12 +7,12 @@ namespace WpfApp_IC.Pages
 {
     public partial class CameraBasic : UserControl
     {
-        private CameraBasicViewModel VM => (CameraBasicViewModel)DataContext;
-
         public CameraBasic()
         {
             InitializeComponent();
         }
+
+        private CameraBasicViewModel VM => (CameraBasicViewModel)DataContext;
 
         private void StartStop_Click(object sender, RoutedEventArgs e) => VM.StartStop();
     }

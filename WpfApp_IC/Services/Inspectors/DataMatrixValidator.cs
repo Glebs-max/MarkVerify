@@ -1,21 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WpfApp_IC.Data;
+using WpfApp_IC.Models;
 
 namespace WpfApp_IC.Services.Inspectors
 {
     /// <summary>
     /// Реализация проверки DataMatrix-кодов через EF Core.
     /// </summary>
-    public class DataMatrixValidator : IDataMatrixValidator
+    public class DataMatrixValidator(IDbContextFactory<AppDbContext> dbContextFactory) : IDataMatrixValidator
     {
-        private readonly AppDbContext _db;
-
-        public DataMatrixValidator(AppDbContext db)
-        {
-            _db = db;
-        }
-
         /// <summary>
         /// Проверяет код в таблице printer_bases.
         /// </summary>
@@ -24,14 +18,14 @@ namespace WpfApp_IC.Services.Inspectors
             if (string.IsNullOrWhiteSpace(dm))
                 return ValidationResult.NoRead();
 
-            var code = await _db.printer_bases
-                .FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == gtinId && c.StatusId == 1);
+            await using var db = await dbContextFactory.CreateDbContextAsync();
+            printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == gtinId && c.StatusId == 1);
 
             if (code == null)
                 return ValidationResult.NotFound();
 
-            code.StatusId = 77;
-            await _db.SaveChangesAsync();
+            code.StatusId = 2;
+            await db.SaveChangesAsync();
 
             return ValidationResult.Ok();
         }

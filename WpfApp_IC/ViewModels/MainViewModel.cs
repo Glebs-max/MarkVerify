@@ -7,7 +7,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Базовая модель приложения
     /// </summary>
-    public class MainViewModel(IServiceProvider provider, VideojetPrinter videojetPrinter, IInspectorController inspector) : ObservableObject
+    public class MainViewModel(IServiceProvider provider) : ObservableObject
     {
         private string _machineName = "Машина 1";
         private ObservableObject? _currentViewModel = null;
@@ -24,16 +24,6 @@ namespace WpfApp_IC.ViewModels
         {
             get => _currentViewModel;
             set => Set(ref _currentViewModel, value);
-        }
-        public VideojetPrinter VideojetPrinter
-        {
-            get => videojetPrinter;
-            set => Set(ref videojetPrinter, value);
-        }
-        public IInspectorController InspectorController
-        {
-            get => inspector;
-            set => Set(ref inspector, value);
         }
 
         /// <summary>

@@ -34,11 +34,6 @@ namespace WpfApp_IC.Services.Inspectors
         public ulong CurrentGtinId { get; set; }
 
         /// <summary>
-        /// Ожидаемый код (если используется прямое сравнение).
-        /// </summary>
-        public string? ExpectedCode { get; set; }
-
-        /// <summary>
         /// Задержка перед активацией отбраковщика.
         /// </summary>
         public int RejectDelayMs { get; set; } = 200;
@@ -53,10 +48,8 @@ namespace WpfApp_IC.Services.Inspectors
 
         // События для ViewModel
         public event Action<int>? SignalChanged;
-        public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string>? ErrorOccurred;
         public event Action<string?, BitmapSource>? FrameReceived;
-        public event Action<string, string?, bool>? CodeChecked;
 
         /// <summary>
         /// Событие результата проверки DataMatrix.
@@ -133,7 +126,7 @@ namespace WpfApp_IC.Services.Inspectors
                                 if (frame != null)
                                     FrameReceived?.Invoke(dm?.Raw, frame);
 
-                                _ = HandleDataMatrixAsync(dm);
+                                await HandleDataMatrixAsync(dm);
                             }
 
                             if (_stableSignal == 0)
@@ -159,17 +152,9 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         private async Task HandleDataMatrixAsync(DataMatrixResult? dm)
         {
-            if (dm != null)
-                DataMatrixRead?.Invoke(dm);
-
             var result = await _validator.ValidateAsync(dm?.Raw, CurrentGtinId);
 
             CodeValidated?.Invoke(result);
-
-            bool ok = result.IsOk &&
-                      (ExpectedCode == null || dm?.Normalized == ExpectedCode);
-
-            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", ExpectedCode, ok);
 
             if (!result.IsOk)
             {

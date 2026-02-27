@@ -10,12 +10,13 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель просмотра и выбора продукции для печати
     /// </summary>
-    public class ProductsViewModel(MainViewModel mainViewModel, AppDbContext db) : ObservableObject
+    public class ProductsViewModel(MainViewModel mainViewModel, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
         public ObservableCollection<gtin> GTINs { get; } = [];
 
         public async Task LoadProductsAsync()
         {
+            await using var db = await dbContextFactory.CreateDbContextAsync();
             List<gtin> gtins = await db.gtins.AsNoTracking().ToListAsync();
             GTINs.Clear();
             foreach (var gtin in gtins) GTINs.Add(gtin);

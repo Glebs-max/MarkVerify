@@ -1,5 +1,4 @@
 ﻿using Observable;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
@@ -19,21 +18,13 @@ namespace WpfApp_IC.ViewModels
             ShowImage = true;
             ShowLog = true;
 
-            _controller.DataMatrixRead += dm =>
+            _controller.FrameReceived += (dm, frame) =>
             {
                 DispatchUI(() =>
                 {
-                    DataMatrix = dm.Normalized;
-                    DataMatrixBrush = Brushes.LimeGreen;
+                    Frame = frame;
+                    DataMatrix = dm ?? "-";
                 });
-            };
-
-            _controller.FrameReceived += (dm, frame) =>
-            {
-                if (frame != null)
-                {
-                    DispatchUI(() => Frame = frame);
-                }
             };
 
             _controller.ErrorOccurred += err =>
@@ -46,15 +37,9 @@ namespace WpfApp_IC.ViewModels
                 AddLog($"Сигнал: {s}");
             };
 
-            _controller.CodeChecked += (actual, expected, ok) =>
+            _controller.CodeValidated += (result) =>
             {
-                AddLog($"Проверка: ожидалось [{expected}], считано [{actual}], результат: {(ok ? "OK" : "BRK")}");
-
-                DispatchUI(() =>
-                {
-                    DataMatrix = actual;
-                    DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
-                });
+                DispatchUI(() => DataMatrixBrush = result.IsOk ? Brushes.LimeGreen : Brushes.Red);
             };
         }
 

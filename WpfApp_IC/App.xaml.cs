@@ -11,6 +11,7 @@ using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WpfApp_IC
 {
@@ -27,16 +28,17 @@ namespace WpfApp_IC
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    var conn = context.Configuration.GetConnectionString("DefaultConnection");
+                    string? conn = context.Configuration.GetConnectionString("DefaultConnection");
                     var ioConfig = IoModuleConfig.Load();
 
-                    services.AddDbContext<AppDbContext>(options => options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+                    services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
                     services.AddSingleton(ioConfig);
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<ProductsViewModel>();
+                    services.AddSingleton<VideojetErrorsViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
                     services.AddTransient<CameraBasicViewModel>();
@@ -48,18 +50,8 @@ namespace WpfApp_IC
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IDataMatrixValidator, DataMatrixValidator>();
                     services.AddSingleton<IInspectorController, InspectorController>();
-                    services.AddSingleton<ISensor>(sp =>
-                    {
-                        var modbus = sp.GetRequiredService<IModbusService>();
-                        var config = sp.GetRequiredService<IoModuleConfig>();
-                        return new ModbusSensor(modbus, config);
-                    });
-                    services.AddSingleton<IRejector>(sp =>
-                    {
-                        var modbus = sp.GetRequiredService<IModbusService>();
-                        var config = sp.GetRequiredService<IoModuleConfig>();
-                        return new ModbusRejector(modbus, config);
-                    });
+                    services.AddSingleton<ISensor, ModbusSensor>();
+                    services.AddSingleton<IRejector, ModbusRejector>();
 
                     services.AddSingleton<MainWindow>();
                 })

@@ -28,74 +28,61 @@ namespace WpfApp_IC.Converters
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values[0] is PrintingStatus printingStatus && values[1] is ErrorStatus errorStatus)
+            if (values[0] is PrinterState printerState && values[1] is ErrorState errorState)
             {
                 Result result = new();
 
-                switch (printingStatus)
+                switch (printerState)
                 {
-                    case PrintingStatus.Printing:
-                        result.StatusText = "Печать";
-                        result.StopEnabled = result.PauseEnabled = true;
-                        result.ReportEnabled = result.ExitEnabled = false;
-                        result.PauseText = "Пауза";
+                    case PrinterState.Disconnected:
+                        result.StatusText = "Нет соединения";
+                        result.StatusColor = Brushes.WhiteSmoke;
                         break;
-                    case PrintingStatus.Paused:
-                        result.StatusText = "Приостановлено";
-                        result.StopEnabled = result.PauseEnabled = true;
-                        result.ReportEnabled = result.ExitEnabled = false;
-                        result.PauseText = "Возобновить";
+                    case PrinterState.Connecting:
+                        result.StatusText = "Соединение...";
+                        result.StatusColor = Brushes.WhiteSmoke;
                         break;
-                    case PrintingStatus.Finished:
-                        result.StatusText = "Завершено";
-                        result.StopEnabled = result.PauseEnabled = false;
-                        result.ReportEnabled = result.ExitEnabled = true;
-                        result.PauseText = "Пауза";
+                    case PrinterState.Connected:
+                        result.StatusText = "Соединение установлено";
+                        result.StatusColor = Brushes.Lavender;
+                        break;
+                    case PrinterState.Shutdown:
+                        result.StatusText = "Остановлен";
+                        result.StatusColor = Brushes.Lavender;
+                        break;
+                    case PrinterState.StartingUp:
+                        result.StatusText = "Запуск...";
+                        result.StatusColor = Brushes.Lavender;
+                        break;
+                    case PrinterState.ShuttingDown:
+                        result.StatusText = "Остановка...";
+                        result.StatusColor = Brushes.LightBlue;
+                        break;
+                    case PrinterState.Offline:
+                        result.StatusText = "Не в работе";
+                        result.StatusColor = Brushes.LightBlue;
+                        break;
+                    case PrinterState.Running:
+                        result.StatusText = "В работе";
+                        result.StatusColor = Brushes.LightGreen;
                         break;
                 }
 
-                switch (errorStatus)
+                switch (errorState)
                 {
-                    case ErrorStatus.None:
+                    case ErrorState.None:
                         result.StatusIcon = "/Assets/good.png";
-                        switch (printingStatus)
-                        {
-                            case PrintingStatus.Printing:
-                                result.StatusColor = Brushes.LightGreen;
-                                break;
-                            case PrintingStatus.Paused:
-                                result.StatusColor = Brushes.LightBlue;
-                                break;
-                            case PrintingStatus.Finished:
-                                result.StatusColor = Brushes.LightGray;
-                                break;
-                        }
                         break;
-                    case ErrorStatus.Warnings:
+                    case ErrorState.Warnings:
                         result.StatusIcon = "/Assets/warning.png";
-                        switch (printingStatus)
-                        {
-                            case PrintingStatus.Printing:
-                            case PrintingStatus.Paused:
-                                result.StatusColor = Brushes.LightYellow;
-                                break;
-                            case PrintingStatus.Finished:
-                                result.StatusColor = Brushes.LightGray;
-                                break;
-                        }
+                        result.StatusColor = Brushes.LightGoldenrodYellow;
                         break;
-                    case ErrorStatus.Faults:
+                    case ErrorState.Faults:
                         result.StatusIcon = "/Assets/fault.png";
-                        switch (printingStatus)
-                        {
-                            case PrintingStatus.Printing:
-                            case PrintingStatus.Paused:
-                                result.StatusColor = Brushes.OrangeRed;
-                                break;
-                            case PrintingStatus.Finished:
-                                result.StatusColor = Brushes.LightGray;
-                                break;
-                        }
+                        result.StatusColor = Brushes.OrangeRed;
+                        break;
+                    case ErrorState.Unknown:
+                        result.StatusIcon = string.Empty;
                         break;
                 }
 

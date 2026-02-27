@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:WpfApp_IC"
-             d:DataContext="{d:DesignInstance Type=local:VideojetPrinter}"
+             xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
+             d:DataContext="{d:DesignInstance Type=vm:VideojetErrorsViewModel}"
              mc:Ignorable="d" Background="#F4F4F4" FontSize="24">
     <Grid>
         <Grid.RowDefinitions>

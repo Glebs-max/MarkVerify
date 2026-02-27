@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:CameraAdvancedViewModel}"
+            
              mc:Ignorable="d">
-
-    <Grid Background="#FF2B2B2B" Margin="10">
+ <!--d:DataContext="{d:DesignInstance Type=viewmodels:CameraAdvancedViewModel}"-->
+   <!-- <Grid Background="#FF2B2B2B" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -24,7 +24,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Отбраковка -->
+            --><!-- Отбраковка --><!--
             <Border Grid.Column="0"
                     Margin="0,0,10,0"
                     Background="#FF3A3A3A"
@@ -53,7 +53,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- IDMVS -->
+            --><!-- IDMVS --><!--
             <Border Grid.Column="1"
                     Background="#FF3A3A3A"
                     CornerRadius="8"
@@ -88,5 +88,5 @@
                 </StackPanel>
             </Border>
         </Grid>
-    </Grid>
+    </Grid>-->
 </UserControl>

@@ -139,10 +139,13 @@
                 <DataTemplate DataType="{x:Type vm:LabelPrintingViewModel}">
                     <pages:LabelPrinting/>
                 </DataTemplate>
-
-                <DataTemplate DataType="{x:Type vm:CameraAdvancedViewModel}">
-                    <pages:CameraAdvanced/>
+                <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                    <pages:Settings/>
                 </DataTemplate>
+
+                <!--<DataTemplate DataType="{x:Type vm:CameraAdvancedViewModel}">
+                    <pages:CameraAdvanced/>
+                </DataTemplate>-->
 
                 <DataTemplate DataType="{x:Type vm:CameraBasicViewModel}">
                     <pages:CameraBasic/>

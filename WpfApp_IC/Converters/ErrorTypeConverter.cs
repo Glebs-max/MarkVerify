@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Конвертер — это класс, который преобразует данные между VM и View в момент привязки.
+//Нужен когда тип или формат данных в VM не совпадает с тем что ожидает UI-элемент.
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

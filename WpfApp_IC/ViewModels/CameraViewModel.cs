@@ -5,19 +5,49 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WpfApp_IC.Services.Inspectors;
+using WpfApp_IC.Services.Log;
 
 namespace WpfApp_IC.ViewModels
 {
     public class CameraViewModel : ObservableObject
     {
-        private readonly IInspectorController _controller;
+        protected readonly IInspectorController _controller;
+        protected readonly ILogService _log;
 
-        public CameraViewModel(IInspectorController controller)
+        // Публичное свойство для биндинга в XAML
+        public ILogService LogService => _log;
+
+        // Коллекция логов, к которой привязывается UI
+        public ObservableCollection<LogEntry> Entries => _log.Entries;
+
+        public CameraViewModel(IInspectorController controller, ILogService log)
         {
             _controller = controller;
+            _log = log;
 
-            ShowImage = true;
-            ShowLog = true;
+            // === Подписки на события инспектора ===
+
+            _controller.ErrorOccurred += err =>
+            {
+                _log.Error(err);
+            };
+
+            _controller.SignalChanged += s =>
+            {
+                _log.Info($"Сигнал датчика: {s}");
+            };
+
+            _controller.CodeChecked += (actual, expected, ok) =>
+            {
+                string result = ok ? "OK" : "BRK";
+                _log.Info($"Проверка: [{actual}] → {result}");
+
+                DispatchUI(() =>
+                {
+                    DataMatrix = actual;
+                    DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
+                });
+            };
 
             _controller.DataMatrixRead += dm =>
             {
@@ -31,32 +61,11 @@ namespace WpfApp_IC.ViewModels
             _controller.FrameReceived += (dm, frame) =>
             {
                 if (frame != null)
-                {
                     DispatchUI(() => Frame = frame);
-                }
-            };
-
-            _controller.ErrorOccurred += err =>
-            {
-                AddLog($"Ошибка: {err}");
-            };
-
-            _controller.SignalChanged += s =>
-            {
-                AddLog($"Сигнал: {s}");
-            };
-
-            _controller.CodeChecked += (actual, expected, ok) =>
-            {
-                AddLog($"Проверка: ожидалось [{expected}], считано [{actual}], результат: {(ok ? "OK" : "BRK")}");
-
-                DispatchUI(() =>
-                {
-                    DataMatrix = actual;
-                    DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
-                });
             };
         }
+
+        // === Свойства UI ===
 
         private BitmapSource? _frame;
         public BitmapSource? Frame
@@ -79,15 +88,12 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _isRunning, value);
         }
 
-
         private Brush _dataMatrixBrush = Brushes.Black;
         public Brush DataMatrixBrush
         {
             get => _dataMatrixBrush;
             set => Set(ref _dataMatrixBrush, value);
         }
-
-        public ObservableCollection<string> Log { get; } = new();
 
         private bool _showImage;
         public bool ShowImage
@@ -103,11 +109,10 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _showLog, value);
         }
 
-        public void AddLog(string msg)
-        {
-            DispatchUI(() => Log.Add(msg));
-        }
+        // === Удобный метод для записи в лог ===
+        public void AddLog(string msg) => _log.Info(msg);
 
+        // === UI dispatcher ===
         protected static void DispatchUI(Action action)
         {
             if (Application.Current.Dispatcher.CheckAccess())
@@ -117,4 +122,3 @@ namespace WpfApp_IC.ViewModels
         }
     }
 }
-

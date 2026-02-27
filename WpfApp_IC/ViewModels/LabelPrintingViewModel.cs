@@ -8,6 +8,7 @@ using Observable;
 using WpfApp_IC.Services.Inspectors;
 using System.Windows;
 using System.Windows.Media;
+using WpfApp_IC.Services.Log;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -27,7 +28,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель печати и проверки маркировок
     /// </summary>
-    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraBasicViewModel cameraViewModel) : ObservableObject
+    public class LabelPrintingViewModel(MainViewModel mainViewModel, AppDbContext db, CameraBasicViewModel cameraViewModel, ILogService log) : ObservableObject
     {
         private readonly List<printer_base> _printedCodes = [];
         private PrintingStatus _printingStatus = PrintingStatus.Paused;

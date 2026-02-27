@@ -1,30 +1,19 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using WpfApp_IC.ViewModels;
 
 namespace WpfApp_IC.Pages
 {
     public partial class Settings : UserControl
     {
-        public Settings()
-        {
-            InitializeComponent();
-        }
+        private SettingsViewModel VM => (SettingsViewModel)DataContext;
 
-        private void RefreshCameras_Click(object sender, RoutedEventArgs e)
-        {
+        public Settings() => InitializeComponent();
 
-        }
-        private void AutoDetectModbus_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-        private void TestPrinter_Click(object sender, RoutedEventArgs e)
-        {
+        private void Save_Click(object sender, RoutedEventArgs e) => VM.Save();
+        private void Cancel_Click(object sender, RoutedEventArgs e) => VM.Cancel();
+        private void BrowseIdmvs_Click(object sender, RoutedEventArgs e) => VM.BrowseIdmvs();
 
-        }
-        private void SaveSettings_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+        private void RefreshCameras_Click(object sender, RoutedEventArgs e) => VM.RefreshCameras();
     }
 }

@@ -19,11 +19,10 @@ namespace WpfApp_IC.Services.Camera
         /// <summary>
         /// Инициализация камеры: поиск, создание handle (дескриптор), настройка параметров
         /// </summary>
-        public void Open()
+        public void Open(int deviceIndex = 0)
         {
             if (_isOpened) return;
 
-            // Получаем список устройств
             var list = new MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST
             {
                 pDeviceInfo = new IntPtr[MvCodeReader.MV_CODEREADER_MAX_DEVICE_NUM]
@@ -36,12 +35,16 @@ namespace WpfApp_IC.Services.Camera
             if (ret != MvCodeReader.MV_CODEREADER_OK || list.nDeviceNum == 0)
                 throw new Exception("Камера не найдена");
 
-            // Берём первую камеру (в этом месте нужно будет исправить на несколько камер кода-нибудь)
+            // Используем переданный индекс вместо жёсткого [0]
+            if (deviceIndex < 0 || deviceIndex >= list.nDeviceNum)
+                throw new Exception($"Камера с индексом {deviceIndex} не найдена. " +
+                                    $"Доступно: {list.nDeviceNum}");
+
             var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
-                list.pDeviceInfo[0] );
+                list.pDeviceInfo[deviceIndex]); // ← было [0]
 
             _reader = new MvCodeReader();
-            _reader.MV_CODEREADER_CreateHandle_NET( ref devInfo );
+            _reader.MV_CODEREADER_CreateHandle_NET(ref devInfo);
             _reader.MV_CODEREADER_OpenDevice_NET();
 
             _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerMode", "On");
@@ -49,17 +52,74 @@ namespace WpfApp_IC.Services.Camera
             _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerActivation", "RisingEdge");
             _reader.MV_CODEREADER_SetEnumValueByString_NET("CodeType", "DataMatrix");
 
-
-
             _reader.MV_CODEREADER_StartGrabbing_NET();
-
             _isOpened = true;
+        }
+
+        /// <summary>
+        /// Получение информации с камеры
+        /// </summary>
+        public IReadOnlyList<CameraDeviceInfo> GetAvailableDevices()
+        {
+            var result = new List<CameraDeviceInfo>();
+
+            var list = new MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST
+            {
+                pDeviceInfo = new IntPtr[MvCodeReader.MV_CODEREADER_MAX_DEVICE_NUM]
+            };
+
+            int ret = MvCodeReader.MV_CODEREADER_EnumDevices_NET(
+                ref list,
+                MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
+
+            if (ret != MvCodeReader.MV_CODEREADER_OK)
+                return result;
+
+            for (int i = 0; i < list.nDeviceNum; i++)
+            {
+                var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
+                    list.pDeviceInfo[i]);
+
+                // stGigEInfo — сырой byte[540], разбираем вручную
+                byte[] g = devInfo.SpecialInfo.stGigEInfo;
+
+                result.Add(new CameraDeviceInfo
+                {
+                    Index = i,
+                    IP = ParseIp(g, 8),    // текущий IP
+                    StaticIP = ParseIp(g, 196),  // статический IP
+                    Gateway = ParseIp(g, 16),   // шлюз
+                    Manufacturer = ParseString(g, 20, 32),  // "Hikrobot"
+                    Model = ParseString(g, 52, 32),  // "MV-ID3013PM-06M-SENSOTEC"
+                    Firmware = ParseString(g, 84, 32),  // "V3.1.4.C 250519"
+                    SerialNumber = ParseString(g, 164, 32), // "02DA6864011"
+                });
+            }
+
+            return result;
+        }
+
+        // IP хранится в формате: byte[offset]=last, byte[offset+1]=..., обратный порядок
+        private static string ParseIp(byte[] data, int offset)
+        {
+            if (offset + 3 >= data.Length) return "";
+            // Порядок байт: [offset+3].[offset+2].[offset+1].[offset]
+            return $"{data[offset + 3]}.{data[offset + 2]}.{data[offset + 1]}.{data[offset]}";
+        }
+
+        private static string ParseString(byte[] data, int offset, int maxLen)
+        {
+            if (offset >= data.Length) return "";
+            int end = offset;
+            int limit = Math.Min(offset + maxLen, data.Length);
+            while (end < limit && data[end] != 0) end++;
+            return Encoding.UTF8.GetString(data, offset, end - offset);
         }
 
         /// <summary>
         /// Закрытие камеры 
         /// </summary>
-        
+
         public void Close()
         {
             if(!_isOpened || _reader == null) return;
@@ -146,5 +206,22 @@ namespace WpfApp_IC.Services.Camera
             return bmp;
         }
         public void Dispose() => Close();
+    }
+
+    /// <summary>
+    /// Модель данных камеры
+    /// </summary>
+    public class CameraDeviceInfo
+    {
+        public int Index { get; set; }
+        public string IP { get; set; } = "";
+        public string StaticIP { get; set; } = "";
+        public string Gateway { get; set; } = "";
+        public string Manufacturer { get; set; } = "";
+        public string Model { get; set; } = "";
+        public string Firmware { get; set; } = "";
+        public string SerialNumber { get; set; } = "";
+
+        public override string ToString() => $"[{Index}] {Model} — {IP}";
     }
 }

@@ -10,7 +10,7 @@ namespace WpfApp_IC.Services.Camera
     public interface ICameraService : IDisposable
     {
         /// <summary>Открывает соединение с камерой.</summary>
-        void Open();
+        void Open(int deviceIndex =0 );
 
         /// <summary>Закрывает соединение.</summary>
         void Close();
@@ -21,5 +21,7 @@ namespace WpfApp_IC.Services.Camera
         /// - кадр (BitmapSource)
         /// </summary>
         (DataMatrixResult? dm, BitmapSource? frame) TriggerAndRead();
+
+        IReadOnlyList<CameraDeviceInfo> GetAvailableDevices();
     }
 }

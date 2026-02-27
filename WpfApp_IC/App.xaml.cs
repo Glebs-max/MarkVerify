@@ -9,7 +9,9 @@ using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
+using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
+using WpfApp_IC.Services.SettingsD;
 using WpfApp_IC.ViewModels;
 
 namespace WpfApp_IC
@@ -41,7 +43,12 @@ namespace WpfApp_IC
                     services.AddTransient<LabelPrintingViewModel>();
                     services.AddTransient<CameraBasicViewModel>();
                     services.AddTransient<CameraViewModel>();
-                    services.AddTransient<CameraAdvancedViewModel>();
+
+                    services.AddSingleton<ISettingsService, SettingsService>();
+                    services.AddTransient<SettingsViewModel>();
+                    //services.AddTransient<CameraAdvancedViewModel>();
+
+                    services.AddSingleton<ILogService, LogService>();
 
                     services.AddSingleton<VideojetPrinter>();
                     services.AddSingleton<IModbusService, ModbusService>();

@@ -21,5 +21,8 @@ namespace Observable
             action.Invoke();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+
+        protected void OnPropertyChanged([CallerMemberName] string? prop = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
 }

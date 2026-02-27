@@ -7,6 +7,7 @@ using WpfApp_IC.Device;
 using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
 using WpfApp_IC.Services.Camera;
+using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
 
 namespace WpfApp_IC.Services.Inspectors
@@ -24,6 +25,7 @@ namespace WpfApp_IC.Services.Inspectors
         private readonly IoModuleConfig _config;
         private readonly IRejector _rejector;
         private readonly IDataMatrixValidator _validator;
+        private readonly ILogService _log;
 
         private CancellationTokenSource? _cts;
 
@@ -34,22 +36,37 @@ namespace WpfApp_IC.Services.Inspectors
         public ulong CurrentGtinId { get; set; }
 
         /// <summary>
+        /// Ожидаемый код (если используется прямое сравнение).
+        /// </summary>
+        public string? ExpectedCode { get; set; }
+
+        /// <summary>
         /// Задержка перед активацией отбраковщика.
         /// </summary>
         public int RejectDelayMs { get; set; } = 200;
+
+        /// <summary> SensorFilterCount - Периодичность стабильного сигнала, фильтр дребезга датчика /// </summary>
+        public int SensorFilterCount { get; set; } = 2;
+
+        /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
+        public int SensorPollIntervalMs { get; set; } = 10;
+
+        public int CameraDeviceIndex { get; set; } = 0;
 
         // Фильтрация дребезга
         private int _stableSignal = -1;
         private int _previousSignal = -1;
         private int _sameCount = 0;
-        private const int FILTER_COUNT = 2;
+        //private const int FILTER_COUNT = 2;
 
         private bool _triggerInProgress = false;
 
         // События для ViewModel
         public event Action<int>? SignalChanged;
+        public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string>? ErrorOccurred;
         public event Action<string?, BitmapSource>? FrameReceived;
+        public event Action<string, string?, bool>? CodeChecked;
 
         /// <summary>
         /// Событие результата проверки DataMatrix.
@@ -63,7 +80,8 @@ namespace WpfApp_IC.Services.Inspectors
             IRejector rejector,
             IModbusService modbus,
             IoModuleConfig config,
-            IDataMatrixValidator validator)
+            IDataMatrixValidator validator,
+            ILogService log)
         {
             _camera = camera;
             _sensor = sensor;
@@ -71,6 +89,7 @@ namespace WpfApp_IC.Services.Inspectors
             _modbus = modbus;
             _config = config;
             _validator = validator;
+            _log = log;
         }
 
         /// <summary>
@@ -78,8 +97,25 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         public void Start()
         {
-            _modbus.Connect(_config.ModbusIp, _config.ModbusPort);
-            _camera.Open();
+            try
+            {
+                _modbus.Connect(_config.ModbusIp, _config.ModbusPort);
+                _log.Info($"Modbus подключён: {_config.ModbusIp}:{_config.ModbusPort}");
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Ошибка подключения Modbus", ex); // ← вот где ловим SocketException
+            }
+
+            try
+            {
+                _camera.Open(CameraDeviceIndex);
+                _log.Info($"Камера [{CameraDeviceIndex}] открыта");
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Ошибка открытия камеры [{CameraDeviceIndex}]", ex);
+            }
 
             _stableSignal = -1;
             _previousSignal = -1;
@@ -95,55 +131,68 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         private async Task Loop(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                try
+
+                while (!token.IsCancellationRequested)
                 {
-                    int rawSignal = _sensor.Read();
-
-                    // Фильтрация дребезга
-                    if (rawSignal == _stableSignal)
-                        _sameCount++;
-                    else
+                    try
                     {
-                        _sameCount = 0;
-                        _stableSignal = rawSignal;
-                    }
+                        int rawSignal = _sensor.Read();
 
-                    if (_sameCount >= FILTER_COUNT)
-                    {
-                        if (_stableSignal != _previousSignal)
+                        // Фильтрация дребезга
+                        if (rawSignal == _stableSignal)
+                            _sameCount++;
+                        else
                         {
-                            _previousSignal = _stableSignal;
-                            SignalChanged?.Invoke(_stableSignal);
-
-                            if (_stableSignal == 1 && !_triggerInProgress)
-                            {
-                                _triggerInProgress = true;
-
-                                var (dm, frame) = _camera.TriggerAndRead();
-
-                                if (frame != null)
-                                    FrameReceived?.Invoke(dm?.Raw, frame);
-
-                                await HandleDataMatrixAsync(dm);
-                            }
-
-                            if (_stableSignal == 0)
-                                _triggerInProgress = false;
+                            _sameCount = 0;
+                            _stableSignal = rawSignal;
                         }
-                    }
 
-                    await Task.Delay(10, token);
+                        if (_sameCount >= SensorFilterCount)
+                        {
+                            if (_stableSignal != _previousSignal)
+                            {
+                                _previousSignal = _stableSignal;
+                                SignalChanged?.Invoke(_stableSignal);
+
+                                if (_stableSignal == 1 && !_triggerInProgress)
+                                {
+                                    _triggerInProgress = true;
+
+                                    var (dm, frame) = _camera.TriggerAndRead();
+
+                                    if (frame != null)
+                                        FrameReceived?.Invoke(dm?.Raw, frame);
+
+                                    _ = HandleDataMatrixAsync(dm);
+                                }
+
+                                if (_stableSignal == 0)
+                                    _triggerInProgress = false;
+                            }
+                        }
+
+                        await Task.Delay(SensorPollIntervalMs, token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorOccurred?.Invoke(ex.Message);
+                    }
                 }
-                catch (TaskCanceledException)
-                {
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    ErrorOccurred?.Invoke(ex.Message);
-                }
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Ошибка в цикле инспекции", ex); // ← вместо ErrorOccurred
+                ErrorOccurred?.Invoke(ex.Message);
             }
         }
 
@@ -152,9 +201,17 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         private async Task HandleDataMatrixAsync(DataMatrixResult? dm)
         {
+            if (dm != null)
+                DataMatrixRead?.Invoke(dm);
+
             var result = await _validator.ValidateAsync(dm?.Raw, CurrentGtinId);
 
             CodeValidated?.Invoke(result);
+
+            bool ok = result.IsOk &&
+                      (ExpectedCode == null || dm?.Normalized == ExpectedCode);
+
+            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", ExpectedCode, ok);
 
             if (!result.IsOk)
             {

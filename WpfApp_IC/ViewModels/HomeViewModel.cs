@@ -6,6 +6,6 @@ namespace WpfApp_IC.ViewModels
     {
         public void Start() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<ProductsViewModel>();
         public void CameraBasic() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<CameraBasicViewModel>();
-        public void Settings() { }
+        public void Settings() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<SettingsViewModel>();
     }
 }

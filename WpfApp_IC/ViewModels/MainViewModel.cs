@@ -9,14 +9,8 @@ namespace WpfApp_IC.ViewModels
     /// </summary>
     public class MainViewModel(IServiceProvider provider) : ObservableObject
     {
-        private string _machineName = "Машина 1";
         private ObservableObject? _currentViewModel = null;
 
-        public string MachineName
-        {
-            get => _machineName;
-            set => Set(ref _machineName, value);
-        }
         /// <summary>
         /// Текущая ViewModel - определяет текущую страницу приложения
         /// </summary>

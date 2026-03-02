@@ -1,11 +1,15 @@
-﻿using Observable;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Observable;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using WpfApp_IC.Data;
 using WpfApp_IC.Device;
 using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
+using WpfApp_IC.Models;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
@@ -17,23 +21,17 @@ namespace WpfApp_IC.Services.Inspectors
     /// Управляет камерой, датчиком, отбраковщиком и выполняет проверку DataMatrix.
     /// Не зависит от UI и не содержит логики отображения.
     /// </summary>
-    public class InspectorController : ObservableObject, IInspectorController, IDisposable
+    public class InspectorController(
+        LabelingSession labelingSession,
+        IoModuleConfig config,
+        ICameraService camera,
+        ISensor sensor,
+        IRejector rejector,
+        IModbusService modbus,
+        ILogService log,
+        IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject, IInspectorController, IDisposable
     {
-        private readonly ICameraService _camera;
-        private readonly ISensor _sensor;
-        private readonly IModbusService _modbus;
-        private readonly IoModuleConfig _config;
-        private readonly IRejector _rejector;
-        private readonly IDataMatrixValidator _validator;
-        private readonly ILogService _log;
-
         private CancellationTokenSource? _cts;
-
-        /// <summary>
-        /// Текущий GTIN, по которому выполняется проверка.
-        /// Устанавливается ViewModel.
-        /// </summary>
-        public ulong CurrentGtinId { get; set; }
 
         /// <summary>
         /// Ожидаемый код (если используется прямое сравнение).
@@ -74,24 +72,6 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         public event Action<ValidationResult>? CodeValidated;
 
-        public InspectorController(
-            ICameraService camera,
-            ISensor sensor,
-            IRejector rejector,
-            IModbusService modbus,
-            IoModuleConfig config,
-            IDataMatrixValidator validator,
-            ILogService log)
-        {
-            _camera = camera;
-            _sensor = sensor;
-            _rejector = rejector;
-            _modbus = modbus;
-            _config = config;
-            _validator = validator;
-            _log = log;
-        }
-
         /// <summary>
         /// Запускает инспекцию: подключает Modbus, открывает камеру и запускает цикл чтения датчика.
         /// </summary>
@@ -99,22 +79,22 @@ namespace WpfApp_IC.Services.Inspectors
         {
             try
             {
-                _modbus.Connect(_config.ModbusIp, _config.ModbusPort);
-                _log.Info($"Modbus подключён: {_config.ModbusIp}:{_config.ModbusPort}");
+                modbus.Connect(config.ModbusIp, config.ModbusPort);
+                log.Info($"Modbus подключён: {config.ModbusIp}:{config.ModbusPort}");
             }
             catch (Exception ex)
             {
-                _log.Error("Ошибка подключения Modbus", ex); // ← вот где ловим SocketException
+                log.Error("Ошибка подключения Modbus", ex); // ← вот где ловим SocketException
             }
 
             try
             {
-                _camera.Open(CameraDeviceIndex);
-                _log.Info($"Камера [{CameraDeviceIndex}] открыта");
+                camera.Open(CameraDeviceIndex);
+                log.Info($"Камера [{CameraDeviceIndex}] открыта");
             }
             catch (Exception ex)
             {
-                _log.Error($"Ошибка открытия камеры [{CameraDeviceIndex}]", ex);
+                log.Error($"Ошибка открытия камеры [{CameraDeviceIndex}]", ex);
             }
 
             _stableSignal = -1;
@@ -138,7 +118,7 @@ namespace WpfApp_IC.Services.Inspectors
                 {
                     try
                     {
-                        int rawSignal = _sensor.Read();
+                        int rawSignal = sensor.Read();
 
                         // Фильтрация дребезга
                         if (rawSignal == _stableSignal)
@@ -160,7 +140,7 @@ namespace WpfApp_IC.Services.Inspectors
                                 {
                                     _triggerInProgress = true;
 
-                                    var (dm, frame) = _camera.TriggerAndRead();
+                                    var (dm, frame) = camera.TriggerAndRead();
 
                                     if (frame != null)
                                         FrameReceived?.Invoke(dm?.Raw, frame);
@@ -191,7 +171,7 @@ namespace WpfApp_IC.Services.Inspectors
             }
             catch (Exception ex)
             {
-                _log.Error("Ошибка в цикле инспекции", ex); // ← вместо ErrorOccurred
+                log.Error("Ошибка в цикле инспекции", ex); // ← вместо ErrorOccurred
                 ErrorOccurred?.Invoke(ex.Message);
             }
         }
@@ -204,20 +184,40 @@ namespace WpfApp_IC.Services.Inspectors
             if (dm != null)
                 DataMatrixRead?.Invoke(dm);
 
-            var result = await _validator.ValidateAsync(dm?.Raw, CurrentGtinId);
+            var result = await ValidateAsync(dm?.Raw);
 
             CodeValidated?.Invoke(result);
 
-            bool ok = result.IsOk &&
-                      (ExpectedCode == null || dm?.Normalized == ExpectedCode);
+            bool ok = result.IsOk && (ExpectedCode == null || dm?.Normalized == ExpectedCode);
 
             CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", ExpectedCode, ok);
 
-            if (!result.IsOk)
+            if (result.IsOk)
+            {
+                labelingSession.Verified++;
+            }
+            else
             {
                 RejectWithDelay();
                 ErrorOccurred?.Invoke(result.ErrorMessage ?? "Ошибка проверки DataMatrix");
+                labelingSession.Rejected++;
             }
+        }
+        private async Task<ValidationResult> ValidateAsync(string? dm)
+        {
+            if (string.IsNullOrWhiteSpace(dm))
+                return ValidationResult.NoRead();
+
+            await using var db = await dbContextFactory.CreateDbContextAsync();
+            printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 1);
+
+            if (code == null)
+                return ValidationResult.NotFound();
+
+            code.StatusId = 2;
+            await db.SaveChangesAsync();
+
+            return ValidationResult.Ok();
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace WpfApp_IC.Services.Inspectors
             Task.Run(() =>
             {
                 Thread.Sleep(RejectDelayMs);
-                _rejector.Activate();
+                rejector.Activate();
             });
         }
 
@@ -239,14 +239,14 @@ namespace WpfApp_IC.Services.Inspectors
         {
             _cts?.Cancel();
             Thread.Sleep(100);
-            _camera.Close();
+            camera.Close();
         }
 
         public void Dispose()
         {
             Stop();
-            _modbus?.Disconnect();
-            _camera.Dispose();
+            modbus?.Disconnect();
+            camera.Dispose();
         }
     }
 }

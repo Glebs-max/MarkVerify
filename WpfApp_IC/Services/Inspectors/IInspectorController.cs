@@ -14,7 +14,6 @@ namespace WpfApp_IC.Services.Inspectors
         int RejectDelayMs { get; set; }
         int SensorFilterCount { get; set; }
         int SensorPollIntervalMs { get; set; }
-        ulong CurrentGtinId { get; set; }
         int CameraDeviceIndex { get; set; }
 
         event Action<int>? SignalChanged;

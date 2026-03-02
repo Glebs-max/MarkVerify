@@ -136,8 +136,8 @@
                 <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
                     <pages:LabelPreview/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:LabelPrintingViewModel}">
-                    <pages:LabelPrinting/>
+                <DataTemplate DataType="{x:Type vm:LabelingViewModel}">
+                    <pages:Labeling/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                     <pages:Settings/>
@@ -147,7 +147,7 @@
                     <pages:CameraAdvanced/>
                 </DataTemplate>-->
 
-                <DataTemplate DataType="{x:Type vm:CameraBasicViewModel}">
+                <DataTemplate DataType="{x:Type vm:CameraViewModel}">
                     <pages:CameraBasic/>
                 </DataTemplate>
 

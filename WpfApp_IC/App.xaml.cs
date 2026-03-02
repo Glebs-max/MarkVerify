@@ -13,7 +13,6 @@ using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.Services.SettingsD;
 using WpfApp_IC.ViewModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WpfApp_IC
 {
@@ -42,23 +41,20 @@ namespace WpfApp_IC
                     services.AddSingleton<ProductsViewModel>();
                     services.AddSingleton<VideojetErrorsViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
+                    services.AddTransient<LabelingViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
-                    services.AddTransient<CameraBasicViewModel>();
                     services.AddTransient<CameraViewModel>();
-
-                    services.AddSingleton<ISettingsService, SettingsService>();
                     services.AddTransient<SettingsViewModel>();
-                    //services.AddTransient<CameraAdvancedViewModel>();
 
-                    services.AddSingleton<ILogService, LogService>();
-
+                    services.AddTransient<LabelingSession>();
                     services.AddSingleton<VideojetPrinter>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
-                    services.AddSingleton<IDataMatrixValidator, DataMatrixValidator>();
                     services.AddSingleton<IInspectorController, InspectorController>();
                     services.AddSingleton<ISensor, ModbusSensor>();
                     services.AddSingleton<IRejector, ModbusRejector>();
+                    services.AddSingleton<ISettingsService, SettingsService>();
+                    services.AddSingleton<ILogService, LogService>();
 
                     services.AddSingleton<MainWindow>();
                 })

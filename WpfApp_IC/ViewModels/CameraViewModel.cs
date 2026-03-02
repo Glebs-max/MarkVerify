@@ -16,27 +16,23 @@ namespace WpfApp_IC.ViewModels
 
         // Публичное свойство для биндинга в XAML
         public ILogService LogService => _log;
-
         // Коллекция логов, к которой привязывается UI
         public ObservableCollection<LogEntry> Entries => _log.Entries;
 
-        public CameraViewModel(IInspectorController controller, ILogService log)
+        public CameraViewModel(LabelingSession labelingSession, IInspectorController controller, ILogService log)
         {
             _controller = controller;
             _log = log;
 
             // === Подписки на события инспектора ===
-
             _controller.ErrorOccurred += err =>
             {
                 _log.Error(err);
             };
-
             _controller.SignalChanged += s =>
             {
                 _log.Info($"Сигнал датчика: {s}");
             };
-
             _controller.CodeChecked += (actual, expected, ok) =>
             {
                 string result = ok ? "OK" : "BRK";
@@ -48,7 +44,6 @@ namespace WpfApp_IC.ViewModels
                     DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
                 });
             };
-
             _controller.DataMatrixRead += dm =>
             {
                 DispatchUI(() =>
@@ -57,7 +52,6 @@ namespace WpfApp_IC.ViewModels
                     DataMatrixBrush = Brushes.LimeGreen;
                 });
             };
-
             _controller.FrameReceived += (dm, frame) =>
             {
                 if (frame != null)
@@ -109,11 +103,33 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _showLog, value);
         }
 
+        public void StartStop()
+        {
+            if (!IsRunning)
+            {
+                try
+                {
+                    _controller.Start();
+                    AddLog("Инспекция запущена");
+                    IsRunning = true;
+                }
+                catch (Exception ex)
+                {
+                    AddLog("Ошибка запуска: " + ex.Message);
+                }
+            }
+            else
+            {
+                _controller.Stop();
+                AddLog("Инспекция остановлена");
+                IsRunning = false;
+            }
+        }
         // === Удобный метод для записи в лог ===
         public void AddLog(string msg) => _log.Info(msg);
 
         // === UI dispatcher ===
-        protected static void DispatchUI(Action action)
+        private static void DispatchUI(Action action)
         {
             if (Application.Current.Dispatcher.CheckAccess())
                 action();

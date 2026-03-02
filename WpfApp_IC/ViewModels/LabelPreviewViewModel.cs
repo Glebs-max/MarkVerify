@@ -1,7 +1,6 @@
 ﻿using LabelDesigner;
 using WpfApp_IC.Models;
 using Observable;
-using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -26,10 +25,10 @@ namespace WpfApp_IC.ViewModels
 
         public void PrintLabel()
         {
-            LabelPrintingViewModel model = mainViewModel.GetViewModel<LabelPrintingViewModel>();
-            model.DesignerViewModel = DesignerViewModel;
-            model.DesignerViewModel.Scale = 3.0;
-            model.GTIN = GTIN;
+            LabelingViewModel model = mainViewModel.GetViewModel<LabelingViewModel>();
+            model.LabelPrintingViewModel.DesignerViewModel = DesignerViewModel;
+            model.LabelPrintingViewModel.DesignerViewModel.Scale = 3.0;
+            model.LabelingSession.GTIN = GTIN;
             mainViewModel.CurrentViewModel = model;
         }
         public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<ProductsViewModel>();

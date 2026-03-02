@@ -27,6 +27,6 @@ namespace WpfApp_IC.Pages
 
         private void Start_Click(object sender, RoutedEventArgs e) => VM.Start();
         private void Settings_Click(object sender, RoutedEventArgs e) => VM.Settings();
-        private void CameraBasic_Click(object sender, RoutedEventArgs e) => VM.CameraBasic();
+        private void Camera_Click(object sender, RoutedEventArgs e) => VM.Camera();
     }
 }

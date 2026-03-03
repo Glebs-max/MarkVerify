@@ -37,6 +37,11 @@
             <CheckBox Style="{StaticResource LogToggleStyle}"
                       Margin="10,0"
                       IsChecked="{Binding ShowLog}"/>
+            <Button Content="Триггер"
+                    Width="90" Height="30"
+                    Margin="10,0"
+                    IsEnabled="{Binding IsRunning}"
+                    Click="TriggerManual_Click"/>
         </WrapPanel>
 
         <!-- DataMatrix -->

@@ -248,5 +248,45 @@ namespace WpfApp_IC.Services.Inspectors
             modbus?.Disconnect();
             camera.Dispose();
         }
+
+        /// <summary>
+        /// Ручной триггер камеры — для тестирования без датчика.
+        /// Запускает снимок напрямую, минуя цикл опроса датчика.
+        /// </summary>
+        public void TriggerManual()
+        {
+            if (_triggerInProgress)
+            {
+                log.Warning("Триггер уже выполняется.");
+                return;
+            }
+
+            _triggerInProgress = true;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    log.Info("Ручной триггер камеры");
+                    var (dm, frame) = camera.TriggerAndRead();
+
+                    if (frame != null)
+                        FrameReceived?.Invoke(dm?.Raw, frame);
+                    else
+                        log.Warning("Кадр не получен");
+
+                    await HandleDataMatrixAsync(dm);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Ошибка ручного триггера", ex);
+                    ErrorOccurred?.Invoke(ex.Message);
+                }
+                finally
+                {
+                    _triggerInProgress = false;
+                }
+            });
+        }
     }
 }

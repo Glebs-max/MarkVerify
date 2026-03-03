@@ -25,5 +25,6 @@ namespace WpfApp_IC.Services.Inspectors
 
         void Start();
         void Stop();
+        void TriggerManual();
     }
 }

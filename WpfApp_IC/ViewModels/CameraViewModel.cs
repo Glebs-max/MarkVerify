@@ -136,5 +136,15 @@ namespace WpfApp_IC.ViewModels
             else
                 Application.Current.Dispatcher.BeginInvoke(action);
         }
+
+        public void TriggerManual()
+        {
+            if (!IsRunning)
+            {
+                AddLog("Инспекция не запущена.");
+                return;
+            }
+            _controller.TriggerManual();
+        }
     }
 }

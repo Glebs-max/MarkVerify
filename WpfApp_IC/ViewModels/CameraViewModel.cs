@@ -19,7 +19,7 @@ namespace WpfApp_IC.ViewModels
         // Коллекция логов, к которой привязывается UI
         public ObservableCollection<LogEntry> Entries => _log.Entries;
 
-        public CameraViewModel(LabelingSession labelingSession, IInspectorController controller, ILogService log)
+        public CameraViewModel(IInspectorController controller, ILogService log)
         {
             _controller = controller;
             _log = log;

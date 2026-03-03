@@ -10,7 +10,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель просмотра и выбора продукции для печати
     /// </summary>
-    public class ProductsViewModel(MainViewModel mainViewModel, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
+    public class ProductsViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
         public ObservableCollection<gtin> GTINs { get; } = [];
 
@@ -26,10 +26,11 @@ namespace WpfApp_IC.ViewModels
             if (product == null || product.CountAviable <= 0)
                 return;
 
+            labelingSession.GTIN = product;
+
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             //model.DesignerViewModel = DesignerService.LoadLabel(product.TemplateLabel ?? string.Empty) ?? new();
             model.DesignerViewModel = DesignerService.LoadLabel("label.xml") ?? new();
-            model.GTIN = product;
             mainViewModel.CurrentViewModel = model;
         }
         public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();

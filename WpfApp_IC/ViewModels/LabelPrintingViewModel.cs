@@ -12,7 +12,6 @@ namespace WpfApp_IC.ViewModels
     public class LabelPrintingViewModel (VideojetErrorsViewModel videojetErrorsViewModel, VideojetPrinter videojetPrinter, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
         private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(1000) };
-
         private DesignerViewModel _designerViewModel = new();
 
         public DesignerViewModel DesignerViewModel
@@ -28,8 +27,15 @@ namespace WpfApp_IC.ViewModels
         {
             VideojetPrinter.Connect();
 
+            while (!VideojetPrinter.Connected)
+                continue;
+
+            //await VideojetPrinter.GetMaxQueueSizeAsync();
+            await VideojetPrinter.GetQueueSizeAsync();
             await VideojetPrinter.GetStateAsync();
-            await VideojetPrinter.ClearQueueAsync();
+            await VideojetPrinter.GetAllFaultsAsync();
+            await VideojetPrinter.GetAllWarningsAsync();
+            await QueueLabel();
 
             _printerStatusCheck.Tick += async (s, e) =>
             {
@@ -53,7 +59,7 @@ namespace WpfApp_IC.ViewModels
         /// </summary>
         private async Task QueueLabel(int? count = null)
         {
-            if (VideojetPrinter.PrinterState == PrinterState.Disconnected || VideojetPrinter.PrinterState == PrinterState.Connecting)
+            if (!VideojetPrinter.Connected)
                 return;
 
             BarcodeField? DataMatrix = DesignerViewModel.Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);

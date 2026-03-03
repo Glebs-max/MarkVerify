@@ -46,7 +46,7 @@ namespace WpfApp_IC
                     services.AddTransient<CameraViewModel>();
                     services.AddTransient<SettingsViewModel>();
 
-                    services.AddTransient<LabelingSession>();
+                    services.AddSingleton<LabelingSession>();
                     services.AddSingleton<VideojetPrinter>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();

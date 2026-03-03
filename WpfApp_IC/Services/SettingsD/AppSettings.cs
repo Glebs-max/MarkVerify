@@ -15,11 +15,9 @@
         public int ModbusPort { get; set; } = 502;
 
         // Принтер 
-        public string PrinterType { get; set; } = "Эмулятор (заглушка)";
         public string PrinterIp { get; set; } = "192.168.0.150";
-        public int PrinterPort { get; set; } = 9100;          // старый порт о
-        public int PrinterPortTextComms { get; set; } = 3003; 
-        public int PrinterPortZpl { get; set; } = 1000; 
+        public int PrinterPortTextComms { get; set; } = 3003;
+        public int PrinterPortZpl { get; set; } = 1000;
         
         // Камера 
         public string IdmvsPath { get; set; } = "";

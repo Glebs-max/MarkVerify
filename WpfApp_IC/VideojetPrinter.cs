@@ -46,6 +46,7 @@ namespace WpfApp_IC
         private PrinterState _printerState = PrinterState.Disconnected;
         private ErrorState _errorState = ErrorState.Unknown;
         private int _queueSize, _maxQueueSize = 10;
+        private bool _getMaxQueue;
 
         public event Action<PrinterState>? StateChanged;
         public event Action<int>? QueueSizeChanged;
@@ -61,6 +62,11 @@ namespace WpfApp_IC
         {
             get => _errorState;
             set => Set(ref _errorState, value, () => ErrorStateChanged?.Invoke(value));
+        }
+        public int MaxQueueSize
+        {
+            get => _maxQueueSize;
+            private set => Set(ref _maxQueueSize, value);
         }
         public int QueueSize
         {
@@ -81,11 +87,6 @@ namespace WpfApp_IC
         {
             get => portZplEmulation;
             set => Set(ref portZplEmulation, value, OnConfigChanged);
-        }
-        public int MaxQueueSize
-        {
-            get => _maxQueueSize;
-            private set => Set(ref _maxQueueSize, value);
         }
         public List<VideojetPrinterError> Errors { get; set; } = [];
         public bool Connected => PrinterState != PrinterState.Disconnected && PrinterState != PrinterState.Connecting;
@@ -123,6 +124,16 @@ namespace WpfApp_IC
             } catch { }
 
             Dispose();
+        }
+        public async Task GetMaxQueueSizeAsync()
+        {
+            await ClearQueueAsync();
+            _getMaxQueue = true;
+
+            for (int i = 0; i < 22; i++)
+                await SendZplAsync("");
+
+            await GetQueueSizeAsync();
         }
         /// <summary>
         /// Отправка в очередь принтера изображения в формате ZPL
@@ -256,7 +267,15 @@ namespace WpfApp_IC
                     break;
                 case "QSZ":
                     if (int.TryParse(split[1], out int qsz))
+                    {
                         QueueSize = qsz;
+
+                        if (_getMaxQueue)
+                        {
+                            MaxQueueSize = qsz;
+                            _getMaxQueue = false;
+                        }
+                    }
                     break;
                 case "FLT":
                 case "WRN":

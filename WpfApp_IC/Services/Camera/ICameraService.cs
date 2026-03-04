@@ -10,7 +10,7 @@ namespace WpfApp_IC.Services.Camera
     public interface ICameraService : IDisposable
     {
         /// <summary>Открывает соединение с камерой.</summary>
-        void Open(int deviceIndex =0 );
+        void Open(string CameraIp);
 
         /// <summary>Закрывает соединение.</summary>
         void Close();

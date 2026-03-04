@@ -78,13 +78,13 @@ namespace WpfApp_IC.ViewModels
         }
 
         // Камера
-        private int _cameraDeviceIndex;
+        private string _cameraIp;
         private string _idmvsPath = "";
 
-        public int CameraDeviceIndex
+        public string CameraIp
         {
-            get => _cameraDeviceIndex;
-            set => Set(ref _cameraDeviceIndex, value);
+            get => _cameraIp;
+            set => Set(ref _cameraIp, value);
         }
         public string IdmvsPath
         {
@@ -151,7 +151,7 @@ namespace WpfApp_IC.ViewModels
             {
                 Set(ref _selectedCamera, value);
                 if (value != null)
-                    CameraDeviceIndex = value.Index; // сразу обновляем индекс
+                    CameraIp = value.IP; // сразу обновляем индекс
             }
         }
 
@@ -165,7 +165,7 @@ namespace WpfApp_IC.ViewModels
 
                 // Выделить текущую камеру в списке
                 SelectedCamera = AvailableCameras
-                    .FirstOrDefault(c => c.Index == CameraDeviceIndex);
+                    .FirstOrDefault(c => c.IP == CameraIp);
 
                 if (AvailableCameras.Count == 0)
                     ValidationMessage = "Камеры не найдены. Проверьте подключение.";
@@ -194,7 +194,7 @@ namespace WpfApp_IC.ViewModels
                 ModbusIp = ModbusIp,
                 ModbusPort = ModbusPort,
 
-                CameraDeviceIndex = CameraDeviceIndex,
+                CameraIp = CameraIp,
                 IdmvsPath = IdmvsPath,
 
                 RejectDelayMs = RejectDelayMs,
@@ -241,7 +241,7 @@ namespace WpfApp_IC.ViewModels
             ModbusIp = s.ModbusIp;
             ModbusPort = s.ModbusPort;
 
-            CameraDeviceIndex = s.CameraDeviceIndex;
+            CameraIp = s.CameraIp;
             IdmvsPath = s.IdmvsPath;
 
             RejectDelayMs = s.RejectDelayMs;

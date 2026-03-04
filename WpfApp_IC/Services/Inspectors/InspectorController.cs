@@ -49,7 +49,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
         public int SensorPollIntervalMs { get; set; } = 10;
 
-        public int CameraDeviceIndex { get; set; } = 0;
+        public string CameraIp { get; set; } = "";
 
         // Фильтрация дребезга
         private int _stableSignal = -1;
@@ -84,17 +84,17 @@ namespace WpfApp_IC.Services.Inspectors
             }
             catch (Exception ex)
             {
-                log.Error("Ошибка подключения Modbus", ex); // ← вот где ловим SocketException
+                log.Error("Ошибка подключения Modbus", ex); // тут ловим SocketException
             }
 
             try
             {
-                camera.Open(CameraDeviceIndex);
-                log.Info($"Камера [{CameraDeviceIndex}] открыта");
+                camera.Open(CameraIp);
+                log.Info($"Камера [{CameraIp}] открыта");
             }
             catch (Exception ex)
             {
-                log.Error($"Ошибка открытия камеры [{CameraDeviceIndex}]", ex);
+                log.Error($"Ошибка открытия камеры [{CameraIp}]", ex);
             }
 
             _stableSignal = -1;

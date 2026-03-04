@@ -30,7 +30,7 @@ namespace WpfApp_IC.ViewModels
 
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             //model.DesignerViewModel = DesignerService.LoadLabel(product.TemplateLabel ?? string.Empty) ?? new();
-            model.DesignerViewModel = DesignerService.LoadLabel("label.xml") ?? new();
+            model.DesignerViewModel = DesignerService.LoadLabel("C:\\Users\\dvornikov.ga\\Documents\\Честный знак\\Test\\MarkVerify\\WpfApp_IC-begin-Unification--master\\WpfApp_IC\\label.xml") ?? new();
             mainViewModel.CurrentViewModel = model;
         }
         public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();

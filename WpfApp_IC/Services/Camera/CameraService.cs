@@ -19,13 +19,12 @@ namespace WpfApp_IC.Services.Camera
         /// <summary>
         /// Инициализация камеры: поиск, создание handle (дескриптор), настройка параметров
         /// </summary>
-        public void Open(int deviceIndex = 0)
+        public void Open(string cameraIp)
         {
             if (_isOpened) return;
 
-            // ── ВРЕМЕННО ДЛЯ ТЕСТА ── убрать после проверки
-            string? testIp = "192.168.0.57";
-            // ────────────────────────────
+            if (string.IsNullOrWhiteSpace(cameraIp))
+                throw new Exception("IP камеры не задан. Укажите IP в настройках.");
 
             var list = new MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST
             {
@@ -33,44 +32,31 @@ namespace WpfApp_IC.Services.Camera
             };
 
             int ret = MvCodeReader.MV_CODEREADER_EnumDevices_NET(
-                ref list,
-                MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
+                ref list, MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
 
-            if (ret != MvCodeReader.MV_CODEREADER_OK || list.nDeviceNum == 0)
-                throw new Exception("Камера не найдена");
+            if (ret != MvCodeReader.MV_CODEREADER_OK)
+                throw new Exception($"Ошибка поиска камер: код {ret}");
 
-            // Если testIp задан — ищем по IP, иначе берём по индексу
-            int targetIndex = deviceIndex;
-
-            if (testIp != null)
+            for (int i = 0; i < list.nDeviceNum; i++)
             {
-                targetIndex = -1;
-                for (int i = 0; i < list.nDeviceNum; i++)
+                var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
+                    list.pDeviceInfo[i]);
+
+                byte[] g = devInfo.SpecialInfo.stGigEInfo;
+                string foundIp = $"{g[11]}.{g[10]}.{g[9]}.{g[8]}";
+
+                if (foundIp == cameraIp)
                 {
-                    var d = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
-                        list.pDeviceInfo[i]);
-                    byte[] g = d.SpecialInfo.stGigEInfo;
-                    string foundIp = $"{g[11]}.{g[10]}.{g[9]}.{g[8]}";
-
-                    if (foundIp == testIp)
-                    {
-                        targetIndex = i;
-                        break;
-                    }
+                    _reader = new MvCodeReader();
+                    _reader.MV_CODEREADER_CreateHandle_NET(ref devInfo);
+                    _reader.MV_CODEREADER_OpenDevice_NET();
+                    ConfigureCamera();
+                    _isOpened = true;
+                    return;
                 }
-
-                if (targetIndex == -1)
-                    throw new Exception($"[ТЕСТ] Камера с IP {testIp} не найдена");
             }
 
-            var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
-                list.pDeviceInfo[targetIndex]);
-
-            _reader = new MvCodeReader();
-            _reader.MV_CODEREADER_CreateHandle_NET(ref devInfo);
-            _reader.MV_CODEREADER_OpenDevice_NET();
-            ConfigureCamera();
-            _isOpened = true;
+            throw new Exception($"Камера {cameraIp} не найдена в сети");
         }
 
         /// <summary>

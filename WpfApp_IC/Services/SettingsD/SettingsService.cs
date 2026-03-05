@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using WpfApp_IC.Device;
@@ -96,7 +97,9 @@ namespace WpfApp_IC.Services.SettingsD
             _inspector.RejectDelayMs = s.RejectDelayMs;
             _inspector.SensorFilterCount = s.SensorFilterCount;
             _inspector.SensorPollIntervalMs = s.SensorPollIntervalMs;
-            _inspector.CameraDeviceIndex = s.CameraDeviceIndex;
+            //_inspector.CameraDeviceIndex = s.CameraDeviceIndex;
+            _inspector.CameraIp = s.CameraIp;
+            Debug.WriteLine($"Apply: CameraIp = '{s.CameraIp}'");
 
             // Modbus IoConfig — применится при следующем подключении
             _ioConfig.ModbusIp = s.ModbusIp;

@@ -21,7 +21,8 @@
         
         // Камера 
         public string IdmvsPath { get; set; } = "";
-        public int CameraDeviceIndex { get; set; } = 0;
+        //public int CameraDeviceIndex { get; set; } = 0;
+        public string CameraIp { get; set; } = "";
 
         // Инспекция
         public int RejectDelayMs { get; set; } = 500;

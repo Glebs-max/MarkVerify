@@ -14,7 +14,7 @@ namespace WpfApp_IC.Services.Inspectors
         int RejectDelayMs { get; set; }
         int SensorFilterCount { get; set; }
         int SensorPollIntervalMs { get; set; }
-        int CameraDeviceIndex { get; set; }
+        string CameraIp { get; set; }
 
         event Action<int>? SignalChanged;
         event Action<DataMatrixResult>? DataMatrixRead;
@@ -25,5 +25,6 @@ namespace WpfApp_IC.Services.Inspectors
 
         void Start();
         void Stop();
+        void TriggerManual();
     }
 }

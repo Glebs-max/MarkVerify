@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Device;
@@ -66,6 +67,9 @@ namespace WpfApp_IC
             if (AppHost != null)
             {
                 await AppHost.StartAsync();
+
+                AppHost.Services.GetRequiredService<ISettingsService>(); // Apply() вызывается в конструкторе
+                AppHost.Services.GetRequiredService<IInspectorController>(); // CameraIp устанавливается
 
                 MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
                 mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();

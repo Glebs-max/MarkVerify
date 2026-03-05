@@ -12,7 +12,7 @@ namespace WpfApp_IC.Pages
         {
             InitializeComponent();
 
-            Loaded += async (s, e) => await VM.WorkInitiate();
+            Loaded += async (s, e) => await Task.Run(VM.WorkInitiate);
         }
 
         private void Pause_Click(object sender, RoutedEventArgs e) { }

@@ -37,7 +37,7 @@ namespace WpfApp_IC
         public string Title { get; set; }
     }
 
-    public class VideojetPrinter(string ip = "192.168.10.2", int portTextComms = 9100, int portZplEmulation = 1000) : ObservableObject, IDisposable
+    public class VideojetPrinter(string ip = "192.168.0.2", int portTextComms = 3003, int portZplEmulation = 1000) : ObservableObject, IDisposable
     {
         private TcpClient? _textComms, _zplEmulation;
         private NetworkStream? _streamTextComms, _streamZplEmulation;
@@ -204,7 +204,7 @@ namespace WpfApp_IC
                     if (!string.IsNullOrEmpty(message))
                         ProcessMessage(message);
                 }
-                catch
+                catch(Exception ex)
                 {
                     if (token.IsCancellationRequested)
                         break;

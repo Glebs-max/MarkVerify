@@ -19,9 +19,12 @@ namespace WpfApp_IC.Services.Camera
         /// <summary>
         /// Инициализация камеры: поиск, создание handle (дескриптор), настройка параметров
         /// </summary>
-        public void Open(int deviceIndex = 0)
+        public void Open(string cameraIp)
         {
             if (_isOpened) return;
+
+            if (string.IsNullOrWhiteSpace(cameraIp))
+                throw new Exception("IP камеры не задан. Укажите IP в настройках.");
 
             var list = new MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST
             {
@@ -29,31 +32,31 @@ namespace WpfApp_IC.Services.Camera
             };
 
             int ret = MvCodeReader.MV_CODEREADER_EnumDevices_NET(
-                ref list,
-                MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
+                ref list, MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
 
-            if (ret != MvCodeReader.MV_CODEREADER_OK || list.nDeviceNum == 0)
-                throw new Exception("Камера не найдена");
+            if (ret != MvCodeReader.MV_CODEREADER_OK)
+                throw new Exception($"Ошибка поиска камер: код {ret}");
 
-            // Используем переданный индекс вместо жёсткого [0]
-            if (deviceIndex < 0 || deviceIndex >= list.nDeviceNum)
-                throw new Exception($"Камера с индексом {deviceIndex} не найдена. " +
-                                    $"Доступно: {list.nDeviceNum}");
+            for (int i = 0; i < list.nDeviceNum; i++)
+            {
+                var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
+                    list.pDeviceInfo[i]);
 
-            var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
-                list.pDeviceInfo[deviceIndex]); // ← было [0]
+                byte[] g = devInfo.SpecialInfo.stGigEInfo;
+                string foundIp = $"{g[11]}.{g[10]}.{g[9]}.{g[8]}";
 
-            _reader = new MvCodeReader();
-            _reader.MV_CODEREADER_CreateHandle_NET(ref devInfo);
-            _reader.MV_CODEREADER_OpenDevice_NET();
+                if (foundIp == cameraIp)
+                {
+                    _reader = new MvCodeReader();
+                    _reader.MV_CODEREADER_CreateHandle_NET(ref devInfo);
+                    _reader.MV_CODEREADER_OpenDevice_NET();
+                    ConfigureCamera();
+                    _isOpened = true;
+                    return;
+                }
+            }
 
-            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerMode", "On");
-            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerSource", "Software");
-            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerActivation", "RisingEdge");
-            _reader.MV_CODEREADER_SetEnumValueByString_NET("CodeType", "DataMatrix");
-
-            _reader.MV_CODEREADER_StartGrabbing_NET();
-            _isOpened = true;
+            throw new Exception($"Камера {cameraIp} не найдена в сети");
         }
 
         /// <summary>
@@ -206,6 +209,22 @@ namespace WpfApp_IC.Services.Camera
             return bmp;
         }
         public void Dispose() => Close();
+
+        /// <summary>
+        /// Настройка параметров камеры после подключения.
+        /// Вынесено отдельно чтобы не дублировать в Open() и OpenByIp().
+        /// </summary>
+        private void ConfigureCamera()
+        {
+            if (_reader == null) return;
+
+            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerMode", "On");
+            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerSource", "Software");
+            _reader.MV_CODEREADER_SetEnumValueByString_NET("TriggerActivation", "RisingEdge");
+            _reader.MV_CODEREADER_SetEnumValueByString_NET("CodeType", "DataMatrix");
+
+            _reader.MV_CODEREADER_StartGrabbing_NET();
+        }
     }
 
     /// <summary>

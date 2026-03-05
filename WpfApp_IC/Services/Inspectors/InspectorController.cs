@@ -49,7 +49,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
         public int SensorPollIntervalMs { get; set; } = 10;
 
-        public int CameraDeviceIndex { get; set; } = 0;
+        public string CameraIp { get; set; } = "";
 
         // Фильтрация дребезга
         private int _stableSignal = -1;
@@ -84,17 +84,17 @@ namespace WpfApp_IC.Services.Inspectors
             }
             catch (Exception ex)
             {
-                log.Error("Ошибка подключения Modbus", ex); // ← вот где ловим SocketException
+                log.Error("Ошибка подключения Modbus", ex); // тут ловим SocketException
             }
 
             try
             {
-                camera.Open(CameraDeviceIndex);
-                log.Info($"Камера [{CameraDeviceIndex}] открыта");
+                camera.Open(CameraIp);
+                log.Info($"Камера [{CameraIp}] открыта");
             }
             catch (Exception ex)
             {
-                log.Error($"Ошибка открытия камеры [{CameraDeviceIndex}]", ex);
+                log.Error($"Ошибка открытия камеры [{CameraIp}]", ex);
             }
 
             _stableSignal = -1;
@@ -259,6 +259,46 @@ namespace WpfApp_IC.Services.Inspectors
             Stop();
             modbus?.Disconnect();
             camera.Dispose();
+        }
+
+        /// <summary>
+        /// Ручной триггер камеры — для тестирования без датчика.
+        /// Запускает снимок напрямую, минуя цикл опроса датчика.
+        /// </summary>
+        public void TriggerManual()
+        {
+            if (_triggerInProgress)
+            {
+                log.Warning("Триггер уже выполняется.");
+                return;
+            }
+
+            _triggerInProgress = true;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    log.Info("Ручной триггер камеры");
+                    var (dm, frame) = camera.TriggerAndRead();
+
+                    if (frame != null)
+                        FrameReceived?.Invoke(dm?.Raw, frame);
+                    else
+                        log.Warning("Кадр не получен");
+
+                    await HandleDataMatrixAsync(dm);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Ошибка ручного триггера", ex);
+                    ErrorOccurred?.Invoke(ex.Message);
+                }
+                finally
+                {
+                    _triggerInProgress = false;
+                }
+            });
         }
     }
 }

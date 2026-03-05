@@ -46,11 +46,11 @@ namespace WpfApp_IC.ViewModels
             };
             _printerStatusCheck.Start();
 
-            VideojetPrinter.QueueSizeChanged += async (size) =>
+            /*VideojetPrinter.QueueSizeChanged += async (size) =>
             {
                 if (size <= VideojetPrinter.MaxQueueSize / 3)
                     await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
-            };
+            };*/
         }
         public async Task PrintTerminateAsync()
         {

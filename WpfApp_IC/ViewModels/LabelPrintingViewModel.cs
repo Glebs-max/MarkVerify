@@ -30,11 +30,11 @@ namespace WpfApp_IC.ViewModels
             while (!VideojetPrinter.Connected)
                 continue;
 
-            //await VideojetPrinter.GetMaxQueueSizeAsync();
-            await VideojetPrinter.GetQueueSizeAsync();
-            await VideojetPrinter.GetStateAsync();
-            await VideojetPrinter.GetAllFaultsAsync();
-            await VideojetPrinter.GetAllWarningsAsync();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
+            db.printer_tasks.Add(LabelingSession.CurrentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now });
+            await db.SaveChangesAsync();
+
+            await VideojetPrinter.ClearQueueAsync();
             await QueueLabel();
 
             _printerStatusCheck.Tick += async (s, e) =>
@@ -52,7 +52,13 @@ namespace WpfApp_IC.ViewModels
                     await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
             };
         }
-        public void PrintTerminate() => VideojetPrinter.Disconnect();
+        public async Task PrintTerminateAsync()
+        {
+            VideojetPrinter.Disconnect();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
+            LabelingSession.CurrentTask.last_used_at = DateTime.Now;
+            await db.SaveChangesAsync();
+        }
 
         /// <summary>
         /// Пополнение очереди принтера
@@ -67,7 +73,7 @@ namespace WpfApp_IC.ViewModels
             if (DataMatrix != null)
             {
                 await using var db = await dbContextFactory.CreateDbContextAsync();
-                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
+                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0 && (DateTime.Now - (c.DateImport ?? DateTime.MinValue)).Days < 25).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
 
                 foreach (printer_base code in codes)
                 {
@@ -82,6 +88,8 @@ namespace WpfApp_IC.ViewModels
                     code.OperatorName = LabelingSession.MachineName;
                     code.task = LabelingSession.CurrentTask;
                     code.code_number = ++LabelingSession.Count;
+
+                    LabelingSession.GTIN.CountAviable--;
                 }
 
                 //await db.SaveChangesAsync();

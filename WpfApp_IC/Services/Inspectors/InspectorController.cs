@@ -214,8 +214,20 @@ namespace WpfApp_IC.Services.Inspectors
             if (code == null)
                 return ValidationResult.NotFound();
 
-            code.StatusId = 2;
-            await db.SaveChangesAsync();
+            main verified = new()
+            {
+                Code = code.Code,
+                StatusId = 2,
+                DateImport = code.DateImport,
+                DatePrint = code.DatePrint,
+                DateVerify = DateTime.Now,
+                GtinId = code.GtinId,
+                OperatorName = code.OperatorName,
+                OrderID = code.OrderID
+            };
+            
+            db.mains.Add(verified);
+            //await db.SaveChangesAsync();
 
             return ValidationResult.Ok();
         }

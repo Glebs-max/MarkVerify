@@ -7,7 +7,7 @@ namespace WpfApp_IC
     {
         private string _machineName = "Машина 1";
         private gtin _gtin = new();
-        private printer_task _currentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now };
+        private printer_task _currentTask = new();
         private int _verified = 0, _rejected = 0, _count = 0;
 
         public string MachineName
@@ -39,6 +39,15 @@ namespace WpfApp_IC
         {
             get => _count;
             set => Set(ref _count, value);
+        }
+
+        public void Reset()
+        {
+            Verified = 0;
+            Rejected = 0;
+            Count = 0;
+            GTIN = new();
+            CurrentTask = new();
         }
     }
 }

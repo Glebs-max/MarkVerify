@@ -1,5 +1,6 @@
 ﻿using Observable;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -13,8 +14,19 @@ namespace WpfApp_IC.ViewModels
 
             _videojetPrinter.ErrorListChanged += () =>
             {
-                foreach (VideojetPrinterError error in videojetPrinter.Errors)
-                    Errors.Add(error);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    foreach (VideojetPrinterError error in Errors.ToList())
+                    {
+                        if (!videojetPrinter.Errors.Contains(error))
+                            Errors.Remove(error);
+                    }
+                    foreach (VideojetPrinterError error in videojetPrinter.Errors.ToList())
+                    {
+                        if (!Errors.Contains(error))
+                            Errors.Add(error);
+                    }
+                });
             };
         }
 

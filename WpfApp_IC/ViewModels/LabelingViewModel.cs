@@ -17,18 +17,18 @@ namespace WpfApp_IC.ViewModels
         {
             try
             {
-                await LabelPrintingViewModel.PrintInitiate();
-
-                await using var db = await dbContextFactory.CreateDbContextAsync();
-                db.printer_tasks.Add(LabelingSession.CurrentTask);
-                await db.SaveChangesAsync();
+                await Task.Run(LabelPrintingViewModel.PrintInitiate);
             }
             catch { }
         }
-        public void WorkTerminate()
+        public async Task WorkTerminate()
         {
-            LabelPrintingViewModel.PrintTerminate();
+            await LabelPrintingViewModel.PrintTerminateAsync();
         }
-        public void Exit() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+        public void Exit()
+        {
+            LabelingSession.Reset();
+            mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+        }
     }
 }

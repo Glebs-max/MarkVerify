@@ -23,20 +23,27 @@ namespace WpfApp_IC.Services.Inspectors
     /// </summary>
     public class InspectorController(
         LabelingSession labelingSession,
-        IoModuleConfig config,
         ICameraService camera,
         ISensor sensor,
         IRejector rejector,
         IModbusService modbus,
         ILogService log,
-        IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject, IInspectorController, IDisposable
+        IDbContextFactory<AppDbContext> dbContextFactory,
+        IImageSaverService imageSaver) : ObservableObject, IInspectorController, IDisposable
     {
         private CancellationTokenSource? _cts;
+        private BitmapSource? _lastFrame;
 
         /// <summary>
         /// Ожидаемый код (если используется прямое сравнение).
         /// </summary>
         public string? ExpectedCode { get; set; }
+
+
+        public string ModbusIp { get; set; } = "192.168.0.127";
+        public int ModbusPort { get; set; } = 502;
+        public int SignalCoil { get; set; } = 12;
+        public int RejectCoil { get; set; } = 10;
 
         /// <summary>
         /// Задержка перед активацией отбраковщика.
@@ -79,12 +86,12 @@ namespace WpfApp_IC.Services.Inspectors
         {
             try
             {
-                modbus.Connect(config.ModbusIp, config.ModbusPort);
-                log.Info($"Modbus подключён: {config.ModbusIp}:{config.ModbusPort}");
+                modbus.Connect(ModbusIp, ModbusPort); // ← было config.ModbusIp, config.ModbusPort
+                log.Info($"Modbus подключён: {ModbusIp}:{ModbusPort}");
             }
             catch (Exception ex)
             {
-                log.Error("Ошибка подключения Modbus", ex); // тут ловим SocketException
+                log.Error("Ошибка подключения Modbus", ex);
             }
 
             try
@@ -143,7 +150,10 @@ namespace WpfApp_IC.Services.Inspectors
                                     var (dm, frame) = camera.TriggerAndRead();
 
                                     if (frame != null)
+                                    {
+                                        _lastFrame = frame;
                                         FrameReceived?.Invoke(dm?.Raw, frame);
+                                    }
 
                                     _ = HandleDataMatrixAsync(dm);
                                 }
@@ -198,6 +208,9 @@ namespace WpfApp_IC.Services.Inspectors
             }
             else
             {
+                if (_lastFrame != null)
+                    imageSaver.SaveReject(_lastFrame, dm?.Normalized);
+
                 RejectWithDelay();
                 ErrorOccurred?.Invoke(result.ErrorMessage ?? "Ошибка проверки DataMatrix");
                 labelingSession.Rejected++;
@@ -283,7 +296,10 @@ namespace WpfApp_IC.Services.Inspectors
                     var (dm, frame) = camera.TriggerAndRead();
 
                     if (frame != null)
+                    {
+                        _lastFrame = frame;
                         FrameReceived?.Invoke(dm?.Raw, frame);
+                    }
                     else
                         log.Warning("Кадр не получен");
 

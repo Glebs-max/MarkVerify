@@ -7,5 +7,6 @@
     public interface ISensor
     {
         int Read();
+        void UpdateCoil(int coil);
     }
 }

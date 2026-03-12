@@ -7,5 +7,6 @@
     public interface IRejector
     {
         void Activate();
+        void UpdateCoil(int coil);
     }
 }

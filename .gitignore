@@ -4,6 +4,7 @@
 
 # Visual Studio
 .vs/
+WpfApp_IC/BRK
 *.user
 *.suo
 

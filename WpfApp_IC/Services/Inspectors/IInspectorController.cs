@@ -15,6 +15,10 @@ namespace WpfApp_IC.Services.Inspectors
         int SensorFilterCount { get; set; }
         int SensorPollIntervalMs { get; set; }
         string CameraIp { get; set; }
+        string ModbusIp { get; set; }
+        int ModbusPort { get; set; }
+        int SignalCoil { get; set; } 
+        int RejectCoil { get; set; }
 
         event Action<int>? SignalChanged;
         event Action<DataMatrixResult>? DataMatrixRead;

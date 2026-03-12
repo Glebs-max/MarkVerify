@@ -1,4 +1,8 @@
-﻿namespace WpfApp_IC.Services.SettingsD
+﻿using System;
+using System.IO;
+using System.Text.Json;
+
+namespace WpfApp_IC.Services.SettingsD
 {
     /// <summary>
     /// Настройки приложения.
@@ -13,6 +17,8 @@
         // Modbus 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
+        public int SignalCoil { get; set; } = 0;
+        public int RejectCoil { get; set; } = 0;
 
         // Принтер 
         public string PrinterIp { get; set; } = "192.168.0.150";
@@ -21,13 +27,57 @@
         
         // Камера 
         public string IdmvsPath { get; set; } = "";
-        //public int CameraDeviceIndex { get; set; } = 0;
+        public string RejectImagesPath { get; set; } = "RejectImages";
         public string CameraIp { get; set; } = "";
+        //public int CameraDeviceIndex { get; set; } = 0;
 
         // Инспекция
         public int RejectDelayMs { get; set; } = 500;
         public int SensorFilterCount { get; set; } = 2;
         public int SensorPollIntervalMs { get; set; } = 10;
-        
+
+        /// <summary>
+        /// Читает только RejectImagesPath из файла без создания SettingsService.
+        /// Используется для разрыва циклической зависимости в DI.
+        /// </summary>
+        public static string ReadRejectImagesPath()
+        {
+            try
+            {
+                string filePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+
+                if (!File.Exists(filePath))
+                    return "RejectImages";
+
+                string json = File.ReadAllText(filePath);
+                var s = JsonSerializer.Deserialize<AppSettings>(json);
+                return s?.RejectImagesPath ?? "RejectImages";
+            }
+            catch
+            {
+                return "RejectImages";
+            }
+        }
+
+        public static AppSettings LoadFromFile()
+        {
+            try
+            {
+                string filePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+
+                if (!File.Exists(filePath))
+                    return new AppSettings();
+
+                string json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+            }
+            catch
+            {
+                return new AppSettings();
+            }
+        }
+
     }
 }

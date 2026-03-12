@@ -15,5 +15,7 @@ namespace WpfApp_IC.Pages
         private void BrowseIdmvs_Click(object sender, RoutedEventArgs e) => VM.BrowseIdmvs();
 
         private void RefreshCameras_Click(object sender, RoutedEventArgs e) => VM.RefreshCameras();
+
+        private void BrowseRejectImages_Click(object sender, RoutedEventArgs e) => VM.BrowseRejectImagesPath();
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media.Media3D;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.SettingsD;
+using System.IO;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -24,6 +25,15 @@ namespace WpfApp_IC.ViewModels
         private bool _useCamera;
         private bool _useModbus;
         private bool _usePrinter;
+        private int _signalCoil;
+        private int _rejectCoil;
+
+        private string _rejectImagesPath = "";
+        public string RejectImagesPath
+        {
+            get => _rejectImagesPath;
+            set => Set(ref _rejectImagesPath, value);
+        }   
 
         public bool UseCamera
         {
@@ -39,6 +49,18 @@ namespace WpfApp_IC.ViewModels
         {
             get => _usePrinter;
             set => Set(ref _usePrinter, value);
+        }
+
+        public int SignalCoil
+        {
+            get => _signalCoil;
+            set => Set(ref _signalCoil, value);
+        }
+
+        public int RejectCoil
+        {
+            get => _rejectCoil;
+            set => Set(ref _rejectCoil, value);
         }
 
         // Принтер
@@ -194,8 +216,12 @@ namespace WpfApp_IC.ViewModels
                 ModbusIp = ModbusIp,
                 ModbusPort = ModbusPort,
 
+                SignalCoil = SignalCoil,
+                RejectCoil = RejectCoil,
+
                 CameraIp = CameraIp,
                 IdmvsPath = IdmvsPath,
+                RejectImagesPath = RejectImagesPath,
 
                 RejectDelayMs = RejectDelayMs,
                 SensorFilterCount = SensorFilterCount,
@@ -241,6 +267,9 @@ namespace WpfApp_IC.ViewModels
             ModbusIp = s.ModbusIp;
             ModbusPort = s.ModbusPort;
 
+            SignalCoil = s.SignalCoil;
+            RejectCoil = s.RejectCoil;
+
             CameraIp = s.CameraIp;
             IdmvsPath = s.IdmvsPath;
 
@@ -249,6 +278,8 @@ namespace WpfApp_IC.ViewModels
             SensorPollIntervalMs = s.SensorPollIntervalMs;
 
             ValidationMessage = "";
+
+            RejectImagesPath = s.RejectImagesPath;
         }
 
         private bool Validate()
@@ -273,6 +304,27 @@ namespace WpfApp_IC.ViewModels
 
             ValidationMessage = string.Join("\n", errors);
             return errors.Count == 0;
+        }
+
+        // Команда выбора папки
+        public void BrowseRejectImagesPath()
+        {
+            // OpenFileDialog с выбором папки через hack
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Выберите папку для сохранения изображений",
+                FileName = "Выберите папку",
+                Filter = "Папка|*.nope",
+                CheckFileExists = false,
+                CheckPathExists = true,
+                ValidateNames = false
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Берём только путь к папке, без имени файла
+                RejectImagesPath = Path.GetDirectoryName(dialog.FileName) ?? RejectImagesPath;
+            }
         }
 
         private void NavigateBack() =>

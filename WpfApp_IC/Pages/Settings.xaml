@@ -180,6 +180,26 @@
                                          BorderBrush="#666666"/>
                             </DockPanel>
 
+                            <!-- Папка сохранения отбракованных -->
+                            <TextBlock Text="Папка отбракованных изображений"
+                                       Style="{StaticResource FieldLabel}"
+                                       Margin="0,8,0,4"/>
+                            
+                            <DockPanel Margin="0,0,0,12">
+                                <Button Content="Обзор..."
+                                        Width="80" Height="32"
+                                        DockPanel.Dock="Right"
+                                        Margin="8,0,0,0"
+                                        Click="BrowseRejectImages_Click"/>
+                                <TextBox Text="{Binding RejectImagesPath, UpdateSourceTrigger=PropertyChanged}"
+                                         Height="32" Padding="8,4"
+                                         FontSize="13"
+                                         Background="#4A4A4A"
+                                         Foreground="White"
+                                         BorderBrush="#666666"
+                                         ToolTip="Папка для сохранения изображений при отбраковке"/>
+                            </DockPanel>
+
                         </StackPanel>
                     </StackPanel>
                 </Border>

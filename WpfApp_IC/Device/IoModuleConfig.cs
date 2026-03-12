@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿/*using System.IO;
 using System.Text.Json;
 
 namespace WpfApp_IC.Device
 {
     /// <summary>
-    /// Конфигурация модуля ввода-вывода.
-    /// Загружается из IoModuleConfig.json.
+    /// Runtime-конфигурация модуля IO.
+    /// Заполняется из AppSettings через SettingsService.Apply().
+    /// Файл IoModuleConfig.json больше не используется.
     /// </summary>
     public class IoModuleConfig
     {
@@ -15,7 +16,8 @@ namespace WpfApp_IC.Device
         public int SignalCoil { get; set; } = 0;
         public int RejectCoil { get; set; } = 1;
 
-        public static IoModuleConfig Load(string path = null)
+        #region УДАЛИТЬ
+        /*public static IoModuleConfig Load(string path = null)
         {
             // Если путь не передан — строим абсолютный путь к Device/IoModuleConfig.json
             if (path == null)
@@ -33,7 +35,8 @@ namespace WpfApp_IC.Device
             };
 
             return JsonSerializer.Deserialize<IoModuleConfig>(json, options) ?? new IoModuleConfig();
-        }
+        }/*
+        #endregion
 
     }
-}
+}*/

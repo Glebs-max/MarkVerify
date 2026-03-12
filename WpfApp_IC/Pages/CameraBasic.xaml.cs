@@ -14,7 +14,13 @@ namespace WpfApp_IC.Pages
 
         private CameraViewModel VM => (CameraViewModel)DataContext;
 
-        private void StartStop_Click(object sender, RoutedEventArgs e) => VM.StartStop();
+        private void StartStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (VM.IsRunning)
+                VM.Stop();
+            else
+                VM.Start();
+        }
 
         private void TriggerManual_Click(object sender, RoutedEventArgs e) => VM.TriggerManual();
     }

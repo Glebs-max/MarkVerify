@@ -103,27 +103,24 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _showLog, value);
         }
 
-        public void StartStop()
+        public void Start()
         {
-            if (!IsRunning)
+            try
             {
-                try
-                {
-                    _controller.Start();
-                    AddLog("Инспекция запущена");
-                    IsRunning = true;
-                }
-                catch (Exception ex)
-                {
-                    AddLog("Ошибка запуска: " + ex.Message);
-                }
+                _controller.Start();
+                AddLog("Инспекция запущена");
+                IsRunning = true;
             }
-            else
+            catch (Exception ex)
             {
-                _controller.Stop();
-                AddLog("Инспекция остановлена");
-                IsRunning = false;
+                AddLog("Ошибка запуска: " + ex.Message);
             }
+        }
+        public void Stop()
+        {
+            _controller.Stop();
+            AddLog("Инспекция остановлена");
+            IsRunning = false;
         }
         // === Удобный метод для записи в лог ===
         public void AddLog(string msg) => _log.Info(msg);

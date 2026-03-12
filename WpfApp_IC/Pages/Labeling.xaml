@@ -59,53 +59,10 @@
 
         <!-- Кнопки -->
         <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-            <Button x:Name="Stop" Content="Завершить" Width="150" Height="50" Margin="20,5,20,20" Click="Stop_Click">
-                <Button.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="PrintingStatus"/>
-                        <Binding Path="ErrorStatus"/>
-                    </MultiBinding>
-                </Button.Tag>
-                <Button.IsEnabled>
-                    <Binding Path="Tag.StopEnabled" RelativeSource="{RelativeSource Self}"/>
-                </Button.IsEnabled>
-            </Button>
-            <Button x:Name="Pause" Width="150" Height="50" Margin="20,5,20,20" Click="Pause_Click">
-                <Button.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="PrintingStatus"/>
-                        <Binding Path="ErrorStatus"/>
-                    </MultiBinding>
-                </Button.Tag>
-                <Button.IsEnabled>
-                    <Binding Path="Tag.PauseEnabled" RelativeSource="{RelativeSource Self}"/>
-                </Button.IsEnabled>
-                <Button.Content>
-                    <Binding Path="Tag.PauseText" RelativeSource="{RelativeSource Self}"/>
-                </Button.Content>
-            </Button>
-            <Button x:Name="Report" Content="Отчёт" Width="150" Height="50" Margin="20,5,20,20">
-                <Button.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="PrintingStatus"/>
-                        <Binding Path="ErrorStatus"/>
-                    </MultiBinding>
-                </Button.Tag>
-                <Button.IsEnabled>
-                    <Binding Path="Tag.ReportEnabled" RelativeSource="{RelativeSource Self}"/>
-                </Button.IsEnabled>
-            </Button>
-            <Button x:Name="Exit" Content="Выход" Width="150" Height="50" Margin="20,5,20,20" Click="Exit_Click">
-                <Button.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="PrintingStatus"/>
-                        <Binding Path="ErrorStatus"/>
-                    </MultiBinding>
-                </Button.Tag>
-                <Button.IsEnabled>
-                    <Binding Path="Tag.ExitEnabled" RelativeSource="{RelativeSource Self}"/>
-                </Button.IsEnabled>
-            </Button>
+            <Button x:Name="StartStop" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.StartStopText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.StartStopEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="StartStop_Click"/>
+            <Button x:Name="Pause" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.PauseText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.PauseEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Pause_Click"/>
+            <Button x:Name="Report" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Отчёт" IsEnabled="{Binding Tag.ReportEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Report_Click"/>
+            <Button x:Name="Exit" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Выход" IsEnabled="{Binding Tag.ExitEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Exit_Click"/>
         </WrapPanel>
     </Grid>
 </UserControl>

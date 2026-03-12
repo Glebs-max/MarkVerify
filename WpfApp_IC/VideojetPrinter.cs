@@ -47,6 +47,8 @@ namespace WpfApp_IC
         private ErrorState _errorState = ErrorState.Unknown;
         private int _queueSize, _maxQueueSize = 10;
 
+        public event Action? ConnectionEstablished;
+        public event Action? ConnectionLost;
         public event Action<PrinterState>? StateChanged;
         public event Action<int>? QueueSizeChanged;
         public event Action<ErrorState>? ErrorStateChanged;
@@ -62,15 +64,15 @@ namespace WpfApp_IC
             get => _errorState;
             set => Set(ref _errorState, value, () => ErrorStateChanged?.Invoke(value));
         }
-        public int MaxQueueSize
-        {
-            get => _maxQueueSize;
-            private set => Set(ref _maxQueueSize, value);
-        }
         public int QueueSize
         {
             get => _queueSize;
             private set => Set(ref _queueSize, value, () => QueueSizeChanged?.Invoke(value));
+        }
+        public int MaxQueueSize
+        {
+            get => _maxQueueSize;
+            private set => Set(ref _maxQueueSize, value);
         }
         public string IP
         {
@@ -96,6 +98,8 @@ namespace WpfApp_IC
             ErrorState = ErrorState.Unknown;
             QueueSize = 0;
             Errors.Clear();
+
+            ConnectionLost?.Invoke();
             ErrorListChanged?.Invoke();
 
             _streamTextComms?.Dispose();
@@ -105,24 +109,58 @@ namespace WpfApp_IC
 
             GC.SuppressFinalize(this);
         }
-        public void Connect() => _connectionTask = Task.Run(() => ConnectLoopAsync((_connectionCts = new()).Token));
+        public void Connect()
+        {
+            _connectionCts = new();
+            _connectionTask = Task.Run(async () =>
+            {
+                while (!Connected && !_connectionCts.Token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        PrinterState = PrinterState.Connecting;
+
+                        _textComms = new();
+                        _zplEmulation = new();
+
+                        await _textComms.ConnectAsync(ip, portTextComms);
+                        await _zplEmulation.ConnectAsync(ip, portZplEmulation);
+
+                        _streamTextComms = _textComms.GetStream();
+                        _streamTextComms.WriteTimeout = _streamTextComms.ReadTimeout = 5000;
+                        _streamZplEmulation = _zplEmulation.GetStream();
+                        _streamZplEmulation.WriteTimeout = _streamZplEmulation.ReadTimeout = 5000;
+
+                        PrinterState = PrinterState.Connected;
+
+                        _listenTask = Task.Run(() => ListenAsync((_listenCts = new()).Token), _connectionCts.Token);
+                    }
+                    catch { Dispose(); }
+                }
+            });
+        }
         public void Disconnect()
         {
-            try
+            Task.Run(() =>
             {
-                _connectionCts?.Cancel();
-                _connectionTask?.Wait(500);
-                _connectionCts?.Dispose();
-            } catch { }
+                try
+                {
+                    _connectionCts?.Cancel();
+                    _connectionTask?.Wait(500);
+                    _connectionCts?.Dispose();
+                }
+                catch { }
 
-            try
-            {
-                _listenCts?.Cancel();
-                _listenTask?.Wait(500);
-                _listenCts?.Dispose();
-            } catch { }
+                try
+                {
+                    _listenCts?.Cancel();
+                    _listenTask?.Wait(500);
+                    _listenCts?.Dispose();
+                }
+                catch { }
 
-            Dispose();
+                Dispose();
+            });
         }
         /// <summary>
         /// Отправка в очередь принтера изображения в формате ZPL
@@ -147,32 +185,6 @@ namespace WpfApp_IC
         public async Task StartAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Running}|\r");
         public async Task StopAsync() => await SendCommandAsync($"SST|{(int)PrinterState.Offline}|\r");
 
-        private async Task ConnectLoopAsync(CancellationToken token)
-        {
-            while (!Connected && !token.IsCancellationRequested)
-            {
-                try
-                {
-                    PrinterState = PrinterState.Connecting;
-
-                    _textComms = new();
-                    _zplEmulation = new();
-
-                    await _textComms.ConnectAsync(ip, portTextComms);
-                    await _zplEmulation.ConnectAsync(ip, portZplEmulation);
-
-                    _streamTextComms = _textComms.GetStream();
-                    _streamTextComms.WriteTimeout = _streamTextComms.ReadTimeout = 5000;
-                    _streamZplEmulation = _zplEmulation.GetStream();
-                    _streamZplEmulation.WriteTimeout = _streamZplEmulation.ReadTimeout = 5000;
-
-                    PrinterState = PrinterState.Connected;
-
-                    _listenTask = Task.Run(() => ListenAsync((_listenCts = new()).Token), token);
-                }
-                catch { Dispose(); }
-            }
-        }
         /// <summary>
         /// Отправка текстовой команды принтеру (протокол TextComms)
         /// </summary>
@@ -204,7 +216,7 @@ namespace WpfApp_IC
                     if (!string.IsNullOrEmpty(message))
                         ProcessMessage(message);
                 }
-                catch(Exception ex)
+                catch
                 {
                     if (token.IsCancellationRequested)
                         break;

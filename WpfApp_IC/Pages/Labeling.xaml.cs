@@ -11,12 +11,23 @@ namespace WpfApp_IC.Pages
         public Labeling()
         {
             InitializeComponent();
-
-            Loaded += async (s, e) => await Task.Run(VM.WorkInitiate);
         }
 
-        private void Pause_Click(object sender, RoutedEventArgs e) { }
-        private void Stop_Click(object sender, RoutedEventArgs e) => VM.WorkTerminate();
+        private async void StartStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (VM.WorkState == WorkState.Ready)
+                await VM.WorkInitiate();
+            else if (VM.WorkState != WorkState.Finished)
+                await VM.WorkTerminate();
+        }
+        private async void Pause_Click(object sender, RoutedEventArgs e)
+        {
+            if (VM.WorkState == WorkState.Active)
+                await VM.WorkPause();
+            else if (VM.WorkState == WorkState.Pause)
+                await VM.WorkContinue();
+        }
+        private async void Report_Click(object sender, RoutedEventArgs e) => await VM.Report();
         private void Exit_Click(object sender, RoutedEventArgs e) => VM.Exit();
     }
 }

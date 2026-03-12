@@ -13,6 +13,7 @@ namespace WpfApp_IC.ViewModels
     {
         private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(1000) };
         private DesignerViewModel _designerViewModel = new();
+        private bool _initiated;
 
         public DesignerViewModel DesignerViewModel
         {
@@ -25,34 +26,42 @@ namespace WpfApp_IC.ViewModels
 
         public async Task PrintInitiate()
         {
-            VideojetPrinter.Connect();
-
-            while (!VideojetPrinter.Connected)
-                continue;
-
             await using var db = await dbContextFactory.CreateDbContextAsync();
             db.printer_tasks.Add(LabelingSession.CurrentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now });
             await db.SaveChangesAsync();
 
-            await VideojetPrinter.ClearQueueAsync();
-            await QueueLabel();
+            VideojetPrinter.ConnectionEstablished += async () =>
+            {
+                _printerStatusCheck.Start();
 
+                if (!_initiated)
+                {
+                    await VideojetPrinter.ClearQueueAsync();
+                    _initiated = true;
+                }
+            };
+            VideojetPrinter.ConnectionLost += _printerStatusCheck.Stop;
+            VideojetPrinter.QueueSizeChanged += async (size) =>
+            {
+                if (VideojetPrinter.Connected && size <= VideojetPrinter.MaxQueueSize / 3)
+                    await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
+            };
             _printerStatusCheck.Tick += async (s, e) =>
             {
-                await VideojetPrinter.GetQueueSizeAsync();
-                await VideojetPrinter.GetStateAsync();
-                await VideojetPrinter.GetAllFaultsAsync();
-                await VideojetPrinter.GetAllWarningsAsync();
+                if (VideojetPrinter.Connected)
+                {
+                    await VideojetPrinter.GetQueueSizeAsync();
+                    await VideojetPrinter.GetStateAsync();
+                    await VideojetPrinter.GetAllFaultsAsync();
+                    await VideojetPrinter.GetAllWarningsAsync();
+                }
             };
-            _printerStatusCheck.Start();
 
-            /*VideojetPrinter.QueueSizeChanged += async (size) =>
-            {
-                if (size <= VideojetPrinter.MaxQueueSize / 3)
-                    await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
-            };*/
+            VideojetPrinter.Connect();
         }
-        public async Task PrintTerminateAsync()
+        public async Task PrintPause() => await VideojetPrinter.StopAsync();
+        public async Task PrintContinue() => await VideojetPrinter.StartAsync();
+        public async Task PrintTerminate()
         {
             VideojetPrinter.Disconnect();
             await using var db = await dbContextFactory.CreateDbContextAsync();

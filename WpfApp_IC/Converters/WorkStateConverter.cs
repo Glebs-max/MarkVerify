@@ -28,7 +28,7 @@ namespace WpfApp_IC.Converters
                             StartStopEnabled = true,
                             PauseEnabled = false,
                             ReportEnabled = false,
-                            ExitEnabled = false,
+                            ExitEnabled = true,
                             StartStopText = "Старт",
                             PauseText = "Пауза"
                         };

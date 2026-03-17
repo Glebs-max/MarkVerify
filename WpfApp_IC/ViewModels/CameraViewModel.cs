@@ -1,43 +1,21 @@
 ﻿using Observable;
-using System;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WpfApp_IC.Services.Inspectors;
-using WpfApp_IC.Services.Log;
 
 namespace WpfApp_IC.ViewModels
 {
     public class CameraViewModel : ObservableObject
     {
-        protected readonly IInspectorController _controller;
-        protected readonly ILogService _log;
+        private readonly IInspectorController _controller;
 
-        // Публичное свойство для биндинга в XAML
-        public ILogService LogService => _log;
-        // Коллекция логов, к которой привязывается UI
-        public ObservableCollection<LogEntry> Entries => _log.Entries;
-
-        public CameraViewModel(IInspectorController controller, ILogService log)
+        public CameraViewModel(IInspectorController controller)
         {
             _controller = controller;
-            _log = log;
 
-            // === Подписки на события инспектора ===
-            _controller.ErrorOccurred += err =>
+            _controller.CodeChecked += (actual, ok) =>
             {
-                _log.Error(err);
-            };
-            _controller.SignalChanged += s =>
-            {
-                _log.Info($"Сигнал датчика: {s}");
-            };
-            _controller.CodeChecked += (actual, expected, ok) =>
-            {
-                string result = ok ? "OK" : "BRK";
-                _log.Info($"Проверка: [{actual}] → {result}");
-
                 DispatchUI(() =>
                 {
                     DataMatrix = actual;
@@ -89,41 +67,21 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _dataMatrixBrush, value);
         }
 
-        private bool _showImage;
-        public bool ShowImage
-        {
-            get => _showImage;
-            set => Set(ref _showImage, value);
-        }
-
-        private bool _showLog;
-        public bool ShowLog
-        {
-            get => _showLog;
-            set => Set(ref _showLog, value);
-        }
-
         public void Start()
         {
-            try
-            {
-                _controller.Start();
-                AddLog("Инспекция запущена");
-                IsRunning = true;
-            }
-            catch (Exception ex)
-            {
-                AddLog("Ошибка запуска: " + ex.Message);
-            }
+            _controller.Start();
+            IsRunning = true;
         }
         public void Stop()
         {
             _controller.Stop();
-            AddLog("Инспекция остановлена");
             IsRunning = false;
         }
-        // === Удобный метод для записи в лог ===
-        public void AddLog(string msg) => _log.Info(msg);
+        public void TriggerManual()
+        {
+            if (IsRunning)
+                _controller.TriggerManual();
+        }
 
         // === UI dispatcher ===
         private static void DispatchUI(Action action)
@@ -132,16 +90,6 @@ namespace WpfApp_IC.ViewModels
                 action();
             else
                 Application.Current.Dispatcher.BeginInvoke(action);
-        }
-
-        public void TriggerManual()
-        {
-            if (!IsRunning)
-            {
-                AddLog("Инспекция не запущена.");
-                return;
-            }
-            _controller.TriggerManual();
         }
     }
 }

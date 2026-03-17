@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="StatusBar" Height="60" Cursor="Hand" MouseDown="StatusBar_Click">
+        <Grid x:Name="StatusBar" Height="45" Cursor="Hand" MouseDown="StatusBar_Click">
             <Grid.Tag>
                 <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
                     <Binding Path="VideojetPrinter.PrinterState"/>
@@ -26,7 +26,7 @@
                 <Binding Path="Tag.StatusColor" RelativeSource="{RelativeSource Self}"/>
             </Grid.Background>
 
-            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="28" FontFamily="Bahnschrift">
+            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="22" FontFamily="Bahnschrift">
                 <TextBlock.Tag>
                     <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
                         <Binding Path="VideojetPrinter.PrinterState"/>

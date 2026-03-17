@@ -18,10 +18,10 @@ namespace WpfApp_IC.ViewModels
                 {
                     foreach (VideojetPrinterError error in Errors.ToList())
                     {
-                        if (!videojetPrinter.Errors.Contains(error))
+                        if (!_videojetPrinter.Errors.Contains(error))
                             Errors.Remove(error);
                     }
-                    foreach (VideojetPrinterError error in videojetPrinter.Errors.ToList())
+                    foreach (VideojetPrinterError error in _videojetPrinter.Errors.ToList())
                     {
                         if (!Errors.Contains(error))
                             Errors.Add(error);

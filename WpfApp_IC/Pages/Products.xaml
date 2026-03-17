@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
              d:DataContext="{d:DesignInstance Type=vm:ProductsViewModel}"
              mc:Ignorable="d" Background="#F4F4F4">
-    <Grid Margin="30">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>

@@ -35,25 +35,24 @@ namespace WpfApp_IC
 
                     services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
-                    //services.AddSingleton<IoModuleConfig>(); // DI создаёт сам SettingsService заполнит
-
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<ProductsViewModel>();
                     services.AddSingleton<VideojetErrorsViewModel>();
+                    services.AddSingleton<LogViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelingViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
                     services.AddTransient<CameraViewModel>();
                     services.AddTransient<SettingsViewModel>();
 
+
                     services.AddSingleton<LabelingSession>();
                     services.AddSingleton<VideojetPrinter>();
+                    services.AddSingleton<LogService>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
-                    //services.AddSingleton<ISensor, ModbusSensor>();
-                    //services.AddSingleton<IRejector, ModbusRejector>();
                     services.AddSingleton<ISensor>(sp =>
                     {
                         var modbus = sp.GetRequiredService<IModbusService>();
@@ -61,7 +60,6 @@ namespace WpfApp_IC
                         var settings = AppSettings.LoadFromFile();
                         return new ModbusSensor(modbus, settings.SignalCoil);
                     });
-
                     services.AddSingleton<IRejector>(sp =>
                     {
                         var modbus = sp.GetRequiredService<IModbusService>();
@@ -69,8 +67,6 @@ namespace WpfApp_IC
                         return new ModbusRejector(modbus, settings.RejectCoil);
                     });
                     services.AddSingleton<ISettingsService, SettingsService>();
-                    services.AddSingleton<ILogService, LogService>();
-                    //services.AddSingleton<IImageSaverService, ImageSaverService>();
                     services.AddSingleton<IImageSaverService>(sp =>
                     {
                         // Читаем путь напрямую из AppSettings — без зависимости от ISettingsService
@@ -82,64 +78,28 @@ namespace WpfApp_IC
                 })
                 .Build();
         }
-
         protected override async void OnStartup(StartupEventArgs e)
         {
-            if (AppHost == null) return;
-
-            // Синхронно — исключение не потеряется
-            AppHost.StartAsync().GetAwaiter().GetResult();
-
-            try
+            if (AppHost != null)
             {
-                AppHost.Services.GetRequiredService<ISettingsService>();
-                AppHost.Services.GetRequiredService<IInspectorController>();
+                try
+                {
+                    await AppHost.StartAsync();
 
-                var mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
-                mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();
+                    MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
+                    mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();
 
-                var mw = AppHost.Services.GetRequiredService<MainWindow>();
-                mw.Show();
+                    MainWindow mw = AppHost.Services.GetRequiredService<MainWindow>();
+                    mw.Show();
+
+                    base.OnStartup(e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка:\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}", "Критическая ошибка");
+                    Shutdown();
+                }
             }
-            catch (System.Exception ex)
-            {
-                System.Windows.MessageBox.Show(
-                    $"Ошибка:\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}",
-                    "Критическая ошибка");
-                Shutdown();
-                return;
-            }
-
-            base.OnStartup(e);
-
-            //try
-            //{
-            //    if (AppHost != null)
-            //    {
-            //        await AppHost.StartAsync();
-
-            //        AppHost.Services.GetRequiredService<ISettingsService>(); // Apply() вызывается в конструкторе
-            //        AppHost.Services.GetRequiredService<IInspectorController>(); // CameraIp устанавливается
-
-            //        MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
-            //        mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();
-
-            //        MainWindow mw = AppHost.Services.GetRequiredService<MainWindow>();
-            //        mw.Show();
-
-            //        base.OnStartup(e);
-            //    }
-            //}
-            //catch (System.Exception ex)
-            //{
-            //    System.Windows.MessageBox.Show(
-            //        $"Ошибка запуска:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}",
-            //        "Критическая ошибка",
-            //        System.Windows.MessageBoxButton.OK,
-            //        System.Windows.MessageBoxImage.Error);
-
-            //    Shutdown();
-            //}
         }
         protected override async void OnExit(ExitEventArgs e)
         {

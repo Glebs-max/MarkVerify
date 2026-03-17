@@ -19,7 +19,7 @@
             </Grid.ColumnDefinitions>
 
             <Image Source="/Assets/good.png" Height="40" Margin="0,0,20,0" Stretch="Uniform"/>
-            <TextBlock Grid.Column="1" Text="Всё хорошо" Margin="0,0,20,0" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Всё хорошо" Margin="0,0,20,0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
         <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Errors}" Tag="{Binding Errors.Count, Converter={StaticResource VideojetErrorsConverter}}" Visibility="{Binding Tag.ErrorListVisibility, RelativeSource={RelativeSource Self}}">
             <ListView.ItemTemplate>
@@ -32,8 +32,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Source="{Binding ErrorType, Converter={StaticResource ErrorTypeConverter}}" Height="40" Margin="0,0,20,0" Stretch="Uniform"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Code}" Margin="0,0,20,0" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Title}" Margin="0,0,20,0" TextWrapping="Wrap" FontSize="20" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Code}" Margin="0,0,20,0" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Title}" Margin="0,0,20,0" TextWrapping="Wrap" FontSize="18" VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

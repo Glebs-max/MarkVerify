@@ -15,7 +15,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель печати и проверки маркировок
     /// </summary>
-    public class LabelingViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
+    public class LabelingViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel, LogViewModel logViewModel, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
         private WorkState _workState = WorkState.Ready;
 
@@ -27,6 +27,7 @@ namespace WpfApp_IC.ViewModels
         public LabelingSession LabelingSession => labelingSession;
         public CameraViewModel CameraViewModel => cameraViewModel;
         public LabelPrintingViewModel LabelPrintingViewModel => labelPrintingViewModel;
+        public LogViewModel LogViewModel => logViewModel;
 
         public async Task WorkInitiate()
         {

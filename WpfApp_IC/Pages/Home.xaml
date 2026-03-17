@@ -7,22 +7,25 @@
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel}"
              mc:Ignorable="d">
-    <Border Padding="20" Background="#DCDCDC" Cursor="">
+    <Border Padding="20" Background="#F4F4F4" Cursor="">
         <Grid>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                 <Button Content="Старт"
                         Width="250"
                         Height="50"
                         FontSize="18"
-                        Margin="0,0,0,20" Click="Start_Click"/>
+                        Margin="10"
+                        Click="Start_Click"/>
                 <Button Content="Камера (базовый режим)"
                         Width="250"
                         Height="50"
                         FontSize="18"
-                        Margin="0,0,0,20" Click="Camera_Click"/>
+                        Margin="10"
+                        Click="Camera_Click"/>
                 <Button Content="Настройки"
                         Width="250"
                         Height="50"
+                        Margin="10"
                         FontSize="18" Click="Settings_Click"/>
             </StackPanel>
         </Grid>

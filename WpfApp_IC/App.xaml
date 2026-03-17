@@ -19,6 +19,7 @@
             <converters:StartStopGeometryConverter x:Key="StartStopGeometryConverter"/>
             <converters:VideojetErrorsConverter x:Key="VideojetErrorsConverter"/>
             <converters:WorkStateConverter x:Key="WorkStateConverter"/>
+            <converters:InspectionStatusConverter x:Key="InspectionStatusConverter"/>
             <designerconverters:UnitsConverter x:Key="UnitsConverter"/>
             <designerconverters:LabelAreaConverter x:Key="LabelAreaConverter"/>
 

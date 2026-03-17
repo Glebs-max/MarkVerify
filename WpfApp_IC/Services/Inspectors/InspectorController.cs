@@ -10,6 +10,7 @@ using WpfApp_IC.Device;
 using WpfApp_IC.Device.Actuators;
 using WpfApp_IC.Device.Sensors;
 using WpfApp_IC.Models;
+using WpfApp_IC.Pages;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
@@ -23,22 +24,16 @@ namespace WpfApp_IC.Services.Inspectors
     /// </summary>
     public class InspectorController(
         LabelingSession labelingSession,
+        LogService log,
         ICameraService camera,
         ISensor sensor,
         IRejector rejector,
         IModbusService modbus,
-        ILogService log,
         IDbContextFactory<AppDbContext> dbContextFactory,
-        IImageSaverService imageSaver) : ObservableObject, IInspectorController, IDisposable
+        IImageSaverService imageSaver) : IInspectorController, IDisposable
     {
         private CancellationTokenSource? _cts;
         private BitmapSource? _lastFrame;
-
-        /// <summary>
-        /// Ожидаемый код (если используется прямое сравнение).
-        /// </summary>
-        public string? ExpectedCode { get; set; }
-
 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
@@ -71,7 +66,7 @@ namespace WpfApp_IC.Services.Inspectors
         public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string>? ErrorOccurred;
         public event Action<string?, BitmapSource>? FrameReceived;
-        public event Action<string, string?, bool>? CodeChecked;
+        public event Action<string, bool>? CodeChecked;
 
         /// <summary>
         /// Событие результата проверки DataMatrix.
@@ -86,7 +81,7 @@ namespace WpfApp_IC.Services.Inspectors
         {
             try
             {
-                modbus.Connect(ModbusIp, ModbusPort); // ← было config.ModbusIp, config.ModbusPort
+                modbus.Connect(ModbusIp, ModbusPort);
                 log.Info($"Modbus подключён: {ModbusIp}:{ModbusPort}");
             }
             catch (Exception ex)
@@ -111,6 +106,8 @@ namespace WpfApp_IC.Services.Inspectors
 
             _cts = new CancellationTokenSource();
             Task.Run(() => Loop(_cts.Token));
+
+            log.Info("Инспекция запущена");
         }
 
         /// <summary>
@@ -142,6 +139,7 @@ namespace WpfApp_IC.Services.Inspectors
                             {
                                 _previousSignal = _stableSignal;
                                 SignalChanged?.Invoke(_stableSignal);
+                                log.Info($"Сигнал датчика: {_stableSignal}");
 
                                 if (_stableSignal == 1 && !_triggerInProgress)
                                 {
@@ -181,7 +179,7 @@ namespace WpfApp_IC.Services.Inspectors
             }
             catch (Exception ex)
             {
-                log.Error("Ошибка в цикле инспекции", ex); // ← вместо ErrorOccurred
+                log.Error("Ошибка в цикле инспекции", ex);
                 ErrorOccurred?.Invoke(ex.Message);
             }
         }
@@ -198,9 +196,8 @@ namespace WpfApp_IC.Services.Inspectors
 
             CodeValidated?.Invoke(result);
 
-            bool ok = result.IsOk && (ExpectedCode == null || dm?.Normalized == ExpectedCode);
-
-            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", ExpectedCode, ok);
+            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
+            log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] → {(result.IsOk ? "OK" : "BRK")}");
 
             if (result.IsOk)
             {
@@ -265,6 +262,7 @@ namespace WpfApp_IC.Services.Inspectors
             _cts?.Cancel();
             Thread.Sleep(100);
             camera.Close();
+            log.Info("Инспекция остановлена");
         }
 
         public void Dispose()

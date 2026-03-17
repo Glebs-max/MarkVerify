@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WpfApp_IC.Services.Log
+﻿namespace WpfApp_IC.Services.Log
 {
+    public enum LogLevel
+    {
+        Info,
+        Warning,
+        Error
+    }
+
     /// <summary>
     /// Модель одной записи в логе
     /// </summary>
@@ -16,14 +17,6 @@ namespace WpfApp_IC.Services.Log
         public string Message { get; init; } = "";
 
         /// <summary>Готовая строка для отображения в UI</summary>
-        public string Display =>
-            $"[{Time:HH:mm:ss}] [{Level}] {Message}";
-    }
-
-    public enum LogLevel
-    {
-        Info,
-        Warning,
-        Error
+        public string Display => $"[{Time:HH:mm:ss}] [{Level}] {Message}";
     }
 }

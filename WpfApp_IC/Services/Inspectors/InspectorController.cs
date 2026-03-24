@@ -195,8 +195,8 @@ namespace WpfApp_IC.Services.Inspectors
             var result = await ValidateAsync(dm?.Raw);
 
             CodeValidated?.Invoke(result);
-
             CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
+
             log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] → {(result.IsOk ? "OK" : "BRK")}");
 
             if (result.IsOk)
@@ -238,6 +238,8 @@ namespace WpfApp_IC.Services.Inspectors
             
             db.mains.Add(verified);
             //await db.SaveChangesAsync();
+
+            labelingSession.VerifiedCodes.Add(code.Code);
 
             return ValidationResult.Ok();
         }

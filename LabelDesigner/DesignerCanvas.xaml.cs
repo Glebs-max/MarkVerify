@@ -1,6 +1,4 @@
 ﻿using LabelDesigner.Models;
-using LabelDesigner.Services;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -213,6 +211,7 @@ namespace LabelDesigner
                             if (VM.SelectedTool == ToolboxItemType.None)
                                 Mouse.OverrideCursor = null;
                         };
+
                         CanvasArea.Children.Remove(field.Visual);
                         CanvasArea.Children.Remove(field.Adorner);
                     }

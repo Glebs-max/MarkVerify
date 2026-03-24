@@ -1,4 +1,5 @@
 ﻿using Observable;
+using System.Collections.ObjectModel;
 using WpfApp_IC.Models;
 
 namespace WpfApp_IC
@@ -40,6 +41,13 @@ namespace WpfApp_IC
             get => _count;
             set => Set(ref _count, value);
         }
+        public ObservableCollection<string> VerifiedCodes = [
+            "0104630007402529215Q7a-En&yYq0V",
+            "0104630007402529215Q8Dr-fhifehs",
+            "0104630007402529215Q8HMQZHNYoaJ",
+            "0104630007402529215Q8N-ONZNac!L",
+            "0104630007402529215sWA:Xm1XTp2_"
+        ];
 
         public void Reset()
         {
@@ -48,6 +56,7 @@ namespace WpfApp_IC
             Count = 0;
             GTIN = new();
             CurrentTask = new();
+            VerifiedCodes.Clear();
         }
     }
 }

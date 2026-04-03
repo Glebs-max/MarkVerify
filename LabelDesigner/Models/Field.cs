@@ -62,41 +62,37 @@ namespace LabelDesigner.Models
             get => Canvas.GetTop(Visual);
             set => Set(() => Canvas.SetTop(Visual, value));
         }
+        public int ZIndex
+        {
+            get => Panel.GetZIndex(Visual);
+            set => Set(() => Panel.SetZIndex(Visual, value));
+        }
         public int Orientation
         {
             get => (int)Visual.Rotation.Angle;
-            set
+            set => Set(() =>
             {
-                Set(() =>
-                {
-                    Visual.Rotation.Angle = value;
-                    MeasureArrangeVisual();
-                });
-            }
+                Visual.Rotation.Angle = value;
+                MeasureArrangeVisual();
+            });
         }
         public bool MirrorX
         {
             get => Visual.Scale.ScaleX < 0;
-            set
+            set => Set(() =>
             {
-                Set(() =>
-                {
-                    if (MirrorX != value)
-                        Visual.Scale.ScaleX *= -1;
-                });
-            }
+                if (MirrorX != value)
+                    Visual.Scale.ScaleX *= -1;
+            });
         }
         public bool MirrorY
         {
             get => Visual.Scale.ScaleY < 0;
-            set
+            set => Set(() =>
             {
-                Set(() =>
-                {
-                    if (MirrorY != value)
-                        Visual.Scale.ScaleY *= -1;
-                });
-            }
+                if (MirrorY != value)
+                    Visual.Scale.ScaleY *= -1;
+            });
         }
         public bool Inverted
         {
@@ -111,55 +107,46 @@ namespace LabelDesigner.Models
         public bool KeepAspectRatio
         {
             get => _keepAspectRatio;
-            set
+            set => Set(ref _keepAspectRatio, value, () =>
             {
-                Set(ref _keepAspectRatio, value, () =>
+                if (value)
                 {
-                    if (value)
-                    {
-                        if (W / H > AspectRatio)
-                            H = W / AspectRatio;
-                        else
-                            W = H * AspectRatio;
-                    }
-                });
-            }
+                    if (W / H > AspectRatio)
+                        H = W / AspectRatio;
+                    else
+                        W = H * AspectRatio;
+                }
+            });
         }
         public double W
         {
             get => Visual.Width;
-            set
+            set => Set(() =>
             {
-                Set(() =>
-                {
-                    if (value < MinWidth || value == Visual.Width)
-                        return;
+                if (value < MinWidth || value == Visual.Width)
+                    return;
 
-                    Visual.Width = value;
-                    Visual.Scale.ScaleX = (Horizontal ? W : H) / InitialSize.Width * (MirrorX ? -1 : 1);
+                Visual.Width = value;
+                Visual.Scale.ScaleX = (Horizontal ? W : H) / InitialSize.Width * (MirrorX ? -1 : 1);
 
-                    if (KeepAspectRatio)
-                        H = Visual.Width / AspectRatio;
-                });
-            }
+                if (KeepAspectRatio)
+                    H = Visual.Width / AspectRatio;
+            });
         }
         public double H
         {
             get => Visual.Height;
-            set
+            set => Set(() =>
             {
-                Set(() =>
-                {
-                    if (value < MinHeight || value == Visual.Height)
-                        return;
+                if (value < MinHeight || value == Visual.Height)
+                    return;
 
-                    Visual.Height = value;
-                    Visual.Scale.ScaleY = (Horizontal ? H : W) / InitialSize.Height * (MirrorY ? -1 : 1);
+                Visual.Height = value;
+                Visual.Scale.ScaleY = (Horizontal ? H : W) / InitialSize.Height * (MirrorY ? -1 : 1);
 
-                    if (KeepAspectRatio)
-                        W = Visual.Height * AspectRatio;
-                });
-            }
+                if (KeepAspectRatio)
+                    W = Visual.Height * AspectRatio;
+            });
         }
 
         private bool Horizontal => Orientation == 0 || Orientation == 180;

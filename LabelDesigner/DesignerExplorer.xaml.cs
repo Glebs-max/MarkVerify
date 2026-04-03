@@ -8,19 +8,22 @@ namespace LabelDesigner
         public DesignerExplorer()
         {
             InitializeComponent();
-
+            
             KeyDown += (s, e) =>
             {
                 switch (e.Key)
                 {
                     case Key.Delete:
-                        if (VM.SelectedField != null)
-                            VM.Fields.Remove(VM.SelectedField);
+                        VM.RemoveField();
                         break;
                 }
             };
         }
 
         private DesignerViewModel VM => (DesignerViewModel)DataContext;
+
+        private void Delete_Click(object sender, MouseButtonEventArgs e) => VM.RemoveField();
+        private void Up_Click(object sender, MouseButtonEventArgs e) => VM.MoveFieldUp();
+        private void Down_Click(object sender, MouseButtonEventArgs e) => VM.MoveFieldDown();
     }
 }

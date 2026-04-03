@@ -1,43 +1,49 @@
-﻿<UserControl x:Class="LabelDesigner.DesignerExplorer" Name="X"
+﻿<UserControl x:Class="LabelDesigner.DesignerExplorer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:LabelDesigner"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance Type=local:DesignerViewModel}"
              mc:Ignorable="d" Background="#F4F4F4">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="FieldsView" Source="{Binding Fields}" IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="ZIndex" Direction="Descending" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.LiveSortingProperties>
+                <sys:String>ZIndex</sys:String>
+            </CollectionViewSource.LiveSortingProperties>
+        </CollectionViewSource>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label HorizontalAlignment="Stretch" Content="Обозреватель" Margin="0,0,0,7"/>
-        <DockPanel Margin="4" Grid.Row="1">
-            <Grid DockPanel.Dock="Top" Margin="0 0 0 4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="3*" />
-                </Grid.ColumnDefinitions>
+        <Label HorizontalAlignment="Stretch" Content="Обозреватель"/>
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+            <Image Source="/Icons/up.png" Height="22" Margin="3" Cursor="Hand" MouseDown="Up_Click"/>
+            <Image Source="/Icons/down.png" Height="22" Margin="3" Cursor="Hand" MouseDown="Down_Click"/>
+            <Image Source="/Icons/trash.png" Height="22" Margin="3" Cursor="Hand" MouseDown="Delete_Click"/>
+        </WrapPanel>
+        <ListView x:Name="FieldList" Grid.Row="2" Margin="4" ItemsSource="{Binding Source={StaticResource FieldsView}}" SelectedItem="{Binding SelectedField, Mode=TwoWay}" Grid.IsSharedSizeScope="True">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="Col1"/>
+                            <ColumnDefinition SharedSizeGroup="Col2"/>
+                        </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Тип поля" VerticalAlignment="Center" TextAlignment="Left"/>
-                <TextBlock Grid.Column="1" Text="Название поля"  VerticalAlignment="Center" TextAlignment="Left"/>
-            </Grid>
-
-            <ListView x:Name="FieldList" ItemsSource="{Binding Fields}" SelectedItem="{Binding SelectedField, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="{Binding FieldType}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            <TextBlock Grid.Column="1" Text="{Binding FieldName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </DockPanel>
+                        <TextBlock Text="{Binding FieldType}" Margin="0,0,20,0" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding FieldName}" Margin="0,0,20,0" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </UserControl>

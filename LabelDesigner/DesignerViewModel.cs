@@ -81,5 +81,37 @@ namespace LabelDesigner
         public ObservableCollection<Field> Fields { get; } = [];
 
         public string ConvertToZpl(double dpi = 300) => BitmapService.ConvertToZpl(BitmapService.Monochrome(BitmapService.GetBitmap(LabelModel, dpi, new(LabelArea.W, LabelArea.H))));
+        public void RemoveField()
+        {
+            if (SelectedField != null)
+            {
+                foreach (Field field in Fields.Where(f => f.ZIndex > SelectedField.ZIndex))
+                    field.ZIndex--;
+
+                Fields.Remove(SelectedField);
+            }
+        }
+        public void MoveFieldUp()
+        {
+            if (SelectedField != null)
+            {
+                if (Fields.FirstOrDefault(f => f.ZIndex == SelectedField.ZIndex + 1) is Field field)
+                {
+                    SelectedField.ZIndex++;
+                    field.ZIndex--;
+                }
+            }
+        }
+        public void MoveFieldDown()
+        {
+            if (SelectedField != null)
+            {
+                if (Fields.FirstOrDefault(f => f.ZIndex == SelectedField.ZIndex - 1) is Field field)
+                {
+                    SelectedField.ZIndex--;
+                    field.ZIndex++;
+                }
+            }
+        }
     }
 }

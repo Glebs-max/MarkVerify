@@ -13,12 +13,18 @@
     <None Remove="example.bmp" />
     <None Remove="Icons\BarcodeField.png" />
     <None Remove="Icons\DateField.png" />
+    <None Remove="Icons\down.png" />
     <None Remove="Icons\ImageField.png" />
     <None Remove="Icons\TextField.png" />
     <None Remove="Icons\TimeField.png" />
+    <None Remove="Icons\trash.png" />
+    <None Remove="Icons\up.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Icons\down.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icons\example.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -38,6 +44,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icons\TimeField.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\trash.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\up.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -12,6 +12,8 @@ namespace LabelDesigner
 
             MouseLeftButtonDown += (s, mouse) =>
             {
+                Focus();
+
                 if (VM.SelectedTool == ToolboxItemType.None)
                 {
                     VM.SelectedField = null;
@@ -40,19 +42,18 @@ namespace LabelDesigner
                         field.H = VM.LabelArea.H * 0.5 / VM.Scale;
                     };
 
+                    field.ZIndex = VM.Fields.Count;
+                    Mouse.OverrideCursor = null;
+                    
                     VM.Fields.Add(field);
                     VM.SelectedTool = ToolboxItemType.None;
-                    Mouse.OverrideCursor = null;
                 }
             };
             MouseRightButtonDown += (s, e) =>
             {
+                Focus();
                 VM.SelectedTool = ToolboxItemType.None;
                 Mouse.OverrideCursor = null;
-            };
-            MouseEnter += (s, e) =>
-            {
-                Focus();
             };
             PreviewMouseWheel += (s, e) =>
             {
@@ -75,7 +76,7 @@ namespace LabelDesigner
                             if (CanvasArea.Children.Contains(VM.SelectedField.Visual))
                                 CanvasArea.Children.Remove(VM.SelectedField.Visual);
 
-                            VM.Fields.Remove(VM.SelectedField);
+                            VM.RemoveField();
                         }
                         break;
                 }

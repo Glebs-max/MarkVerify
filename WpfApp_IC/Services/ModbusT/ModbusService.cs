@@ -26,9 +26,9 @@ namespace WpfApp_IC.Services.ModbusT
 
                     Debug.WriteLine($"Modbus CONNECTED: {ip}:{port}");
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Debug.WriteLine($"Modbus CONNECT ERROR: {ex.Message}");
+                    throw;
                 }
             }
         }

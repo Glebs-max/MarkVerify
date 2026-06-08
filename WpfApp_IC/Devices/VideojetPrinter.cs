@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
-namespace WpfApp_IC
+namespace WpfApp_IC.Devices
 {
     public enum PrinterState
     {

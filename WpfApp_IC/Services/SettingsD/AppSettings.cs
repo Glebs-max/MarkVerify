@@ -12,7 +12,7 @@ namespace WpfApp_IC.Services.SettingsD
         // Флаги включения устройств
         public bool UseCamera { get; set; } = true;
         public bool UseModbus { get; set; } = true;
-        public bool UsePrinter { get; set; } = false;
+        public bool UsePrinter { get; set; } = true;
 
         // Modbus 
         public string ModbusIp { get; set; } = "192.168.0.127";
@@ -29,7 +29,6 @@ namespace WpfApp_IC.Services.SettingsD
         public string IdmvsPath { get; set; } = "";
         public string RejectImagesPath { get; set; } = "RejectImages";
         public string CameraIp { get; set; } = "";
-        //public int CameraDeviceIndex { get; set; } = 0;
 
         // Инспекция
         public int RejectDelayMs { get; set; } = 500;

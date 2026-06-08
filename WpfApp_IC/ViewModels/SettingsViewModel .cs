@@ -100,7 +100,7 @@ namespace WpfApp_IC.ViewModels
         }
 
         // Камера
-        private string _cameraIp;
+        private string _cameraIp = "";
         private string _idmvsPath = "";
 
         public string CameraIp

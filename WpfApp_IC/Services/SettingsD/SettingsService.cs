@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
-using WpfApp_IC.Device;
-using WpfApp_IC.Device.Actuators;
-using WpfApp_IC.Device.Sensors;
+using WpfApp_IC.Devices;
 using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.Services.SettingsD
@@ -15,27 +13,21 @@ namespace WpfApp_IC.Services.SettingsD
     /// </summary>   
     public class SettingsService : ISettingsService
     {
-        private static readonly string FilePath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
-
+        private static readonly string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             WriteIndented = true
         };
 
-        // объекты, которые нужно обновлять при смене настроек
         private readonly VideojetPrinter _printer;
+        private readonly ModbusSensor _sensor;
+        private readonly ModbusRejector _rejector;
         private readonly IInspectorController _inspector;
         private readonly IImageSaverService _imageSaver;
-        private readonly ISensor _sensor;
-        private readonly IRejector _rejector;
 
         public AppSettings Current { get; private set; }
 
-        public SettingsService(
-            VideojetPrinter printer,
-            IInspectorController inspector,
-            IImageSaverService imageSaver, ISensor sensor, IRejector rejector)
+        public SettingsService(ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, IInspectorController inspector, IImageSaverService imageSaver)
         {
             _printer = printer;
             _inspector = inspector;
@@ -44,7 +36,7 @@ namespace WpfApp_IC.Services.SettingsD
             _rejector = rejector;
 
             Current = Load();
-            Apply(Current); // применяем сразу при старте
+            Apply(Current);
         }
 
         // Публичные методы
@@ -55,7 +47,6 @@ namespace WpfApp_IC.Services.SettingsD
             WriteFile(settings);
             Apply(settings);
         }
-
         public void ApplyCurrent() => Apply(Current);
 
         // Приватные методы
@@ -109,15 +100,13 @@ namespace WpfApp_IC.Services.SettingsD
             _inspector.RejectDelayMs = s.RejectDelayMs;
             _inspector.SensorFilterCount = s.SensorFilterCount;
             _inspector.SensorPollIntervalMs = s.SensorPollIntervalMs;
-            //_imageSaver.UpdatePath(s.RejectImagesPath);
 
-            _sensor.UpdateCoil(s.SignalCoil);
-            _rejector.UpdateCoil(s.RejectCoil);
+            _sensor.Coil = s.SignalCoil;
+            _rejector.Coil = s.RejectCoil;
 
             // Камера 
             _inspector.CameraIp = s.CameraIp;
             Debug.WriteLine($"Apply: CameraIp = '{s.CameraIp}'");
-            //_inspector.CameraDeviceIndex = s.CameraDeviceIndex;
 
             _imageSaver.UpdatePath(s.RejectImagesPath);
 

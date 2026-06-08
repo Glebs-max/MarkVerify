@@ -5,6 +5,7 @@ using Observable;
 using System.Windows;
 using System.Windows.Threading;
 using WpfApp_IC.Data;
+using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
 
 namespace WpfApp_IC.ViewModels

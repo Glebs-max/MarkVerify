@@ -6,9 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using WpfApp_IC.Data;
-using WpfApp_IC.Device;
-using WpfApp_IC.Device.Actuators;
-using WpfApp_IC.Device.Sensors;
+using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
 using WpfApp_IC.Pages;
 using WpfApp_IC.Services.Camera;
@@ -26,8 +24,8 @@ namespace WpfApp_IC.Services.Inspectors
         LabelingSession labelingSession,
         LogService log,
         ICameraService camera,
-        ISensor sensor,
-        IRejector rejector,
+        ModbusSensor sensor,
+        ModbusRejector rejector,
         IModbusService modbus,
         IDbContextFactory<AppDbContext> dbContextFactory,
         IImageSaverService imageSaver) : IInspectorController, IDisposable

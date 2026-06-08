@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using WpfApp_IC.Devices;
 
 namespace WpfApp_IC.Converters
 {

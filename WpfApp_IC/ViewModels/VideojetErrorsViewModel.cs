@@ -1,6 +1,7 @@
 ﻿using Observable;
 using System.Collections.ObjectModel;
 using System.Windows;
+using WpfApp_IC.Devices;
 
 namespace WpfApp_IC.ViewModels
 {

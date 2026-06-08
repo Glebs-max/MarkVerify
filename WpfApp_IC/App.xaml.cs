@@ -2,12 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics;
 using System.Windows;
 using WpfApp_IC.Data;
-using WpfApp_IC.Device;
-using WpfApp_IC.Device.Actuators;
-using WpfApp_IC.Device.Sensors;
+using WpfApp_IC.Devices;
 using WpfApp_IC.Services;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
@@ -53,14 +50,13 @@ namespace WpfApp_IC
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
-                    services.AddSingleton<ISensor>(sp =>
+                    services.AddSingleton(sp =>
                     {
                         var modbus = sp.GetRequiredService<IModbusService>();
-                        // ← Читаем напрямую из файла, не через IInspectorController
                         var settings = AppSettings.LoadFromFile();
                         return new ModbusSensor(modbus, settings.SignalCoil);
                     });
-                    services.AddSingleton<IRejector>(sp =>
+                    services.AddSingleton(sp =>
                     {
                         var modbus = sp.GetRequiredService<IModbusService>();
                         var settings = AppSettings.LoadFromFile();
@@ -69,7 +65,6 @@ namespace WpfApp_IC
                     services.AddSingleton<ISettingsService, SettingsService>();
                     services.AddSingleton<IImageSaverService>(sp =>
                     {
-                        // Читаем путь напрямую из AppSettings — без зависимости от ISettingsService
                         string path = AppSettings.ReadRejectImagesPath();
                         return new ImageSaverService(path);
                     });

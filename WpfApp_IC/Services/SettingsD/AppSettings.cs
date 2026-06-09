@@ -26,7 +26,6 @@ namespace WpfApp_IC.Services.SettingsD
         public int PrinterPortZpl { get; set; } = 1000;
         
         // Камера 
-        public string IdmvsPath { get; set; } = "";
         public string RejectImagesPath { get; set; } = "RejectImages";
         public string CameraIp { get; set; } = "";
 

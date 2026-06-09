@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="StatusBar" Height="45" Cursor="Hand" MouseDown="StatusBar_Click">
+        <Grid x:Name="StatusBar" Height="50" Cursor="Hand" MouseDown="StatusBar_Click">
             <Grid.Tag>
                 <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
                     <Binding Path="VideojetPrinter.PrinterState"/>

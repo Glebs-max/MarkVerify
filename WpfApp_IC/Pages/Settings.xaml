@@ -139,46 +139,25 @@
                                      Background="#4A4A4A"
                                      Foreground="White"
                                      BorderBrush="#666666">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Margin="4,6">
-                                                        <TextBlock FontWeight="SemiBold" Foreground="White"><Run Text="["/>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="4,6">
+                                            <TextBlock FontWeight="SemiBold" Foreground="White"><Run Text="["/>
                                                             <Run Text="{Binding Index}"/><Run Text="]  "/>
                                                             <Run Text="{Binding Model}"/>
-                                                        </TextBlock>
-                                                        <TextBlock Foreground="#88CCFF" FontSize="12"><Run Text="IP: "/>
+                                            </TextBlock>
+                                            <TextBlock Foreground="#88CCFF" FontSize="12"><Run Text="IP: "/>
                                                             <Run Text="{Binding IP}"/>
-                                                        </TextBlock>
-                                                        <TextBlock Foreground="#AAAAAA" FontSize="11">
+                                            </TextBlock>
+                                            <TextBlock Foreground="#AAAAAA" FontSize="11">
                                                                 <Run Text="S/N: "/>
                                                                 <Run Text="{Binding SerialNumber}"/>
                                                                 <Run Text="   FW: "/><Run Text="{Binding Firmware}"/>
-                                                        </TextBlock>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-
-                            <!-- Текущий индекс (только для информации) -->
-                            <TextBlock Style="{StaticResource FieldLabel}">
-                                <Run Text="Выбран индекс: "/>
-                                <Run Text="{Binding CameraDeviceIndex}"/>
-                            </TextBlock>
-
-                            <!-- Путь к IDMVS.exe -->
-                            <TextBlock Text="Путь к IDMVS.exe" Style="{StaticResource FieldLabel}" Margin="0,8,0,4"/>
-                            <DockPanel Margin="0,0,0,12">
-                                <Button Content="Обзор..."
-                                        Width="80" Height="32"
-                                        DockPanel.Dock="Right"
-                                        Margin="8,0,0,0"
-                                        Click="BrowseIdmvs_Click"/>
-                                <TextBox Text="{Binding IdmvsPath}"
-                                         Height="32" Padding="8,4"
-                                         FontSize="13" IsReadOnly="True"
-                                         Background="#4A4A4A" Foreground="White"
-                                         BorderBrush="#666666"/>
-                            </DockPanel>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
 
                             <!-- Папка сохранения отбракованных -->
                             <TextBlock Text="Папка отбракованных изображений"

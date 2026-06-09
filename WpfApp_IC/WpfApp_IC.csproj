@@ -25,17 +25,6 @@
     <None Remove="Assets\toggle_close.png" />
     <None Remove="Assets\toggle_open.png" />
     <None Remove="Assets\warning.png" />
-    <None Remove="lib\CodeReaderSdkConfig.ini" />
-    <None Remove="lib\hlog.dll" />
-    <None Remove="lib\hpr.dll" />
-    <None Remove="lib\log4cxx.properties" />
-    <None Remove="lib\msvcr90.dll" />
-    <None Remove="lib\MvCodeReaderCtrl.dll" />
-    <None Remove="lib\MvCodeReaderSDK.Net.dll" />
-    <None Remove="lib\MvCodeReaderSdk_00.log" />
-    <None Remove="lib\MvZip.dll" />
-    <None Remove="lib\VirCodeReaderSdkConfig.ini" />
-    <None Remove="lib\VirXMLParse.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,40 +49,6 @@
     <Resource Include="Assets\warning.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Content Include="lib\CodeReaderSdkConfig.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\hlog.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\hpr.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\log4cxx.properties">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\msvcr90.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\MvCodeReaderCtrl.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-   
-    <Content Include="lib\MvCodeReaderSDK.Net.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\MvCodeReaderSdk_00.log">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\MvZip.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\VirCodeReaderSdkConfig.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\VirXMLParse.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -112,50 +67,43 @@
     <ProjectReference Include="..\LabelDesigner\LabelDesigner.csproj" />
     <ProjectReference Include="..\Observable\Observable.csproj" />
   </ItemGroup>
-    <ItemGroup>
-    <Reference Include="MvCodeReaderSDK.Net">
-      <HintPath>lib\MvCodeReaderSDK.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="MvCodeReaderCtrl">
-      <HintPath>lib\MvCodeReaderCtrl.dll</HintPath>
-    </Reference>
-   
-  </ItemGroup>
-    <ItemGroup>
-      <Resource Include="Assets\info.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\logo.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\nastr.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\Next.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\return.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\Start.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\Stop.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\toggle_close.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="Assets\toggle_open.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-    </ItemGroup>
-  <!-- Копирование всех файлов из lib в bin -->
+
   <ItemGroup>
-    <None Update="lib\**\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Reference Include="MvCodeReaderSDK.Net">
+      <HintPath>..\..\IDMVS SDK\Development\Modules\MvCodeReaderSDK\DotNet\AnyCpu\MvCodeReaderSDK.Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\info.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\nastr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Next.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\return.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Start.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Stop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\toggle_close.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\toggle_open.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+	
   <ItemGroup>
     <None Update="label.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

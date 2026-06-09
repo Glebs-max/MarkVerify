@@ -235,7 +235,7 @@ namespace WpfApp_IC.Services.Inspectors
             };
             
             db.mains.Add(verified);
-            //await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             labelingSession.VerifiedCodes.Add(code.Code);
 

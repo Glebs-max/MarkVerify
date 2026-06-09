@@ -132,6 +132,7 @@ namespace WpfApp_IC.Devices
                         _streamZplEmulation.WriteTimeout = _streamZplEmulation.ReadTimeout = 5000;
 
                         PrinterState = PrinterState.Connected;
+                        ConnectionEstablished?.Invoke();
 
                         _listenTask = Task.Run(() => ListenAsync((_listenCts = new()).Token), _connectionCts.Token);
                     }

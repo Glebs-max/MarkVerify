@@ -38,6 +38,7 @@ namespace WpfApp_IC.ViewModels
                 if (!_initiated)
                 {
                     await VideojetPrinter.ClearQueueAsync();
+                    await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
                     _initiated = true;
                 }
             };
@@ -83,7 +84,7 @@ namespace WpfApp_IC.ViewModels
             if (DataMatrix != null)
             {
                 await using var db = await dbContextFactory.CreateDbContextAsync();
-                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0 && (DateTime.Now - (c.DateImport ?? DateTime.MinValue)).Days < 25).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
+                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
 
                 foreach (printer_base code in codes)
                 {
@@ -102,7 +103,7 @@ namespace WpfApp_IC.ViewModels
                     LabelingSession.GTIN.CountAviable--;
                 }
 
-                //await db.SaveChangesAsync();
+                await db.SaveChangesAsync();
             }
         }
     }

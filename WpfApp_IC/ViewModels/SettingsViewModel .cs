@@ -220,7 +220,6 @@ namespace WpfApp_IC.ViewModels
                 RejectCoil = RejectCoil,
 
                 CameraIp = CameraIp,
-                IdmvsPath = IdmvsPath,
                 RejectImagesPath = RejectImagesPath,
 
                 RejectDelayMs = RejectDelayMs,
@@ -271,7 +270,6 @@ namespace WpfApp_IC.ViewModels
             RejectCoil = s.RejectCoil;
 
             CameraIp = s.CameraIp;
-            IdmvsPath = s.IdmvsPath;
 
             RejectDelayMs = s.RejectDelayMs;
             SensorFilterCount = s.SensorFilterCount;

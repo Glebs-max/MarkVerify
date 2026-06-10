@@ -2,8 +2,10 @@
 using LabelDesigner.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml;
 using WpfApp_IC.Data;
 using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
@@ -12,9 +14,9 @@ namespace WpfApp_IC.ViewModels
 {
     public class LabelPrintingViewModel (VideojetErrorsViewModel videojetErrorsViewModel, VideojetPrinter videojetPrinter, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
-        private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(1000) };
+        private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(750) };
         private DesignerViewModel _designerViewModel = new();
-        private bool _initiated;
+        private bool _initiated, _queueLock;
 
         public DesignerViewModel DesignerViewModel
         {
@@ -38,15 +40,21 @@ namespace WpfApp_IC.ViewModels
                 if (!_initiated)
                 {
                     await VideojetPrinter.ClearQueueAsync();
-                    await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
+                    await QueueLabel(VideojetPrinter.MaxQueueSize);
                     _initiated = true;
                 }
+
+                await VideojetPrinter.StartAsync();
             };
             VideojetPrinter.ConnectionLost += _printerStatusCheck.Stop;
             VideojetPrinter.QueueSizeChanged += async (size) =>
             {
-                if (VideojetPrinter.Connected && size <= VideojetPrinter.MaxQueueSize / 3)
-                    await QueueLabel(VideojetPrinter.MaxQueueSize - VideojetPrinter.QueueSize);
+                if (!_queueLock && VideojetPrinter.Connected && size < VideojetPrinter.MaxQueueSize / 2)
+                {
+                    _queueLock = true;
+                    await QueueLabel(VideojetPrinter.MaxQueueSize - size);
+                    _queueLock = false;
+                }
             };
             _printerStatusCheck.Tick += async (s, e) =>
             {
@@ -65,7 +73,9 @@ namespace WpfApp_IC.ViewModels
         public async Task PrintContinue() => await VideojetPrinter.StartAsync();
         public async Task PrintTerminate()
         {
+            await VideojetPrinter.StopAsync();
             VideojetPrinter.Disconnect();
+
             await using var db = await dbContextFactory.CreateDbContextAsync();
             LabelingSession.CurrentTask.last_used_at = DateTime.Now;
             await db.SaveChangesAsync();
@@ -76,8 +86,7 @@ namespace WpfApp_IC.ViewModels
         /// </summary>
         private async Task QueueLabel(int? count = null)
         {
-            if (!VideojetPrinter.Connected)
-                return;
+            if (!VideojetPrinter.Connected) return;
 
             BarcodeField? DataMatrix = DesignerViewModel.Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);
 
@@ -85,6 +94,7 @@ namespace WpfApp_IC.ViewModels
             {
                 await using var db = await dbContextFactory.CreateDbContextAsync();
                 List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
+                gtin gtin = await db.gtins.FirstAsync(g => g.GtinId == LabelingSession.GTIN.GtinId);
 
                 foreach (printer_base code in codes)
                 {
@@ -97,9 +107,10 @@ namespace WpfApp_IC.ViewModels
                     code.StatusId = 1;
                     code.DatePrint = DateTime.Now;
                     code.OperatorName = LabelingSession.MachineName;
-                    code.task = LabelingSession.CurrentTask;
+                    code.task_id = LabelingSession.CurrentTask.id;
                     code.code_number = ++LabelingSession.Count;
 
+                    gtin.CountAviable--;
                     LabelingSession.GTIN.CountAviable--;
                 }
 

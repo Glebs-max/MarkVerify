@@ -42,8 +42,7 @@ namespace WpfApp_IC.Services.SettingsD
         {
             try
             {
-                string filePath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+                string filePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
 
                 if (!File.Exists(filePath))
                     return "RejectImages";
@@ -62,8 +61,7 @@ namespace WpfApp_IC.Services.SettingsD
         {
             try
             {
-                string filePath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+                string filePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
 
                 if (!File.Exists(filePath))
                     return new AppSettings();

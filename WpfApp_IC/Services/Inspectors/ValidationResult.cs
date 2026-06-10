@@ -24,5 +24,6 @@
         public static ValidationResult Ok() => new(true);
         public static ValidationResult NoRead() => new(false, "NO_READ", "DataMatrix не считан");
         public static ValidationResult NotFound() => new(false, "NOT_FOUND", "Код не найден в БД");
+        public static ValidationResult Duplicate() => new(false, "DUPLICATE", "Дубликат");
     }
 }

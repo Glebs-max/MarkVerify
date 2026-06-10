@@ -45,7 +45,7 @@ namespace WpfApp_IC.Devices
         private CancellationTokenSource? _listenCts, _connectionCts;
         private PrinterState _printerState = PrinterState.Disconnected;
         private ErrorState _errorState = ErrorState.Unknown;
-        private int _queueSize, _maxQueueSize = 10;
+        private int _queueSize, _maxQueueSize = 18;
 
         public event Action? ConnectionEstablished;
         public event Action? ConnectionLost;

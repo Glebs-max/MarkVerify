@@ -218,6 +218,10 @@ namespace WpfApp_IC.Services.Inspectors
 
             await using var db = await dbContextFactory.CreateDbContextAsync();
             printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 1);
+            main? duplicate = await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
+
+            if (duplicate != null)
+                return ValidationResult.Duplicate();
 
             if (code == null)
                 return ValidationResult.NotFound();

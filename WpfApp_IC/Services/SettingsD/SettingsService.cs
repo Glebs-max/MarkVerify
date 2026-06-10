@@ -13,7 +13,7 @@ namespace WpfApp_IC.Services.SettingsD
     /// </summary>   
     public class SettingsService : ISettingsService
     {
-        private static readonly string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
+        private static readonly string FilePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             WriteIndented = true

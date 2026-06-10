@@ -80,6 +80,7 @@ namespace WpfApp_IC
                 try
                 {
                     await AppHost.StartAsync();
+                    AppHost.Services.GetRequiredService<ISettingsService>().ApplyCurrent();
 
                     MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
                     mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();

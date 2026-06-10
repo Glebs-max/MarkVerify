@@ -41,13 +41,7 @@ namespace WpfApp_IC
             get => _count;
             set => Set(ref _count, value);
         }
-        public ObservableCollection<string> VerifiedCodes = [
-            "0104630007402529215Q7a-En&yYq0V",
-            "0104630007402529215Q8Dr-fhifehs",
-            "0104630007402529215Q8HMQZHNYoaJ",
-            "0104630007402529215Q8N-ONZNac!L",
-            "0104630007402529215sWA:Xm1XTp2_"
-        ];
+        public ObservableCollection<string> VerifiedCodes = [];
 
         public void Reset()
         {

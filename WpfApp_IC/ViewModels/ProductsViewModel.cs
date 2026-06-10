@@ -1,9 +1,10 @@
 ﻿using LabelDesigner.Services;
-using WpfApp_IC.Data;
-using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
 using System.Collections.ObjectModel;
+using System.IO;
+using WpfApp_IC.Data;
+using WpfApp_IC.Models;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -17,7 +18,7 @@ namespace WpfApp_IC.ViewModels
         public async Task LoadProductsAsync()
         {
             await using var db = await dbContextFactory.CreateDbContextAsync();
-            List<gtin> gtins = await db.gtins.AsNoTracking().ToListAsync();
+            List<gtin> gtins = await db.gtins.ToListAsync();
             GTINs.Clear();
             foreach (var gtin in gtins) GTINs.Add(gtin);
         }
@@ -29,8 +30,7 @@ namespace WpfApp_IC.ViewModels
             labelingSession.GTIN = product;
 
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
-            //model.DesignerViewModel = DesignerService.LoadLabel(product.TemplateLabel ?? string.Empty) ?? new();
-            model.DesignerViewModel = DesignerService.LoadLabel("label.xml") ?? new();
+            model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, "label.xml")) ?? new();
             mainViewModel.CurrentViewModel = model;
         }
         public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();

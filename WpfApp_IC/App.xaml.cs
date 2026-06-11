@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Devices;
@@ -30,7 +31,7 @@ namespace WpfApp_IC
                 {
                     string? conn = context.Configuration.GetConnectionString("DefaultConnection");
 
-                    services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+                    services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(conn, ServerVersion.Create(new(10, 7, 3), ServerType.MariaDb)));
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
@@ -43,31 +44,16 @@ namespace WpfApp_IC
                     services.AddTransient<CameraViewModel>();
                     services.AddTransient<SettingsViewModel>();
 
-
-                    services.AddSingleton<LabelingSession>();
                     services.AddSingleton<VideojetPrinter>();
+                    services.AddSingleton<ModbusSensor>();
+                    services.AddSingleton<ModbusRejector>();
+                    services.AddSingleton<LabelingSession>();
                     services.AddSingleton<LogService>();
+                    services.AddSingleton<SettingsService>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
-                    services.AddSingleton(sp =>
-                    {
-                        var modbus = sp.GetRequiredService<IModbusService>();
-                        var settings = AppSettings.LoadFromFile();
-                        return new ModbusSensor(modbus, settings.SignalCoil);
-                    });
-                    services.AddSingleton(sp =>
-                    {
-                        var modbus = sp.GetRequiredService<IModbusService>();
-                        var settings = AppSettings.LoadFromFile();
-                        return new ModbusRejector(modbus, settings.RejectCoil);
-                    });
-                    services.AddSingleton<ISettingsService, SettingsService>();
-                    services.AddSingleton<IImageSaverService>(sp =>
-                    {
-                        string path = AppSettings.ReadRejectImagesPath();
-                        return new ImageSaverService(path);
-                    });
+                    services.AddSingleton<ImageSaverService>();
 
                     services.AddSingleton<MainWindow>();
                 })
@@ -80,7 +66,7 @@ namespace WpfApp_IC
                 try
                 {
                     await AppHost.StartAsync();
-                    AppHost.Services.GetRequiredService<ISettingsService>().ApplyCurrent();
+                    AppHost.Services.GetRequiredService<SettingsService>().Load();
 
                     MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
                     mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();

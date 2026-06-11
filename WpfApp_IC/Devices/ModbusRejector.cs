@@ -6,11 +6,11 @@ namespace WpfApp_IC.Devices
     /// <summary>
     /// Отбраковщик, управляемый через Modbus coil.
     /// </summary>
-    public class ModbusRejector(IModbusService modbus, int coil)
+    public class ModbusRejector(IModbusService modbus)
     {
         public event Action<string>? ErrorOccurred;
 
-        public int Coil { get; set; } = coil;
+        public int Coil { get; set; }
 
         public void Activate()
         {

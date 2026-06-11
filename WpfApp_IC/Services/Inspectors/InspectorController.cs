@@ -28,7 +28,7 @@ namespace WpfApp_IC.Services.Inspectors
         ModbusRejector rejector,
         IModbusService modbus,
         IDbContextFactory<AppDbContext> dbContextFactory,
-        IImageSaverService imageSaver) : IInspectorController, IDisposable
+        ImageSaverService imageSaver) : IInspectorController, IDisposable
     {
         private CancellationTokenSource? _cts;
         private BitmapSource? _lastFrame;
@@ -218,15 +218,16 @@ namespace WpfApp_IC.Services.Inspectors
 
             await using var db = await dbContextFactory.CreateDbContextAsync();
             printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 1);
-            main? duplicate = await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
+            main? duplicate1 = await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
+            tmp_main? duplicate2 = await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
 
-            if (duplicate != null)
+            if (duplicate1 != null || duplicate2 != null)
                 return ValidationResult.Duplicate();
 
             if (code == null)
                 return ValidationResult.NotFound();
 
-            main verified = new()
+            tmp_main verified1 = new()
             {
                 Code = code.Code,
                 StatusId = 2,
@@ -237,11 +238,21 @@ namespace WpfApp_IC.Services.Inspectors
                 OperatorName = code.OperatorName,
                 OrderID = code.OrderID
             };
-            
-            db.mains.Add(verified);
-            await db.SaveChangesAsync();
+            main verified2 = new()
+            {
+                Code = code.Code,
+                StatusId = 2,
+                DateImport = code.DateImport,
+                DatePrint = code.DatePrint,
+                DateVerify = DateTime.Now,
+                GtinId = code.GtinId,
+                OperatorName = code.OperatorName,
+                OrderID = code.OrderID
+            };
 
-            labelingSession.VerifiedCodes.Add(code.Code);
+            db.tmp_mains.Add(verified1);
+            db.mains.Add(verified2);
+            await db.SaveChangesAsync();
 
             return ValidationResult.Ok();
         }

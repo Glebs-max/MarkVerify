@@ -7,7 +7,7 @@
     /// </summary>
     public class LogService
     {
-        // Ограничение на максимальное количество записей, чобы не накапливались бесконечно (может стоит убрать или сделать настраиваемым полем)
+        // Ограничение на максимальное количество записей
         private const int MaxEntries = 500;
 
         public event Action? EntriesChanged;

@@ -56,7 +56,7 @@ namespace WpfApp_IC.ViewModels
         }
         public async Task Report()
         {
-            File.WriteAllLines("C:\\Users\\lagaponenko\\Desktop\\output.csv", LabelingSession.VerifiedCodes);
+            
         }
         public void Exit()
         {

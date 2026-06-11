@@ -1,18 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
+﻿using Observable;
 
 namespace WpfApp_IC.Services.SettingsD
 {
     /// <summary>
     /// Настройки приложения.
     /// </summary>
-    public class AppSettings
+    public class AppSettings : ObservableObject
     {
-        // Флаги включения устройств
-        public bool UseCamera { get; set; } = true;
-        public bool UseModbus { get; set; } = true;
-        public bool UsePrinter { get; set; } = true;
+        public string MachineName { get; set; } = "";
 
         // Modbus 
         public string ModbusIp { get; set; } = "192.168.0.127";
@@ -24,56 +19,14 @@ namespace WpfApp_IC.Services.SettingsD
         public string PrinterIp { get; set; } = "192.168.0.150";
         public int PrinterPortTextComms { get; set; } = 3003;
         public int PrinterPortZpl { get; set; } = 1000;
-        
+
         // Камера 
-        public string RejectImagesPath { get; set; } = "RejectImages";
         public string CameraIp { get; set; } = "";
+        public string RejectImagesPath { get; set; } = "RejectImages";
 
         // Инспекция
         public int RejectDelayMs { get; set; } = 500;
         public int SensorFilterCount { get; set; } = 2;
         public int SensorPollIntervalMs { get; set; } = 10;
-
-        /// <summary>
-        /// Читает только RejectImagesPath из файла без создания SettingsService.
-        /// Используется для разрыва циклической зависимости в DI.
-        /// </summary>
-        public static string ReadRejectImagesPath()
-        {
-            try
-            {
-                string filePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
-
-                if (!File.Exists(filePath))
-                    return "RejectImages";
-
-                string json = File.ReadAllText(filePath);
-                var s = JsonSerializer.Deserialize<AppSettings>(json);
-                return s?.RejectImagesPath ?? "RejectImages";
-            }
-            catch
-            {
-                return "RejectImages";
-            }
-        }
-
-        public static AppSettings LoadFromFile()
-        {
-            try
-            {
-                string filePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
-
-                if (!File.Exists(filePath))
-                    return new AppSettings();
-
-                string json = File.ReadAllText(filePath);
-                return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
-            }
-            catch
-            {
-                return new AppSettings();
-            }
-        }
-
     }
 }

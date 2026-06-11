@@ -18,9 +18,9 @@ namespace WpfApp_IC.ViewModels
         public async Task LoadProductsAsync()
         {
             await using var db = await dbContextFactory.CreateDbContextAsync();
-            List<gtin> gtins = await db.gtins.ToListAsync();
+            List<gtin> gtins = await db.gtins.AsNoTracking().ToListAsync();
             GTINs.Clear();
-            foreach (var gtin in gtins) GTINs.Add(gtin);
+            foreach (gtin gtin in gtins) GTINs.Add(gtin);
         }
         public void LoadLabel(gtin? product)
         {

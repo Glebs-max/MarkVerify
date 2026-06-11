@@ -17,7 +17,7 @@ namespace WpfApp_IC.ViewModels
     public class SettingsViewModel : ObservableObject
     {
         private readonly MainViewModel _main;
-        private readonly ISettingsService _settings;
+        private readonly SettingsService _settings;
         private readonly ICameraService _camera;
         public bool HasValidationError => !string.IsNullOrEmpty(ValidationMessage);
 
@@ -150,7 +150,7 @@ namespace WpfApp_IC.ViewModels
         }
 
         // Конструктор
-        public SettingsViewModel(MainViewModel main, ISettingsService settings, ICameraService camera)
+        public SettingsViewModel(MainViewModel main, SettingsService settings, ICameraService camera)
         {
             _main = main;
             _settings = settings;
@@ -173,7 +173,7 @@ namespace WpfApp_IC.ViewModels
             {
                 Set(ref _selectedCamera, value);
                 if (value != null)
-                    CameraIp = value.IP; // сразу обновляем индекс
+                    CameraIp = value.IP;
             }
         }
 
@@ -203,29 +203,7 @@ namespace WpfApp_IC.ViewModels
         {
             if (!Validate()) return;
 
-            _settings.Save(new AppSettings
-            {
-                UseCamera = UseCamera,
-                UseModbus = UseModbus,
-                UsePrinter = UsePrinter,
-
-                PrinterIp = PrinterIp,
-                PrinterPortTextComms = PrinterPortTextComms,
-                PrinterPortZpl = PrinterPortZpl,
-
-                ModbusIp = ModbusIp,
-                ModbusPort = ModbusPort,
-
-                SignalCoil = SignalCoil,
-                RejectCoil = RejectCoil,
-
-                CameraIp = CameraIp,
-                RejectImagesPath = RejectImagesPath,
-
-                RejectDelayMs = RejectDelayMs,
-                SensorFilterCount = SensorFilterCount,
-                SensorPollIntervalMs = SensorPollIntervalMs
-            });
+            _settings.Save();
 
             NavigateBack();
         }
@@ -253,11 +231,7 @@ namespace WpfApp_IC.ViewModels
         // Приватные методы
         private void LoadFromCurrent()
         {
-            var s = _settings.Current;
-
-            UseCamera = s.UseCamera;
-            UseModbus = s.UseModbus;
-            UsePrinter = s.UsePrinter;
+            var s = _settings.Settings;
 
             PrinterIp = s.PrinterIp;
             PrinterPortTextComms = s.PrinterPortTextComms;

@@ -36,7 +36,7 @@ namespace WpfApp_IC.ViewModels
             VideojetPrinter.ConnectionEstablished += async () =>
             {
                 _printerStatusCheck.Start();
-
+                
                 if (!_initiated)
                 {
                     await VideojetPrinter.ClearQueueAsync();

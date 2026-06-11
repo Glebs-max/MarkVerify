@@ -41,7 +41,6 @@ namespace WpfApp_IC
             get => _count;
             set => Set(ref _count, value);
         }
-        public ObservableCollection<string> VerifiedCodes = [];
 
         public void Reset()
         {
@@ -50,7 +49,6 @@ namespace WpfApp_IC
             Count = 0;
             GTIN = new();
             CurrentTask = new();
-            VerifiedCodes.Clear();
         }
     }
 }

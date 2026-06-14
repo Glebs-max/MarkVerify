@@ -61,18 +61,20 @@
 
         <!-- Содержимое -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            
             <StackPanel Width="560" HorizontalAlignment="Center" Margin="0,20,0,20">
-
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Наименование упаковочного автомата" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding MachineName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Field}"/>
+                    </StackPanel>
+                </Border>
                 <!-- ПРИНТЕР -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
                         <TextBlock Text="Принтер" Style="{StaticResource SectionHeader}"/>
 
-                        <CheckBox Content="Использовать принтер"
-                                  IsChecked="{Binding UsePrinter}"
-                                  Style="{StaticResource Toggle}"/>
-
-                        <StackPanel IsEnabled="{Binding UsePrinter}">
+                        <StackPanel>
                             <TextBlock Text="IP-адрес" Style="{StaticResource FieldLabel}"/>
                             <TextBox Text="{Binding PrinterIp, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource Field}"/>
@@ -93,11 +95,7 @@
                     <StackPanel>
                         <TextBlock Text="Modbus контроллер" Style="{StaticResource SectionHeader}"/>
 
-                        <CheckBox Content="Использовать Modbus"
-                                  IsChecked="{Binding UseModbus}"
-                                  Style="{StaticResource Toggle}"/>
-
-                        <StackPanel IsEnabled="{Binding UseModbus}">
+                        <StackPanel>
                             <TextBlock Text="IP-адрес" Style="{StaticResource FieldLabel}"/>
                             <TextBox Text="{Binding ModbusIp, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource Field}"/>
@@ -115,11 +113,7 @@
                     <StackPanel>
                         <TextBlock Text="Камера" Style="{StaticResource SectionHeader}"/>
 
-                        <CheckBox Content="Использовать камеру"
-                          IsChecked="{Binding UseCamera}"
-                          Style="{StaticResource Toggle}"/>
-
-                        <StackPanel IsEnabled="{Binding UseCamera}">
+                        <StackPanel>
 
                             <!-- Список найденных камер -->
                             <DockPanel Margin="0,0,0,8">

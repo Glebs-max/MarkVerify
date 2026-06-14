@@ -53,10 +53,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>14.06.26</Text>
+      <Text>15.06.26</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-06-14T23:58:40.1181443+05:00</Date>
+      <Date>2026-06-15T00:06:34.6017729+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -80,10 +80,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>14.06.27</Text>
+      <Text>15.06.27</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-06-14T23:58:40.118369+05:00</Date>
+      <Date>2027-06-15T00:06:34.6019829+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -112,10 +112,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>19.333604343892542</W>
       <H>8.692365835222978</H>
-      <Text>23:58</Text>
+      <Text>00:06</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-06-14T23:58:40.118469+05:00</Time>
+      <Time>2026-06-15T00:06:34.6021792+05:00</Time>
       <TimeFormat>HH$mm</TimeFormat>
       <Separator>58</Separator>
     </Field>
@@ -177,7 +177,7 @@
         <Height>38.62666666666667</Height>
       </InitialSize>
       <X>62.35827664399094</X>
-      <Y>26.455026455026456</Y>
+      <Y>26.077097505668934</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
@@ -185,8 +185,8 @@
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>4.773453748357933</W>
-      <H>9.25460633026129</H>
+      <W>4.483454487152894</W>
+      <H>8.692365835222978</H>
       <Text>Z</Text>
       <TextFontFamily>Tahoma</TextFontFamily>
       <Bold>true</Bold>

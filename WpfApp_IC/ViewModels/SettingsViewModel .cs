@@ -21,10 +21,6 @@ namespace WpfApp_IC.ViewModels
         private readonly ICameraService _camera;
         public bool HasValidationError => !string.IsNullOrEmpty(ValidationMessage);
 
-        // Флаги устройств
-        private bool _useCamera;
-        private bool _useModbus;
-        private bool _usePrinter;
         private int _signalCoil;
         private int _rejectCoil;
 
@@ -34,22 +30,6 @@ namespace WpfApp_IC.ViewModels
             get => _rejectImagesPath;
             set => Set(ref _rejectImagesPath, value);
         }   
-
-        public bool UseCamera
-        {
-            get => _useCamera;
-            set => Set(ref _useCamera, value);
-        }
-        public bool UseModbus
-        {
-            get => _useModbus;
-            set => Set(ref _useModbus, value);
-        }
-        public bool UsePrinter
-        {
-            get => _usePrinter;
-            set => Set(ref _usePrinter, value);
-        }
 
         public int SignalCoil
         {
@@ -135,6 +115,13 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _sensorPollIntervalMs, value);
         }
 
+        public string _machineName = "";
+        public string MachineName
+        {
+            get => _machineName;
+            set => Set(ref _machineName, value);
+        }
+
         // Валидация
         private string _validationMessage = "";
 
@@ -203,6 +190,19 @@ namespace WpfApp_IC.ViewModels
         {
             if (!Validate()) return;
 
+            _settings.Settings.RejectDelayMs = RejectDelayMs;
+            _settings.Settings.SignalCoil = SignalCoil;
+            _settings.Settings.SensorPollIntervalMs = SensorPollIntervalMs;
+            _settings.Settings.SensorFilterCount = SensorFilterCount;
+            _settings.Settings.ModbusIp = ModbusIp;
+            _settings.Settings.ModbusPort = ModbusPort;
+            _settings.Settings.CameraIp = CameraIp;
+            _settings.Settings.RejectImagesPath = RejectImagesPath;
+            _settings.Settings.PrinterIp = PrinterIp;
+            _settings.Settings.PrinterPortTextComms = PrinterPortTextComms;
+            _settings.Settings.PrinterPortZpl = PrinterPortZpl;
+            _settings.Settings.MachineName = MachineName;
+
             _settings.Save();
 
             NavigateBack();
@@ -252,6 +252,8 @@ namespace WpfApp_IC.ViewModels
             ValidationMessage = "";
 
             RejectImagesPath = s.RejectImagesPath;
+
+            MachineName = s.MachineName;
         }
 
         private bool Validate()

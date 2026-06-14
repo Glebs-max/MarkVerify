@@ -29,9 +29,17 @@ namespace WpfApp_IC.ViewModels
 
         public async Task PrintInitiate()
         {
-            await using var db = await dbContextFactory.CreateDbContextAsync();
-            db.printer_tasks.Add(LabelingSession.CurrentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now });
-            await db.SaveChangesAsync();
+            try
+            {
+                await using var db = await dbContextFactory.CreateDbContextAsync();
+                db.printer_tasks.Add(LabelingSession.CurrentTask = new() { created_at = DateTime.Now, last_used_at = DateTime.Now });
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
 
             VideojetPrinter.ConnectionEstablished += async () =>
             {
@@ -76,9 +84,16 @@ namespace WpfApp_IC.ViewModels
             await VideojetPrinter.StopAsync();
             VideojetPrinter.Disconnect();
 
-            await using var db = await dbContextFactory.CreateDbContextAsync();
-            LabelingSession.CurrentTask.last_used_at = DateTime.Now;
-            await db.SaveChangesAsync();
+            try
+            {
+                await using var db = await dbContextFactory.CreateDbContextAsync();
+                LabelingSession.CurrentTask.last_used_at = DateTime.Now;
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
@@ -92,29 +107,36 @@ namespace WpfApp_IC.ViewModels
 
             if (DataMatrix != null)
             {
-                await using var db = await dbContextFactory.CreateDbContextAsync();
-                List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
-                gtin gtin = await db.gtins.FirstAsync(g => g.GtinId == LabelingSession.GTIN.GtinId);
-
-                foreach (printer_base code in codes)
+                try
                 {
-                    await VideojetPrinter.SendZplAsync(await Application.Current.Dispatcher.InvokeAsync(() =>
+                    await using var db = await dbContextFactory.CreateDbContextAsync();
+                    List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == LabelingSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
+                    gtin gtin = await db.gtins.FirstAsync(g => g.GtinId == LabelingSession.GTIN.GtinId);
+
+                    foreach (printer_base code in codes)
                     {
-                        DataMatrix.BarcodeData = code.Code;
-                        return DesignerViewModel.ConvertToZpl();
-                    }));
+                        await VideojetPrinter.SendZplAsync(await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            DataMatrix.BarcodeData = code.Code;
+                            return DesignerViewModel.ConvertToZpl();
+                        }));
 
-                    code.StatusId = 1;
-                    code.DatePrint = DateTime.Now;
-                    code.OperatorName = LabelingSession.MachineName;
-                    code.task_id = LabelingSession.CurrentTask.id;
-                    code.code_number = ++LabelingSession.Count;
+                        code.StatusId = 1;
+                        code.DatePrint = DateTime.Now;
+                        code.OperatorName = LabelingSession.MachineName;
+                        code.task_id = LabelingSession.CurrentTask.id;
+                        code.code_number = ++LabelingSession.Count;
 
-                    gtin.CountAviable--;
-                    LabelingSession.GTIN.CountAviable--;
+                        gtin.CountAviable--;
+                        LabelingSession.GTIN.CountAviable--;
+                    }
+
+                    await db.SaveChangesAsync();
                 }
-
-                await db.SaveChangesAsync();
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

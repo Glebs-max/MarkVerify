@@ -6,7 +6,7 @@ namespace WpfApp_IC
 {
     public class LabelingSession : ObservableObject
     {
-        private string _machineName = "Машина 1";
+        private string _machineName = "";
         private gtin _gtin = new();
         private printer_task _currentTask = new();
         private int _verified = 0, _rejected = 0, _count = 0;

@@ -47,8 +47,15 @@ namespace WpfApp_IC.ViewModels
         {
             return product.GtinId switch
             {
-                6510651 => "Джинн.xml",
-                5464456 => "Белочка.xml",
+                04630007402529 => "Horizontal.xml",
+                04630007402536 => "Horizontal.xml",
+                04630007403113 => "Horizontal.xml",
+                04630007402987 => "Vertical.xml",
+                04630007402994 => "Vertical.xml",
+                04630007403007 => "Vertical.xml",
+                04630007403014 => "Vertical.xml",
+                04630007402550 => "Set.xml",
+                04630007403120 => "Set.xml",
                 _ => "default.xml",
             };
         }

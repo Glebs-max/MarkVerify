@@ -16,12 +16,6 @@
                         FontSize="18"
                         Margin="10"
                         Click="Start_Click"/>
-                <Button Content="Камера (базовый режим)"
-                        Width="250"
-                        Height="50"
-                        FontSize="18"
-                        Margin="10"
-                        Click="Camera_Click"/>
                 <Button Content="Настройки"
                         Width="250"
                         Height="50"

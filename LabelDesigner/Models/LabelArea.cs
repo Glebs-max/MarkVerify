@@ -10,7 +10,7 @@ namespace LabelDesigner.Models
         {
             MinWidth = MinHeight = UnitsService.FromMM(5);
             GridStepX = GridStepY = UnitsService.FromMM(5);
-            Grid = true;
+            ShowGrid = true;
         }
 
         public new LabelAreaVisual Visual => (LabelAreaVisual)base.Visual;
@@ -52,7 +52,7 @@ namespace LabelDesigner.Models
             get => Visual.GridStepY;
             set => Set(() => Visual.GridStepY = value);
         }
-        public bool Grid
+        public bool ShowGrid
         {
             get => Visual.Grid;
             set => Set(() => Visual.Grid = value);

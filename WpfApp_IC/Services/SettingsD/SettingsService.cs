@@ -25,7 +25,10 @@ namespace WpfApp_IC.Services.SettingsD
                 if (!File.Exists(_settingsPath))
                     Save();
                 else
-                { Settings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_settingsPath)) ?? new(); Apply(Settings); }
+                {
+                    Settings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_settingsPath)) ?? new();
+                    Apply(Settings);
+                }
             }
             catch { }
         }
@@ -56,17 +59,6 @@ namespace WpfApp_IC.Services.SettingsD
             // Камера 
             inspector.CameraIp = s.CameraIp;
             imageSaver.SavePath = s.RejectImagesPath;
-
-            Debug.WriteLine("=== SettingsService.Apply ===");
-            Debug.WriteLine($"  ModbusIp         = {s.ModbusIp}");
-            Debug.WriteLine($"  ModbusPort       = {s.ModbusPort}");
-            Debug.WriteLine($"  SignalCoil       = {s.SignalCoil}");
-            Debug.WriteLine($"  RejectCoil       = {s.RejectCoil}");
-            Debug.WriteLine($"  CameraIp         = {s.CameraIp}");
-            Debug.WriteLine($"  RejectDelayMs    = {s.RejectDelayMs}");
-            Debug.WriteLine($"  SensorFilter     = {s.SensorFilterCount}");
-            Debug.WriteLine($"  SensorPollMs     = {s.SensorPollIntervalMs}");
-            Debug.WriteLine($"  RejectImagesPath = {s.RejectImagesPath}");
         }
     }
 }

@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="Assets\active.png" />
+    <None Remove="Assets\fair mark.png" />
     <None Remove="Assets\fault.png" />
     <None Remove="Assets\good.png" />
     <None Remove="Assets\info.png" />
@@ -31,6 +32,9 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\fair mark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\active.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -111,10 +115,10 @@
     <None Update="LabelTemplates\default.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="LabelTemplates\Белочка.xml">
+    <None Update="LabelTemplates\Vertical.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="LabelTemplates\Джинн.xml">
+    <None Update="LabelTemplates\Horizontal.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -92,7 +92,7 @@ namespace LabelDesigner
 
                     if (Preview)
                     {
-                        VM.LabelArea.Grid = false;
+                        VM.LabelArea.ShowGrid = false;
                         CanvasArea.Children.Add(VM.LabelArea.Visual);
 
                         foreach (Field field in VM.Fields)

@@ -15,6 +15,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -41,5 +42,6 @@
                 <toolkit:DoubleUpDown Value="{Binding GridStepY, Mode=TwoWay, Converter={StaticResource UnitsConverter}}" FormatString="F2" Increment="0.25" Minimum="1" DefaultValue="1"/>
             </StackPanel>
         </Grid>
+        <CheckBox Content="Показывать сетку" IsChecked="{Binding ShowGrid, Mode=TwoWay}" Margin="4"/>
     </StackPanel>
 </UserControl>

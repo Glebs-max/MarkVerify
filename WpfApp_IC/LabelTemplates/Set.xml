@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DesignerViewModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Scale>2.650000000000005</Scale>
+  <LabelArea>
+    <MinWidth>18.89644746787604</MinWidth>
+    <MinHeight>18.89644746787604</MinHeight>
+    <W>215.41950113378684</W>
+    <H>222.97808012093725</H>
+    <GridStepX>18.89644746787604</GridStepX>
+    <GridStepY>18.89644746787604</GridStepY>
+    <Grid>true</Grid>
+  </LabelArea>
+  <Fields>
+    <Field xsi:type="BarcodeField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Database</DataType>
+      <FieldName>Datamatrix</FieldName>
+      <InitialSize>
+        <Width>324</Width>
+        <Height>324</Height>
+      </InitialSize>
+      <X>37.79289493575208</X>
+      <Y>56.68934240362812</Y>
+      <ZIndex>0</ZIndex>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>94.48223733938019</W>
+      <H>94.48223733938019</H>
+      <BarcodeData>1337X228X69</BarcodeData>
+    </Field>
+  </Fields>
+</DesignerViewModel>

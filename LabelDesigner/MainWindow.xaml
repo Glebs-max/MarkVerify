@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LabelDesigner"
         d:DataContext="{d:DesignInstance Type=local:DesignerViewModel}"
         mc:Ignorable="d" FontFamily="Bahnschrift" FontSize="17"
-        Title="MainWindow" Height="720" Width="1280">
+        Title="Label Designer" Height="720" Width="1280">
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="MediumVioletRed" FontFamily="Bahnschrift" FontSize="17">
             <MenuItem Header="Открыть" Click="FileOpen_Click" Padding="15,4,15,4" Foreground="White"/>

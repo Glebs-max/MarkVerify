@@ -7,8 +7,9 @@
         xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
         xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
-        mc:Ignorable="d" Title="MainWindow" FontFamily="Bahnschrift" FontSize="17"
-        Height="720" Width="1280">
+        mc:Ignorable="d" Title="Честный Знак" Icon='/Assets/fair mark.png'
+        FontFamily="Bahnschrift" FontSize="17"
+        Height="1024" Width="1280" WindowState="Maximized">
     <Window.Resources>
         <Style x:Key="IconButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -143,15 +144,9 @@
                     <pages:Settings/>
                 </DataTemplate>
 
-                <!--<DataTemplate DataType="{x:Type vm:CameraAdvancedViewModel}">
-                    <pages:CameraAdvanced/>
-                </DataTemplate>-->
-
                 <DataTemplate DataType="{x:Type vm:CameraViewModel}">
                     <pages:CameraBasic/>
                 </DataTemplate>
-
-
 
             </ContentPresenter.Resources>
         </ContentPresenter>

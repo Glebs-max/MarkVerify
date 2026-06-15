@@ -6,7 +6,7 @@
     <MinHeight>18.89644746787604</MinHeight>
     <W>60.46863189720332</W>
     <H>83.14436885865457</H>
-    <GridStepX>18.89644746787604</GridStepX>
+    <GridStepX>30.23431594860166</GridStepX>
     <GridStepY>18.89644746787604</GridStepY>
     <Grid>true</Grid>
   </LabelArea>
@@ -42,7 +42,7 @@
         <Width>124.56</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>3.7792894935752077</X>
+      <X>2.834467120181406</X>
       <Y>38.73771730914588</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
@@ -56,7 +56,7 @@
       <Text>15.06.26</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-06-15T00:05:55.1084962+05:00</Date>
+      <Date>2026-06-15T10:20:49.9895351+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -69,7 +69,7 @@
         <Width>124.56</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>3.7792894935752077</X>
+      <X>2.834467120181406</X>
       <Y>46.296296296296305</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
@@ -83,7 +83,7 @@
       <Text>15.06.27</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-06-15T00:05:55.1087295+05:00</Date>
+      <Date>2027-06-15T10:20:49.989798+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -101,7 +101,7 @@
         <Width>81.84333333333333</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>3.7792894935752077</X>
+      <X>2.834467120181406</X>
       <Y>53.85487528344671</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
@@ -112,10 +112,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>19.333604343892542</W>
       <H>8.692365835222978</H>
-      <Text>00:05</Text>
+      <Text>10:20</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-06-15T00:05:55.108797+05:00</Time>
+      <Time>2026-06-15T10:20:49.9900813+05:00</Time>
       <TimeFormat>HH$mm</TimeFormat>
       <Separator>58</Separator>
     </Field>
@@ -123,36 +123,12 @@
       <MinWidth>3.7792894935752077</MinWidth>
       <MinHeight>3.7792894935752077</MinHeight>
       <DataType>Input</DataType>
-      <FieldName>Номер автомата и линии</FieldName>
-      <InitialSize>
-        <Width>35.593333333333334</Width>
-        <Height>36.79666666666667</Height>
-      </InitialSize>
-      <X>35.90325018896448</X>
-      <Y>38.73771730914588</Y>
-      <ZIndex>0</ZIndex>
-      <Orientation>0</Orientation>
-      <MirrorX>false</MirrorX>
-      <MirrorY>false</MirrorY>
-      <Inverted>false</Inverted>
-      <Transparent>false</Transparent>
-      <KeepAspectRatio>true</KeepAspectRatio>
-      <W>8.408106023055618</W>
-      <H>8.692365835222978</H>
-      <Text>15</Text>
-      <TextFontFamily>Arial</TextFontFamily>
-      <Bold>true</Bold>
-    </Field>
-    <Field xsi:type="TextField">
-      <MinWidth>3.7792894935752077</MinWidth>
-      <MinHeight>3.7792894935752077</MinHeight>
-      <DataType>Input</DataType>
-      <FieldName>Номер смены</FieldName>
+      <FieldName>Номер линии</FieldName>
       <InitialSize>
         <Width>17.796666666666667</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>45.35147392290249</X>
+      <X>34.95842781557067</X>
       <Y>38.73771730914588</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
@@ -170,14 +146,38 @@
     <Field xsi:type="TextField">
       <MinWidth>3.7792894935752077</MinWidth>
       <MinHeight>3.7792894935752077</MinHeight>
-      <DataType>Fixed</DataType>
+      <DataType>Input</DataType>
+      <FieldName>Номер смены</FieldName>
+      <InitialSize>
+        <Width>17.796666666666667</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>46.2962962962963</X>
+      <Y>38.73771730914588</Y>
+      <ZIndex>0</ZIndex>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>4.204053011527809</W>
+      <H>8.692365835222978</H>
+      <Text>1</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
       <FieldName>Код завода</FieldName>
       <InitialSize>
         <Width>19.923333333333336</Width>
         <Height>38.62666666666667</Height>
       </InitialSize>
-      <X>51.02040816326531</X>
-      <Y>38.548752834467116</Y>
+      <X>51.96523053665911</X>
+      <Y>38.35978835978836</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
@@ -197,10 +197,10 @@
       <DataType>Input</DataType>
       <FieldName>Код региона</FieldName>
       <InitialSize>
-        <Width>75.29666666666667</Width>
+        <Width>35.593333333333334</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>35.90325018896448</X>
+      <X>48.18594104308391</X>
       <Y>46.2962962962963</Y>
       <ZIndex>0</ZIndex>
       <Orientation>0</Orientation>
@@ -209,9 +209,57 @@
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>17.787104977973716</W>
+      <W>8.408106023055618</W>
       <H>8.692365835222978</H>
-      <Text>A  00</Text>
+      <Text>00</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Материал упаковки</FieldName>
+      <InitialSize>
+        <Width>23.110000000000003</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>40.62736205593348</X>
+      <Y>46.2962962962963</Y>
+      <ZIndex>8</ZIndex>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>5.459205755557652</W>
+      <H>8.692365835222978</H>
+      <Text>A</Text>
+      <TextFontFamily>Arial</TextFontFamily>
+      <Bold>true</Bold>
+    </Field>
+    <Field xsi:type="TextField">
+      <MinWidth>3.7792894935752077</MinWidth>
+      <MinHeight>3.7792894935752077</MinHeight>
+      <DataType>Input</DataType>
+      <FieldName>Номер автомата</FieldName>
+      <InitialSize>
+        <Width>17.796666666666667</Width>
+        <Height>36.79666666666667</Height>
+      </InitialSize>
+      <X>40.62736205593348</X>
+      <Y>38.73771730914588</Y>
+      <ZIndex>9</ZIndex>
+      <Orientation>0</Orientation>
+      <MirrorX>false</MirrorX>
+      <MirrorY>false</MirrorY>
+      <Inverted>false</Inverted>
+      <Transparent>false</Transparent>
+      <KeepAspectRatio>true</KeepAspectRatio>
+      <W>4.204053011527809</W>
+      <H>8.692365835222978</H>
+      <Text>5</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
     </Field>

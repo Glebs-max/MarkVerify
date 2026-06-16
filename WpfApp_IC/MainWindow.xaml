@@ -10,145 +10,27 @@
         mc:Ignorable="d" Title="Честный Знак" Icon='/Assets/fair mark.png'
         FontFamily="Bahnschrift" FontSize="17"
         Height="1024" Width="1280" WindowState="Maximized">
-    <Window.Resources>
-        <Style x:Key="IconButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <ContentPresenter x:Name="content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="content" Property="Opacity" Value="0.35"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="content" Property="Opacity" Value="0.8"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="content" Property="Opacity" Value="0.6"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
+    <ContentPresenter Content="{Binding CurrentViewModel}">
+        <ContentPresenter.Resources>
+            <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+                <pages:Home/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+                <pages:Products/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
+                <pages:LabelPreview/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LabelingViewModel}">
+                <pages:Labeling/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <pages:Settings/>
+            </DataTemplate>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <!-- Верхняя панель -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF6D00" Height="50">
-            <DockPanel LastChildFill="True" VerticalAlignment="Center">
-
-                <!-- Логотип -->
-                <Button DockPanel.Dock="Left"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        ToolTip="Главная"
-                        Click="GoHome_Click"
-                        Focusable="False">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="OverridesDefaultStyle" Value="True"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <ContentPresenter/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Cursor" Value="Hand"/>
-                        </Style>
-                    </Button.Style>
-
-                    <!-- Используем pack URI -->
-                    <Image Source="pack://application:,,,/Assets/logo.png"
-                           DockPanel.Dock="Left"
-                           Margin="20,0,0,0"/>
-                </Button>
-
-                <!-- Кнопки справа -->
-                <StackPanel Orientation="Horizontal"
-                            DockPanel.Dock="Right"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Right"
-                            Background="Transparent"
-                            Margin="0,0,20,0">
-
-                    <Button x:Name="BackButton"
-                            Width="40" Height="40"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Click="BackButton_Click"
-                            IsEnabled="False"
-                            Style="{StaticResource IconButtonStyle}">
-                        <Image Source="pack://application:,,,/Assets/return.png" Width="40" Height="40"/>
-                    </Button>
-
-                    <Button x:Name="ForwardButton"
-                            Width="40" Height="40"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Click="ForwardButton_Click"
-                            IsEnabled="False"
-                            Style="{StaticResource IconButtonStyle}">
-                        <Image Source="pack://application:,,,/Assets/Next.png" Width="40" Height="40"/>
-                    </Button>
-
-                    <Button Width="40" Height="40"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Click="SettingsButton_Click">
-                        <Image Source="pack://application:,,,/Assets/nastr.png" Width="40" Height="40"/>
-                    </Button>
-
-                    <Button Width="41" Height="40"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Click="HelpButton_Click">
-                        <Image Source="pack://application:,,,/Assets/info.png" Width="39" Height="39"/>
-                    </Button>
-                </StackPanel>
-            </DockPanel>
-        </Border>
-
-        <ContentPresenter Content="{Binding CurrentViewModel}" Grid.Row="1">
-            <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type vm:HomeViewModel}">
-                    <pages:Home/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
-                    <pages:Products/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
-                    <pages:LabelPreview/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:LabelingViewModel}">
-                    <pages:Labeling/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
-                    <pages:Settings/>
-                </DataTemplate>
-
-                <DataTemplate DataType="{x:Type vm:CameraViewModel}">
-                    <pages:CameraBasic/>
-                </DataTemplate>
-
-            </ContentPresenter.Resources>
-        </ContentPresenter>
-    </Grid>
+            <DataTemplate DataType="{x:Type vm:CameraViewModel}">
+                <pages:CameraBasic/>
+            </DataTemplate>
+        </ContentPresenter.Resources>
+    </ContentPresenter>
 </Window>

@@ -20,6 +20,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<buffer> buffers { get; set; }
 
+    public virtual DbSet<debug> debugs { get; set; }
+
     public virtual DbSet<error> errors { get; set; }
 
     public virtual DbSet<gtin> gtins { get; set; }
@@ -171,6 +173,28 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.IDNavigation).WithMany()
                 .HasForeignKey(d => d.ID)
                 .HasConstraintName("buffers_ibfk_1");
+        });
+
+        modelBuilder.Entity<debug>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PRIMARY");
+
+            entity.ToTable("debug");
+
+            entity.Property(e => e.id)
+                .HasColumnType("int(10) unsigned");
+            entity.Property(e => e.info)
+                .HasColumnType("text");
+            entity.Property(e => e.source)
+                .HasMaxLength(64);
+            entity.Property(e => e.timestamp)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("current_timestamp()")
+                .HasColumnType("timestamp");
+            entity.Property(e => e.type)
+                .HasMaxLength(64);
+            entity.Property(e => e.machine)
+                .HasMaxLength(64);
         });
 
         modelBuilder.Entity<error>(entity =>

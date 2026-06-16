@@ -83,7 +83,7 @@ namespace WpfApp_IC.Converters
                         result.StatusColor = Brushes.OrangeRed;
                         break;
                     case ErrorState.Unknown:
-                        result.StatusIcon = string.Empty;
+                        result.StatusIcon = "/Assets/disconnected.png";
                         break;
                 }
 

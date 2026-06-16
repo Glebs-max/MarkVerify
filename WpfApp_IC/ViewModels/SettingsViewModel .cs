@@ -190,9 +190,9 @@ namespace WpfApp_IC.ViewModels
         {
             if (!Validate()) return;
 
-            _settings.Settings.RejectDelayMs = RejectDelayMs;
+            _settings.Settings.RejectDelay = RejectDelayMs;
             _settings.Settings.SignalCoil = SignalCoil;
-            _settings.Settings.SensorPollIntervalMs = SensorPollIntervalMs;
+            _settings.Settings.SensorPollInterval = SensorPollIntervalMs;
             _settings.Settings.SensorFilterCount = SensorFilterCount;
             _settings.Settings.ModbusIp = ModbusIp;
             _settings.Settings.ModbusPort = ModbusPort;
@@ -245,9 +245,9 @@ namespace WpfApp_IC.ViewModels
 
             CameraIp = s.CameraIp;
 
-            RejectDelayMs = s.RejectDelayMs;
+            RejectDelayMs = s.RejectDelay;
             SensorFilterCount = s.SensorFilterCount;
-            SensorPollIntervalMs = s.SensorPollIntervalMs;
+            SensorPollIntervalMs = s.SensorPollInterval;
 
             ValidationMessage = "";
 

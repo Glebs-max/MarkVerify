@@ -7,9 +7,7 @@
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:LogViewModel}"
              mc:Ignorable="d">
-    <Border Grid.Row="4"
-        Padding="4"
-        Background="#1E1E1E">
+    <Border Grid.Row="4" Padding="4" Background="White">
         <ListBox x:Name="LogList"
              ItemsSource="{Binding Entries}"
              Background="Transparent"
@@ -18,19 +16,16 @@
              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Display}"
-                           FontFamily="Consolas"
-                           FontSize="13"
-                           TextWrapping="Wrap">
+                    <TextBlock Text="{Binding Display}" FontWeight="Bold" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="LightGreen"/>
+                                <Setter Property="Foreground" Value="#FF00B10B"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                        <Setter Property="Foreground" Value="#FFD700"/>
+                                        <Setter Property="Foreground" Value="#FFDABD00"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Level}" Value="Error">
-                                        <Setter Property="Foreground" Value="#FF6B6B"/>
+                                        <Setter Property="Foreground" Value="#FFD10000"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

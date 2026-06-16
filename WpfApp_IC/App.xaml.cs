@@ -48,12 +48,14 @@ namespace WpfApp_IC
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
                     services.AddSingleton<LabelingSession>();
+
                     services.AddSingleton<LogService>();
                     services.AddSingleton<SettingsService>();
                     services.AddSingleton<IModbusService, ModbusService>();
                     services.AddSingleton<ICameraService, CameraService>();
                     services.AddSingleton<IInspectorController, InspectorController>();
                     services.AddSingleton<ImageSaverService>();
+                    services.AddSingleton<DebugService>();
 
                     services.AddSingleton<MainWindow>();
                 })
@@ -75,9 +77,11 @@ namespace WpfApp_IC
                     mw.Show();
 
                     base.OnStartup(e);
+                    await AppHost.Services.GetRequiredService<DebugService>().CreateDebugEntryAsync(DebugType.Info, "App.xaml", "Запуск приложения");
                 }
                 catch (Exception ex)
                 {
+                    await AppHost.Services.GetRequiredService<DebugService>().CreateDebugEntryAsync(DebugType.Error, "App.xaml", $"Ошибка:\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}");
                     MessageBox.Show($"Ошибка:\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}", "Критическая ошибка");
                     Shutdown();
                 }
@@ -87,6 +91,7 @@ namespace WpfApp_IC
         {
             if (AppHost != null)
             {
+                await AppHost.Services.GetRequiredService<DebugService>().CreateDebugEntryAsync(DebugType.Info, "App.xaml", "Остановка приложения");
                 await AppHost.StopAsync();
                 AppHost.Dispose();
                 base.OnExit(e);

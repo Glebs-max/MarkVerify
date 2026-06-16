@@ -61,6 +61,7 @@ namespace WpfApp_IC.ViewModels
         public void Exit()
         {
             LabelingSession.Reset();
+            LogViewModel.Entries.Clear();
             mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
         }
     }

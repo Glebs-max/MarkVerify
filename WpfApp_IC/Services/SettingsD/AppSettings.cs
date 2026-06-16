@@ -7,33 +7,103 @@ namespace WpfApp_IC.Services.SettingsD
     /// </summary>
     public class AppSettings : ObservableObject
     {
-        private string _machineName = "", _modbusIp = "", _printerIp = "", _cameraIp = "", _rejectPath = "";
-        private int _modbusPort, _signalCoil, _rejectCoil, _printerPortTextComms, _printerPortZpl, _rejectDelay, _sensorFilterCount, _sensorPollInterval;
-
+        private string _machineName = "";
         public string MachineName
-        { 
-            get => _machineName; 
+        {
+            get => _machineName;
             set => Set(ref _machineName, value);
         }
 
-        // Modbus 
-        public string ModbusIp { get; set; } = "172.19.43.21";
-        public int ModbusPort { get; set; } = 502;
-        public int SignalCoil { get; set; } = 0;
-        public int RejectCoil { get; set; } = 0;
+        /* --- Modbus --- */
 
-        // Принтер 
-        public string PrinterIp { get; set; } = "172.19.43.5";
-        public int PrinterPortTextComms { get; set; } = 3003;
-        public int PrinterPortZpl { get; set; } = 1000;
+        private string _modbusIp = "172.19.43.21";
+        public string ModbusIp
+        {
+            get => _modbusIp;
+            set => Set(ref _modbusIp, value);
+        }
 
-        // Камера 
-        public string CameraIp { get; set; } = "";
-        public string RejectImagesPath { get; set; } = "RejectImages";
+        private int _modbusPort = 502;
+        public int ModbusPort
+        {
+            get => _modbusPort;
+            set => Set(ref _modbusPort, value);
+        }
 
-        // Инспекция
-        public int RejectDelayMs { get; set; } = 300;
-        public int SensorFilterCount { get; set; } = 2;
-        public int SensorPollIntervalMs { get; set; } = 10;
+        private int _signalCoil = 0;
+        public int SignalCoil
+        {
+            get => _signalCoil;
+            set => Set(ref _signalCoil, value);
+        }
+
+        private int _rejectCoil = 0;
+        public int RejectCoil
+        {
+            get => _rejectCoil;
+            set => Set(ref _rejectCoil, value);
+        }
+
+        /* --- Printer --- */
+
+        private string _printerIp = "172.19.43.5";
+        public string PrinterIp
+        {
+            get => _printerIp;
+            set => Set(ref _printerIp, value);
+        }
+
+        private int _printerPortTextComms = 3003;
+        public int PrinterPortTextComms
+        {
+            get => _printerPortTextComms;
+            set => Set(ref _printerPortTextComms, value);
+        }
+
+        private int _printerPortZpl = 1000;
+        public int PrinterPortZpl
+        {
+            get => _printerPortZpl;
+            set => Set(ref _printerPortZpl, value);
+        }
+
+        /* --- Camera --- */
+
+        private string _cameraIp = "";
+        public string CameraIp
+        {
+            get => _cameraIp;
+            set => Set(ref _cameraIp, value);
+        }
+
+        private string _rejectImagesPath = "RejectImages";
+        public string RejectImagesPath
+        {
+            get => _rejectImagesPath;
+            set => Set(ref _rejectImagesPath, value);
+        }
+
+        /* --- Inspection --- */
+
+        private int _rejectDelay = 300;
+        public int RejectDelay
+        {
+            get => _rejectDelay;
+            set => Set(ref _rejectDelay, value);
+        }
+
+        private int _sensorFilterCount = 2;
+        public int SensorFilterCount
+        {
+            get => _sensorFilterCount;
+            set => Set(ref _sensorFilterCount, value);
+        }
+
+        private int _sensorPollInterval = 10;
+        public int SensorPollInterval
+        {
+            get => _sensorPollInterval;
+            set => Set(ref _sensorPollInterval, value);
+        }
     }
 }

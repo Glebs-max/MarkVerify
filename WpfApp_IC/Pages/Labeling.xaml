@@ -12,68 +12,62 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="350"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="2*" MinWidth="300"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*" MinWidth="350"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Принтер -->
-            <pages:LabelPrinting DataContext="{Binding LabelPrintingViewModel}"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <pages:LabelPrinting DataContext="{Binding LabelPrintingViewModel}"/>
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="MediumVioletRed" ResizeBehavior="PreviousAndNext"/>
+                <pages:Log Grid.Row="2" DataContext="{Binding LogViewModel}"/>
+            </Grid>
 
-            <!-- Вертикальный сплиттер -->
-            <GridSplitter Grid.Column="1"
-                  Width="5"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  Background="MediumVioletRed"
-                  ResizeBehavior="PreviousAndNext"/>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="MediumVioletRed" ResizeBehavior="PreviousAndNext"/>
 
-            <!-- Инспекция -->
-            <pages:CameraBasic Grid.Column="2" DataContext="{Binding CameraViewModel}"/>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <GridSplitter Grid.Column="3"
-                          Width="5"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="MediumVioletRed"
-                          ResizeBehavior="PreviousAndNext"/>
-
-            <pages:Log Grid.Column="4" DataContext="{Binding LogViewModel}"/>
+                <pages:CameraBasic DataContext="{Binding CameraViewModel}"/>
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="25,10">
+                        <TextBlock Text="Очередь: "/>
+                        <TextBlock Text="{Binding LabelPrintingViewModel.VideojetPrinter.QueueSize}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="25,10">
+                        <TextBlock Text="Остаток: "/>
+                        <TextBlock Text="{Binding LabelingSession.GTIN.CountAviable}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="25,10">
+                        <TextBlock Text="Верифицировано: "/>
+                        <TextBlock Text="{Binding LabelingSession.Verified}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="25,10">
+                        <TextBlock Text="Отбраковано: "/>
+                        <TextBlock Text="{Binding LabelingSession.Rejected}"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Grid>
         </Grid>
 
-        <!-- Статистика -->
-        <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Margin="25,10">
-                <TextBlock Text="Очередь: "/>
-                <TextBlock Text="{Binding LabelPrintingViewModel.VideojetPrinter.QueueSize}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="25,10">
-                <TextBlock Text="Остаток: "/>
-                <TextBlock Text="{Binding LabelingSession.GTIN.CountAviable}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="25,10">
-                <TextBlock Text="Верифицировано: "/>
-                <TextBlock Text="{Binding LabelingSession.Verified}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="25,10">
-                <TextBlock Text="Отбраковано: "/>
-                <TextBlock Text="{Binding LabelingSession.Rejected}"/>
-            </StackPanel>
-        </WrapPanel>
-
         <!-- Кнопки -->
-        <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-            <Button x:Name="StartStop" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.StartStopText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.StartStopEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="StartStop_Click"/>
-            <Button x:Name="Pause" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.PauseText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.PauseEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Pause_Click"/>
-            <Button x:Name="Report" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Отчёт" IsEnabled="{Binding Tag.ReportEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Report_Click"/>
-            <Button x:Name="Exit" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Выход" IsEnabled="{Binding Tag.ExitEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20,5,20,20" Click="Exit_Click"/>
+        <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+            <Button x:Name="StartStop" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.StartStopText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.StartStopEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20" Click="StartStop_Click"/>
+            <Button x:Name="Pause" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="{Binding Tag.PauseText, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding Tag.PauseEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20" Click="Pause_Click"/>
+            <Button x:Name="Report" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Отчёт" IsEnabled="{Binding Tag.ReportEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20" Click="Report_Click"/>
+            <Button x:Name="Exit" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Выход" IsEnabled="{Binding Tag.ExitEnabled, RelativeSource={RelativeSource Self}}" Width="150" Height="50" Margin="20" Click="Exit_Click"/>
         </WrapPanel>
     </Grid>
 </UserControl>

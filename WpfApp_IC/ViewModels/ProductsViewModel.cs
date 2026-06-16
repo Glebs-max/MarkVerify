@@ -6,13 +6,14 @@ using System.IO;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
+using WpfApp_IC.Services;
 
 namespace WpfApp_IC.ViewModels
 {
     /// <summary>
     /// Модель просмотра и выбора продукции для печати
     /// </summary>
-    public class ProductsViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
+    public class ProductsViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory, DebugService debugService) : ObservableObject
     {
         public ObservableCollection<gtin> GTINs { get; } = [];
 
@@ -24,16 +25,20 @@ namespace WpfApp_IC.ViewModels
                 List<gtin> gtins = await db.gtins.AsNoTracking().ToListAsync();
                 GTINs.Clear();
                 foreach (gtin gtin in gtins) GTINs.Add(gtin);
+
+                await debugService.CreateDebugEntryAsync(DebugType.Info, "ProductsViewModel.cs", $"Выборка записей из таблицы gtin. Количество записей: {gtins.Count}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        public void LoadLabel(gtin? product)
+        public async void LoadLabel(gtin? product)
         {
             if (product == null || product.CountAviable <= 0)
                 return;
+
+            await debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Выбрана продукция для маркировки: {product.GtinId}");
 
             labelingSession.GTIN = product;
 
@@ -41,7 +46,11 @@ namespace WpfApp_IC.ViewModels
             model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, $"LabelTemplates/{GetLabelTemplate(product)}")) ?? new();
             mainViewModel.CurrentViewModel = model;
         }
-        public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+        public async void GetBack()
+        {
+            await debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Возврат на главную страницу");
+            mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+        }
 
         private static string GetLabelTemplate(gtin product)
         {

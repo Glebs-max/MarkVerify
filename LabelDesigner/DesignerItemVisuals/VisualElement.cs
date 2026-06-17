@@ -23,8 +23,7 @@ namespace LabelDesigner.DesignerItemVisuals
 
         public ScaleTransform Scale => (Content.LayoutTransform as TransformGroup ?? new()).Children.OfType<ScaleTransform>().SingleOrDefault() ?? new(1, 1);
         public RotateTransform Rotation => (Content.LayoutTransform as TransformGroup ?? new()).Children.OfType<RotateTransform>().SingleOrDefault() ?? new(0);
-        public WriteableBitmap Bitmap => BitmapService.GetBitmap(Content, 300);
-        public ImageBrush AlphaMask => BitmapService.GetAlphaMask(Bitmap);
+        public ImageBrush AlphaMask => BitmapService.GetAlphaMask(Content, 300);
 
         public void MeasureArrangeVisual()
         {

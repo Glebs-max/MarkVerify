@@ -6,9 +6,9 @@
     <MinHeight>18.89644746787604</MinHeight>
     <W>60.46863189720332</W>
     <H>83.14436885865457</H>
-    <GridStepX>30.23431594860166</GridStepX>
+    <GridStepX>18.89644746787604</GridStepX>
     <GridStepY>18.89644746787604</GridStepY>
-    <Grid>true</Grid>
+    <ShowGrid>true</ShowGrid>
   </LabelArea>
   <Fields>
     <Field xsi:type="BarcodeField">
@@ -44,7 +44,7 @@
       </InitialSize>
       <X>2.834467120181406</X>
       <Y>38.73771730914588</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>1</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -53,10 +53,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>15.06.26</Text>
+      <Text>17.06.26</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-06-15T10:20:49.9895351+05:00</Date>
+      <Date>2026-06-17T15:04:55.6968389+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -71,7 +71,7 @@
       </InitialSize>
       <X>2.834467120181406</X>
       <Y>46.296296296296305</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>2</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -80,10 +80,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>15.06.27</Text>
+      <Text>17.06.27</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-06-15T10:20:49.989798+05:00</Date>
+      <Date>2027-06-17T15:04:55.6974252+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -103,7 +103,7 @@
       </InitialSize>
       <X>2.834467120181406</X>
       <Y>53.85487528344671</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>3</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -112,10 +112,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>19.333604343892542</W>
       <H>8.692365835222978</H>
-      <Text>10:20</Text>
+      <Text>15:04</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-06-15T10:20:49.9900813+05:00</Time>
+      <Time>2026-06-17T15:04:55.6978256+05:00</Time>
       <TimeFormat>HH$mm</TimeFormat>
       <Separator>58</Separator>
     </Field>
@@ -130,7 +130,7 @@
       </InitialSize>
       <X>34.95842781557067</X>
       <Y>38.73771730914588</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>4</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -154,7 +154,7 @@
       </InitialSize>
       <X>46.2962962962963</X>
       <Y>38.73771730914588</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>6</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -178,7 +178,7 @@
       </InitialSize>
       <X>51.96523053665911</X>
       <Y>38.35978835978836</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>7</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -202,7 +202,7 @@
       </InitialSize>
       <X>48.18594104308391</X>
       <Y>46.2962962962963</Y>
-      <ZIndex>0</ZIndex>
+      <ZIndex>8</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
@@ -226,14 +226,14 @@
       </InitialSize>
       <X>40.62736205593348</X>
       <Y>46.2962962962963</Y>
-      <ZIndex>8</ZIndex>
+      <ZIndex>9</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>5.459205755557652</W>
+      <W>5.459205755557651</W>
       <H>8.692365835222978</H>
       <Text>A</Text>
       <TextFontFamily>Arial</TextFontFamily>
@@ -250,7 +250,7 @@
       </InitialSize>
       <X>40.62736205593348</X>
       <Y>38.73771730914588</Y>
-      <ZIndex>9</ZIndex>
+      <ZIndex>5</ZIndex>
       <Orientation>0</Orientation>
       <MirrorX>false</MirrorX>
       <MirrorY>false</MirrorY>

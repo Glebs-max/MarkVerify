@@ -4,6 +4,7 @@ using Observable;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Xml.Serialization;
 
 namespace LabelDesigner
@@ -78,17 +79,78 @@ namespace LabelDesigner
         }
         [XmlIgnore]
         public Canvas LabelModel { get; set; } = new();
+        public bool Preview { get; set; }
         public ObservableCollection<Field> Fields { get; } = [];
+        public BarcodeField? DataMatrix => Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);
 
-        public string ConvertToZpl(double dpi = 300) => BitmapService.ConvertToZpl(BitmapService.Monochrome(BitmapService.GetBitmap(LabelModel, dpi, new(LabelArea.W, LabelArea.H))));
-        public void RemoveField()
+        public string ConvertToZpl(double dpi = 300) => BitmapService.WPFToZpl(LabelModel, dpi, LabelArea.W, LabelArea.H);
+        public void CreateField(double x = 0, double y = 0)
         {
-            if (SelectedField != null)
+            if (SelectedTool == ToolboxItemType.None)
             {
-                foreach (Field field in Fields.Where(f => f.ZIndex > SelectedField.ZIndex))
-                    field.ZIndex--;
+                SelectedField = null;
+                return;
+            }
 
-                Fields.Remove(SelectedField);
+            Field? field = SelectedTool switch
+            {
+                ToolboxItemType.Text => new TextField(),
+                ToolboxItemType.Image => new ImageField(),
+                ToolboxItemType.Date => new DateField(),
+                ToolboxItemType.Time => new TimeField(),
+                ToolboxItemType.Barcode => new BarcodeField(),
+                ToolboxItemType.None => null,
+                _ => null
+            };
+
+            if (field != null)
+            {
+                field.Visual.Loaded += (s, e) =>
+                {
+                    field.FieldName = $"Field.{Fields.Count(f => f.FieldName.StartsWith("Field.")):D2}";
+                    field.KeepAspectRatio = true;
+                    field.X = x / Scale;
+                    field.Y = y / Scale;
+                    field.H = LabelArea.H * 0.5 / Scale;
+                    field.ZIndex = Fields.Count;
+                    SelectedField = field;
+                };
+                field.Visual.MouseLeftButtonDown += (s, e) =>
+                {
+                    if (SelectedTool != ToolboxItemType.None)
+                        return;
+
+                    SelectedField = field;
+                    e.Handled = true;
+                    Mouse.OverrideCursor = null;
+                };
+                field.Visual.MouseEnter += (s, e) =>
+                {
+                    if (SelectedTool == ToolboxItemType.None)
+                        Mouse.OverrideCursor = Cursors.Hand;
+                };
+                field.Visual.MouseLeave += (s, e) =>
+                {
+                    if (SelectedTool == ToolboxItemType.None)
+                        Mouse.OverrideCursor = null;
+                };
+
+                Fields.Add(field);
+                LabelModel.Children.Add(field.Visual);
+                LabelModel.Children.Add(field.Adorner);
+                SelectedTool = ToolboxItemType.None;
+            }
+        }
+        public void RemoveField(Field? field)
+        {
+            if (field != null && Fields.FirstOrDefault(field) != null)
+            {
+                foreach (Field f in Fields.Where(f => f.ZIndex > field.ZIndex))
+                    f.ZIndex--;
+
+                LabelModel.Children.Remove(field.Visual);
+                LabelModel.Children.Remove(field.Adorner);
+                Fields.Remove(field);
             }
         }
         public void MoveFieldUp()

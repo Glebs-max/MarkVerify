@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing.Printing;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace LabelDesigner.Services

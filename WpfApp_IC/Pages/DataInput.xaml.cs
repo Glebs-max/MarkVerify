@@ -15,10 +15,8 @@ namespace WpfApp_IC.Pages
                 if (DataContext == null)
                     return;
 
-                foreach (Field field in VM.Fields.Where(f => f.DataType == DataType.Input))
-                {
+                foreach (Field field in VM.Fields.Where(f => f.DataType == DataType.Input).OrderBy(f => f.ZIndex))
                     LabelParameters.Children.Add(new ParameterInput(field));
-                }
             };
         }
 

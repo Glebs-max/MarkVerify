@@ -17,11 +17,11 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="7*" MinWidth="150"/>
+                <ColumnDefinition Width="*" MinWidth="150"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="3*" MinWidth="150"/>
+                <ColumnDefinition Width="*" MinWidth="150"/>
             </Grid.ColumnDefinitions>
-            <designer:DesignerCanvas Preview="True" Background="White" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
+            <designer:DesignerCanvas Background="White" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
             <GridSplitter Grid.Column="1"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"

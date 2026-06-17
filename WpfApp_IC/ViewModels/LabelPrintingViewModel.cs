@@ -3,12 +3,14 @@ using LabelDesigner.Models;
 using Microsoft.EntityFrameworkCore;
 using Observable;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using WpfApp_IC.Data;
 using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
+using WpfApp_IC.Pages;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -39,7 +41,6 @@ namespace WpfApp_IC.ViewModels
             {
                 MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
 
             VideojetPrinter.ConnectionEstablished += async () =>
             {
@@ -101,11 +102,10 @@ namespace WpfApp_IC.ViewModels
         /// </summary>
         private async Task QueueLabel(int? count = null)
         {
-            if (!VideojetPrinter.Connected) return;
+            if (!VideojetPrinter.Connected)
+                return;
 
-            BarcodeField? DataMatrix = DesignerViewModel.Fields.OfType<BarcodeField>().FirstOrDefault(f => f.DataType == DataType.Database);
-
-            if (DataMatrix != null)
+            if (DesignerViewModel.DataMatrix != null)
             {
                 try
                 {
@@ -115,11 +115,13 @@ namespace WpfApp_IC.ViewModels
 
                     foreach (printer_base code in codes)
                     {
-                        await VideojetPrinter.SendZplAsync(await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            DataMatrix.BarcodeData = code.Code;
+                        string zpl = await Application.Current.Dispatcher.InvokeAsync(() => {
+                            DesignerViewModel.DataMatrix.BarcodeData = code.Code;
                             return DesignerViewModel.ConvertToZpl();
-                        }));
+                        });
+
+                        await VideojetPrinter.SendZplAsync(zpl);
+                        await File.WriteAllTextAsync(Path.Combine(AppContext.BaseDirectory, $"TestZPL/{LabelingSession.Count}.txt"), zpl);
 
                         code.StatusId = 1;
                         code.DatePrint = DateTime.Now;

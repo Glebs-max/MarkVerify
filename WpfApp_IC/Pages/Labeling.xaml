@@ -7,7 +7,7 @@
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=viewmodels:LabelingViewModel}"
-             mc:Ignorable="d" Background="#F4F4F4" FontSize="24">
+             mc:Ignorable="d" Background="#F4F4F4" FontSize="22">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

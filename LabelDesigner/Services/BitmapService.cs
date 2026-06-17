@@ -1,32 +1,29 @@
-﻿using System.Text;
+﻿using PDFtoZPL;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SkiaSharp.Views.WPF;
 
 namespace LabelDesigner.Services
 {
     public static class BitmapService
     {
-        public static WriteableBitmap GetBitmap(FrameworkElement element, double dpi = 96, Size? size = null)
+        public static string WPFToZpl(FrameworkElement element, double dpi, double width, double height)
         {
-            Transform t = element.RenderTransform;
-            element.RenderTransform = Transform.Identity;
+            RenderTargetBitmap source = GetBitmap(element, dpi, width, height);
+            ZplOptions options = new()
+            {
+                EncodingKind = BitmapEncodingKind.Base64Compressed,
+                DitheringKind = DitheringKind.None,
+                Threshold = 128
+            };
 
-            element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            element.Arrange(new Rect(element.DesiredSize));
-            element.UpdateLayout();
-
-            int width = (int)Math.Floor((size?.Width ?? element.DesiredSize.Width) * dpi / 96);
-            int height = (int)Math.Floor((size?.Height ?? element.DesiredSize.Height) * dpi / 96);
-            
-            RenderTargetBitmap rtb = new(width, height, dpi, dpi, PixelFormats.Pbgra32);
-            rtb.Render(element);
-            
-            element.RenderTransform = t;
-            return new(rtb);
+            return Conversion.ConvertBitmap(source.ToSKBitmap(), options);
         }
-        public static ImageBrush GetAlphaMask(BitmapSource source)
+        public static ImageBrush GetAlphaMask(FrameworkElement element, double dpi)
         {
+            RenderTargetBitmap source = GetBitmap(element, dpi);
+
             int stride = source.PixelWidth * 4;
             int bytesPerPixel = source.Format.BitsPerPixel / 8;
             int length = source.PixelHeight * stride;
@@ -47,32 +44,6 @@ namespace LabelDesigner.Services
             WriteableBitmap result = new(source.PixelWidth, source.PixelHeight, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
             result.WritePixels(new Int32Rect(0, 0, source.PixelWidth, source.PixelHeight), pixels, stride, 0);
             return new(result);
-        }
-        public static WriteableBitmap Monochrome(BitmapSource source, byte threshold = 128)
-        {
-            int width = source.PixelWidth;
-            int height = source.PixelHeight;
-
-            byte[] pixels = new byte[width * height * 4];
-            source.CopyPixels(pixels, width * 4, 0);
-
-            for (int i = 0; i < pixels.Length; i += 4)
-            {
-                byte r = pixels[i + 2];
-                byte g = pixels[i + 1];
-                byte b = pixels[i + 0];
-                byte brightness = (byte)((r + g + b) / 3);
-                byte color = brightness < threshold ? (byte)0 : (byte)255;
-
-                pixels[i + 0] = color;
-                pixels[i + 1] = color;
-                pixels[i + 2] = color;
-                pixels[i + 3] = 255;
-            }
-
-            WriteableBitmap result = new(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
-            result.WritePixels(new Int32Rect(0, 0, width, height), pixels, width * 4, 0);
-            return result;
         }
         public static WriteableBitmap Dither(BitmapSource source, byte threshold = 200)
         {
@@ -108,61 +79,24 @@ namespace LabelDesigner.Services
             result.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
             return result;
         }
-        public static string ConvertToZpl(BitmapSource bitmap)
+
+        private static RenderTargetBitmap GetBitmap(FrameworkElement element, double dpi = 96, double? width = null, double? height = null)
         {
-            ArgumentNullException.ThrowIfNull(bitmap);
+            Transform originalT = element.RenderTransform;
+            element.RenderTransform = Transform.Identity;
+            element.UpdateLayout();
 
-            int width = bitmap.PixelWidth;
-            int height = bitmap.PixelHeight;
-            int bytesPerRow = (width + 7) / 8;
-            int stride = width * 4;
+            int pixelWidth = (int)Math.Floor((width ?? element.DesiredSize.Width) * dpi / 96);
+            int pixelHeight = (int)Math.Floor((height ?? element.DesiredSize.Height) * dpi / 96);
 
-            byte[] pixels = new byte[height * stride];
-            bitmap.CopyPixels(pixels, stride, 0);
+            RenderTargetBitmap rtb = new(pixelWidth, pixelHeight, dpi, dpi, PixelFormats.Pbgra32);
+            rtb.Render(element);
 
-            StringBuilder hexBuilder = new();
+            element.RenderTransform = originalT;
+            element.UpdateLayout();
 
-            for (int y = 0; y < height; y++)
-            {
-                int bitPos = 0;
-                int currentByte = 0;
-
-                for (int x = 0; x < width; x++)
-                {
-                    int pixelIndex = y * stride + x * 4;
-                    byte b = pixels[pixelIndex + 0];
-                    byte g = pixels[pixelIndex + 1];
-                    byte r = pixels[pixelIndex + 2];
-
-                    double luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-                    bool isBlack = luminance < 128;
-
-                    currentByte <<= 1;
-                    if (isBlack)
-                        currentByte |= 1;
-
-                    bitPos++;
-
-                    if (bitPos == 8)
-                    {
-                        hexBuilder.Append(currentByte.ToString("X2"));
-                        bitPos = 0;
-                        currentByte = 0;
-                    }
-                }
-
-                if (bitPos > 0)
-                {
-                    currentByte <<= 8 - bitPos;
-                    hexBuilder.Append(currentByte.ToString("X2"));
-                }
-            }
-
-            int totalBytes = hexBuilder.Length / 2;
-
-            return new($"^XA\n^GFA,{totalBytes},{totalBytes},{bytesPerRow},{hexBuilder}\n^FS\n^XZ");
+            return rtb;
         }
-
         private static void DistributeError(byte[] pixels, int index, int error, double factor)
         {
             if (index < 0 || index + 2 >= pixels.Length)

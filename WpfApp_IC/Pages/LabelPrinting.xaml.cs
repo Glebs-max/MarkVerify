@@ -9,7 +9,5 @@ namespace WpfApp_IC.Pages
         {
             InitializeComponent();
         }
-
-        private void StatusBar_Click(object sender, MouseButtonEventArgs e) => (LabelPreview.Visibility, VideojetErrors.Visibility) = (VideojetErrors.Visibility, LabelPreview.Visibility);
     }
 }

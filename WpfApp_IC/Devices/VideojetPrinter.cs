@@ -16,14 +16,14 @@ namespace WpfApp_IC.Devices
         Connecting,
         Connected
     }
-    public enum ErrorState
+    public enum VideojetErrorState
     {
         None,
         Warnings,
         Faults,
         Unknown
     }
-    public enum ErrorType
+    public enum VideojetErrorType
     {
         Warning,
         Fault
@@ -31,7 +31,7 @@ namespace WpfApp_IC.Devices
 
     public struct VideojetPrinterError
     {
-        public ErrorType ErrorType { get; set; }
+        public VideojetErrorType ErrorType { get; set; }
         public string Code { get; set; }
         public bool Clearable { get; set; }
         public string Title { get; set; }
@@ -44,22 +44,20 @@ namespace WpfApp_IC.Devices
         private Task? _listenTask, _connectionTask;
         private CancellationTokenSource? _listenCts, _connectionCts;
         private PrinterState _printerState = PrinterState.Disconnected;
-        private ErrorState _errorState = ErrorState.Unknown;
+        private VideojetErrorState _errorState = VideojetErrorState.Unknown;
         private int _queueSize, _maxQueueSize = 19;
 
-        public event Action? ConnectionEstablished;
-        public event Action? ConnectionLost;
+        public event Action? ConnectionEstablished, ConnectionLost, ErrorListChanged;
         public event Action<PrinterState>? StateChanged;
+        public event Action<VideojetErrorState>? ErrorStateChanged;
         public event Action<int>? QueueSizeChanged;
-        public event Action<ErrorState>? ErrorStateChanged;
-        public event Action? ErrorListChanged;
 
         public PrinterState PrinterState
         {
             get => _printerState;
             set => Set(ref _printerState, value, () => StateChanged?.Invoke(value));
         }
-        public ErrorState ErrorState
+        public VideojetErrorState ErrorState
         {
             get => _errorState;
             set => Set(ref _errorState, value, () => ErrorStateChanged?.Invoke(value));
@@ -95,7 +93,7 @@ namespace WpfApp_IC.Devices
         public void Dispose()
         {
             PrinterState = PrinterState.Disconnected;
-            ErrorState = ErrorState.Unknown;
+            ErrorState = VideojetErrorState.Unknown;
             QueueSize = 0;
             Errors.Clear();
 
@@ -261,11 +259,11 @@ namespace WpfApp_IC.Devices
                 case "STS":
                     if (Enum.TryParse(split[1], out PrinterState sts1))
                         PrinterState = sts1;
-                    if (Enum.TryParse(split[2], out ErrorState sts2))
+                    if (Enum.TryParse(split[2], out VideojetErrorState sts2))
                         ErrorState = sts2;
                     break;
                 case "ERS":
-                    if (Enum.TryParse(split[1], out ErrorState ers))
+                    if (Enum.TryParse(split[1], out VideojetErrorState ers))
                         ErrorState = ers;
                     break;
                 case "QSZ":
@@ -276,11 +274,11 @@ namespace WpfApp_IC.Devices
                 case "WRN":
                     if (int.TryParse(split[1], out int count))
                     {
-                        ErrorType errorType = split[0] switch
+                        VideojetErrorType errorType = split[0] switch
                         {
-                            "FLT" => ErrorType.Fault,
-                            "WRN" => ErrorType.Warning,
-                            _ => ErrorType.Fault
+                            "FLT" => VideojetErrorType.Fault,
+                            "WRN" => VideojetErrorType.Warning,
+                            _ => VideojetErrorType.Fault
                         };
                         Errors.RemoveAll(e => e.ErrorType == errorType);
                         

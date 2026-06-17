@@ -8,51 +8,11 @@
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=viewmodels:LabelPrintingViewModel}"
              mc:Ignorable="d">
-    <Grid Grid.Column="0">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-
-        <Grid x:Name="StatusBar" Cursor="Hand" MouseDown="StatusBar_Click">
-            <Grid.Tag>
-                <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                    <Binding Path="VideojetPrinter.PrinterState"/>
-                    <Binding Path="VideojetPrinter.ErrorState"/>
-                </MultiBinding>
-            </Grid.Tag>
-
-            <Grid.Background>
-                <Binding Path="Tag.StatusColor" RelativeSource="{RelativeSource Self}"/>
-            </Grid.Background>
-
-            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="22" FontFamily="Bahnschrift">
-                <TextBlock.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="VideojetPrinter.PrinterState"/>
-                        <Binding Path="VideojetPrinter.ErrorState"/>
-                    </MultiBinding>
-                </TextBlock.Tag>
-
-                <TextBlock.Text>
-                    <Binding Path="Tag.StatusText" RelativeSource="{RelativeSource Self}"/>
-                </TextBlock.Text>
-            </TextBlock>
-
-            <Image Height="50" Margin="5,5,20,5" HorizontalAlignment="Right">
-                <Image.Tag>
-                    <MultiBinding Converter="{StaticResource PrintingStatusConverter}">
-                        <Binding Path="VideojetPrinter.PrinterState"/>
-                        <Binding Path="VideojetPrinter.ErrorState"/>
-                    </MultiBinding>
-                </Image.Tag>
-
-                <Image.Source>
-                    <Binding Path="Tag.StatusIcon" RelativeSource="{RelativeSource Self}"/>
-                </Image.Source>
-            </Image>
-        </Grid>
-        <designer:DesignerCanvas x:Name="LabelPreview" Grid.Row="1" Visibility="Visible" Background="White" Preview="True" DataContext="{Binding DesignerViewModel}"/>
-        <pages:VideojetErrors x:Name="VideojetErrors" Grid.Row="1" Visibility="Collapsed" DataContext="{Binding VideojetErrorsViewModel}"/>
+        
+        <designer:DesignerCanvas x:Name="LabelPreview" Background="White" Preview="True" DataContext="{Binding DesignerViewModel}"/>
     </Grid>
 </UserControl>

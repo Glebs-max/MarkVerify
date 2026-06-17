@@ -18,7 +18,7 @@ namespace WpfApp_IC.Devices
             {
                 Debug.WriteLine("ACTIVATE START");
                 modbus.WriteCoil(Coil, true);
-                Thread.Sleep(500);
+                Thread.Sleep(250);
                 modbus.WriteCoil(Coil, false);
                 Debug.WriteLine("ACTIVATE END");
             }

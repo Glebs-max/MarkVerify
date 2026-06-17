@@ -12,6 +12,12 @@ namespace WpfApp_IC.ViewModels
         Pause,
         Finished
     }
+    public enum ErrorState
+    {
+        None,
+        Warnings,
+        Errors
+    }
 
     /// <summary>
     /// Модель печати и проверки маркировок
@@ -19,11 +25,17 @@ namespace WpfApp_IC.ViewModels
     public class LabelingViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel, LogViewModel logViewModel) : ObservableObject
     {
         private WorkState _workState = WorkState.Ready;
+        private ErrorState _errorState = ErrorState.None;
 
         public WorkState WorkState
         {
             get => _workState;
             set => Set(ref _workState, value);
+        }
+        public ErrorState ErrorState
+        {
+            get => _errorState;
+            set => Set(ref _errorState, value);
         }
         public LabelingSession LabelingSession => labelingSession;
         public CameraViewModel CameraViewModel => cameraViewModel;

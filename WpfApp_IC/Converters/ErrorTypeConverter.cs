@@ -16,12 +16,12 @@ namespace WpfApp_IC.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is ErrorType errorType)
+            if (value is VideojetErrorType errorType)
             {
                 return errorType switch
                 {
-                    ErrorType.Warning => "/Assets/warning.png",
-                    ErrorType.Fault => "/Assets/fault.png",
+                    VideojetErrorType.Warning => "/Assets/warning.png",
+                    VideojetErrorType.Fault => "/Assets/fault.png",
                     _ => Binding.DoNothing
                 };
             }

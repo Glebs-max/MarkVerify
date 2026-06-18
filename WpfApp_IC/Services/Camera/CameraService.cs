@@ -16,6 +16,8 @@ namespace WpfApp_IC.Services.Camera
         private MvCodeReader? _reader;
         private bool _isOpened;
 
+        public uint FrameTimeoutMs { get; set; } = 500;
+
         /// <summary>
         /// Инициализация камеры: поиск, создание handle (дескриптор), настройка параметров
         /// </summary>
@@ -157,7 +159,7 @@ namespace WpfApp_IC.Services.Camera
             try
             {
                 // Получаем кадр 
-                int ret = _reader.MV_CODEREADER_GetOneFrameTimeout_NET(ref pData, pInfo, 1000);
+                int ret = _reader.MV_CODEREADER_GetOneFrameTimeout_NET(ref pData, pInfo, FrameTimeoutMs);
                 if (ret != MvCodeReader.MV_CODEREADER_OK) 
                     return (null, null);
 

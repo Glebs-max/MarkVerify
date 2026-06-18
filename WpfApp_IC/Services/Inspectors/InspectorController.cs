@@ -33,6 +33,8 @@ namespace WpfApp_IC.Services.Inspectors
     {
         private CancellationTokenSource? _cts;
         private BitmapSource? _lastFrame;
+        private long _frameCounter = 0;
+        private DateTime _signalStartTime;
 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
@@ -130,6 +132,8 @@ namespace WpfApp_IC.Services.Inspectors
                         {
                             _sameCount = 0;
                             _stableSignal = rawSignal;
+                            if (rawSignal == 1)
+                                _signalStartTime = DateTime.Now;   // момент первого сырого срабатывания
                         }
 
                         if (_sameCount >= SensorFilterCount)
@@ -143,8 +147,17 @@ namespace WpfApp_IC.Services.Inspectors
                                 if (_stableSignal == 1 && !_triggerInProgress)
                                 {
                                     _triggerInProgress = true;
+                                    var filterDelay = (DateTime.Now - _signalStartTime).TotalMilliseconds;
 
+                                    long frameId = Interlocked.Increment(ref _frameCounter);
+                                    log.Info($"[PERF #{frameId}] Задержка фильтра датчика: {filterDelay:F1} мс");
+                                    log.Info($"[PERF #{frameId}] Старт триггера");
+
+                                    var swCamera = System.Diagnostics.Stopwatch.StartNew();                                    
                                     var (dm, frame) = camera.TriggerAndRead();
+                                    swCamera.Stop();
+
+                                    log.Info($"[PERF #{frameId}] Камера: {swCamera.ElapsedMilliseconds} мс");
 
                                     if (frame != null)
                                     {
@@ -152,7 +165,7 @@ namespace WpfApp_IC.Services.Inspectors
                                         FrameReceived?.Invoke(dm?.Raw, frame);
                                     }
 
-                                    _ = HandleDataMatrixAsync(dm);
+                                    _ = HandleDataMatrixAsync(dm, frameId);
                                 }
 
                                 if (_stableSignal == 0)
@@ -186,17 +199,24 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary>
         /// Обрабатывает считанный DataMatrix: вызывает валидатор и генерирует события.
         /// </summary>
-        private async Task HandleDataMatrixAsync(DataMatrixResult? dm)
+        private async Task HandleDataMatrixAsync(DataMatrixResult? dm, long frameId = 0)
         {
+
+            var swTotal = System.Diagnostics.Stopwatch.StartNew();
             if (dm != null)
                 DataMatrixRead?.Invoke(dm);
 
+            var swDb = System.Diagnostics.Stopwatch.StartNew();
             var result = await ValidateAsync(dm?.Raw);
+            swDb.Stop();
 
             CodeValidated?.Invoke(result);
             CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
 
-            log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] → {(result.IsOk ? "OK" : "BRK")}");
+            swTotal.Stop();
+            log.Info($"[PERF #{frameId}] Валидация в БД: {swDb.ElapsedMilliseconds} мс, всего: {swTotal.ElapsedMilliseconds} мс");
+
+            log.Info($"[#{frameId}] Проверка: [{dm?.Normalized ?? "<NO READ>"}] -> {(result.IsOk ? "OK" : "BRK")}");
 
             if (result.IsOk)
             {

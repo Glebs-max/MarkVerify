@@ -41,7 +41,7 @@ namespace WpfApp_IC.Converters
                         result.StatusColor = Brushes.WhiteSmoke;
                         result.PauseEnabled = false;
                         result.ReportEnabled = false;
-                        result.ExitEnabled = false;
+                        result.ExitEnabled = true;
                         result.StartStopEnabled = true;
                         result.PauseText = "Пауза";
                         result.StartStopText = "Старт";

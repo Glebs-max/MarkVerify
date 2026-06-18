@@ -13,6 +13,6 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <designer:DesignerCanvas x:Name="LabelPreview" Background="White" Preview="True" DataContext="{Binding DesignerViewModel}"/>
+        <designer:DesignerCanvas x:Name="LabelPreview" Background="White" DataContext="{Binding DesignerViewModel}"/>
     </Grid>
 </UserControl>

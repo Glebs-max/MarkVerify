@@ -44,6 +44,7 @@ namespace WpfApp_IC.ViewModels
 
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, $"LabelTemplates/{GetLabelTemplate(product)}")) ?? new();
+            model.DesignerViewModel.Preview = true;
             mainViewModel.CurrentViewModel = model;
         }
         public async void GetBack()

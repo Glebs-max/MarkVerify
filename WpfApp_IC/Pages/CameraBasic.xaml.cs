@@ -21,6 +21,6 @@ namespace WpfApp_IC.Pages
                 VM.Start();
         }
 
-        private void TriggerManual_Click(object sender, RoutedEventArgs e) => VM.TriggerManual();
+        private async void TriggerManual_Click(object sender, RoutedEventArgs e) => await VM.TriggerManual();
     }
 }

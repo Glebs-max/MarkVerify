@@ -18,7 +18,7 @@ namespace WpfApp_IC.Pages
         private async void StartStop_Click(object sender, RoutedEventArgs e)
         {
             if (VM.WorkState == WorkState.Ready)
-                await VM.WorkInitiate();
+                await VM.WorkStart();
             else if (VM.WorkState != WorkState.Finished)
                 await VM.WorkTerminate();
         }
@@ -30,7 +30,5 @@ namespace WpfApp_IC.Pages
                 await VM.WorkContinue();
         }
         private async void Exit_Click(object sender, RoutedEventArgs e) => await VM.Exit();
-
-        private void SHRATT(object sender, RoutedEventArgs e) => MessageBox.Show("EBALUGA!!!");
     }
 }

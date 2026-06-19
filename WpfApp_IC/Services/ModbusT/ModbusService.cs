@@ -10,7 +10,7 @@ namespace WpfApp_IC.Services.ModbusT
     public class ModbusService : IModbusService
     {
         private ModbusClient? _client;
-        private readonly object _sync = new();
+        private readonly Lock _sync = new();
 
         public void Connect(string ip, int port)
         {
@@ -96,6 +96,10 @@ namespace WpfApp_IC.Services.ModbusT
             }
         }
 
-        public void Dispose() => Disconnect();
+        public void Dispose()
+        {
+            Disconnect();
+            GC.SuppressFinalize(this);
+        }
     }
 }

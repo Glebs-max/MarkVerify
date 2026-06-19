@@ -24,10 +24,10 @@ namespace WpfApp_IC.Services.Inspectors
         event Action<string>? ErrorOccurred;
         event Action<string?, BitmapSource>? FrameReceived;
         event Action<string, bool>? CodeChecked;
-         event Action<ValidationResult>? CodeValidated;
+        event Action<ValidationResult>? CodeValidated;
 
         void Start();
         void Stop();
-        void TriggerManual();
+        Task TriggerManual();
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Internal;
 using Observable;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -116,83 +117,68 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         private async Task Loop(CancellationToken token)
         {
-            try
+            while (!token.IsCancellationRequested)
             {
-
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    try
+                    int rawSignal = sensor.Read();
+
+                    // Фильтрация дребезга
+                    if (rawSignal == _stableSignal)
+                        _sameCount++;
+                    else
                     {
-                        int rawSignal = sensor.Read();
+                        _sameCount = 0;
+                        _stableSignal = rawSignal;
+                        if (rawSignal == 1)
+                            _signalStartTime = DateTime.Now;
+                    }
 
-                        // Фильтрация дребезга
-                        if (rawSignal == _stableSignal)
-                            _sameCount++;
-                        else
-                        {
-                            _sameCount = 0;
-                            _stableSignal = rawSignal;
-                            if (rawSignal == 1)
-                                _signalStartTime = DateTime.Now;   // момент первого сырого срабатывания
-                        }
+                    if (_stableSignal != _previousSignal && _sameCount >= SensorFilterCount)
+                    {
+                        _previousSignal = _stableSignal;
+                        SignalChanged?.Invoke(_stableSignal);
+                        log.Info($"Сигнал датчика: {_stableSignal}");
 
-                        if (_sameCount >= SensorFilterCount)
+                        if (_stableSignal == 1 && !_triggerInProgress)
                         {
-                            if (_stableSignal != _previousSignal)
+                            _triggerInProgress = true;
+                            var filterDelay = (DateTime.Now - _signalStartTime).TotalMilliseconds;
+
+                            long frameId = Interlocked.Increment(ref _frameCounter);
+                            log.Info($"[PERF #{frameId}] Задержка фильтра датчика: {filterDelay:F1} мс");
+                            log.Info($"[PERF #{frameId}] Старт триггера");
+
+                            var swCamera = Stopwatch.StartNew();
+                            var (dm, frame) = camera.TriggerAndRead();
+                            swCamera.Stop();
+
+                            log.Info($"[PERF #{frameId}] Камера: {swCamera.ElapsedMilliseconds} мс");
+
+                            if (frame != null)
                             {
-                                _previousSignal = _stableSignal;
-                                SignalChanged?.Invoke(_stableSignal);
-                                log.Info($"Сигнал датчика: {_stableSignal}");
-
-                                if (_stableSignal == 1 && !_triggerInProgress)
-                                {
-                                    _triggerInProgress = true;
-                                    var filterDelay = (DateTime.Now - _signalStartTime).TotalMilliseconds;
-
-                                    long frameId = Interlocked.Increment(ref _frameCounter);
-                                    log.Info($"[PERF #{frameId}] Задержка фильтра датчика: {filterDelay:F1} мс");
-                                    log.Info($"[PERF #{frameId}] Старт триггера");
-
-                                    var swCamera = System.Diagnostics.Stopwatch.StartNew();                                    
-                                    var (dm, frame) = camera.TriggerAndRead();
-                                    swCamera.Stop();
-
-                                    log.Info($"[PERF #{frameId}] Камера: {swCamera.ElapsedMilliseconds} мс");
-
-                                    if (frame != null)
-                                    {
-                                        _lastFrame = frame;
-                                        FrameReceived?.Invoke(dm?.Raw, frame);
-                                    }
-
-                                    _ = HandleDataMatrixAsync(dm, frameId);
-                                }
-
-                                if (_stableSignal == 0)
-                                    _triggerInProgress = false;
+                                _lastFrame = frame;
+                                FrameReceived?.Invoke(dm?.Raw, frame);
                             }
+
+                            await HandleDataMatrixAsync(dm, frameId);
                         }
 
-                        await Task.Delay(SensorPollIntervalMs, token);
+                        if (_stableSignal == 0)
+                            _triggerInProgress = false;
                     }
-                    catch (TaskCanceledException)
-                    {
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorOccurred?.Invoke(ex.Message);
-                    }
+
+                    await Task.Delay(SensorPollIntervalMs, token);
                 }
-            }
-            catch (TaskCanceledException)
-            {
-                return;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Ошибка в цикле инспекции", ex);
-                ErrorOccurred?.Invoke(ex.Message);
+                catch (TaskCanceledException)
+                {
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Ошибка в цикле инспекции", ex);
+                    ErrorOccurred?.Invoke(ex.Message);
+                }
             }
         }
 
@@ -202,11 +188,11 @@ namespace WpfApp_IC.Services.Inspectors
         private async Task HandleDataMatrixAsync(DataMatrixResult? dm, long frameId = 0)
         {
 
-            var swTotal = System.Diagnostics.Stopwatch.StartNew();
+            var swTotal = Stopwatch.StartNew();
             if (dm != null)
                 DataMatrixRead?.Invoke(dm);
 
-            var swDb = System.Diagnostics.Stopwatch.StartNew();
+            var swDb = Stopwatch.StartNew();
             var result = await ValidateAsync(dm?.Raw);
             swDb.Stop();
 
@@ -242,12 +228,12 @@ namespace WpfApp_IC.Services.Inspectors
                 await using var db = await dbContextFactory.CreateDbContextAsync();
                 printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 1);
 
+                if (code == null)
+                    return ValidationResult.NotFound();
+
                 if (await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2) != null ||
                     await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2) != null)
                     return ValidationResult.Duplicate();
-
-                if (code == null)
-                    return ValidationResult.NotFound();
 
                 tmp_main verified1 = new()
                 {
@@ -260,27 +246,15 @@ namespace WpfApp_IC.Services.Inspectors
                     OperatorName = code.OperatorName,
                     OrderID = code.OrderID
                 };
-                /*main verified2 = new()
-                {
-                    Code = code.Code,
-                    StatusId = 2,
-                    DateImport = code.DateImport,
-                    DatePrint = code.DatePrint,
-                    DateVerify = DateTime.Now,
-                    GtinId = code.GtinId,
-                    OperatorName = code.OperatorName,
-                    OrderID = code.OrderID
-                };*/
 
                 db.tmp_mains.Add(verified1);
-                //db.mains.Add(verified2);
                 await db.SaveChangesAsync();
 
                 return ValidationResult.Ok();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Возникла ошибка при валидации кода в базе данных.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return ValidationResult.NotFound();
             }
         }
@@ -319,7 +293,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// Ручной триггер камеры — для тестирования без датчика.
         /// Запускает снимок напрямую, минуя цикл опроса датчика.
         /// </summary>
-        public void TriggerManual()
+        public async Task TriggerManual()
         {
             if (_triggerInProgress)
             {
@@ -329,7 +303,7 @@ namespace WpfApp_IC.Services.Inspectors
 
             _triggerInProgress = true;
 
-            Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 try
                 {

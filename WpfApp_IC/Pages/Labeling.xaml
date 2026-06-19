@@ -143,7 +143,6 @@
                     <Binding Path="Tag.ExitEnabled" RelativeSource="{RelativeSource Self}"/>
                 </Button.IsEnabled>
             </Button>
-            <Button Width="180" Height="60" Margin="15" Content="PUK" Click="SHRATT"/>
         </WrapPanel>
     </Grid>
 </UserControl>

@@ -11,6 +11,8 @@ namespace WpfApp_IC.Pages
         public Labeling()
         {
             InitializeComponent();
+
+            Loaded += async (s, e) => await VM.WorkInitiate();
         }
 
         private async void StartStop_Click(object sender, RoutedEventArgs e)
@@ -27,7 +29,8 @@ namespace WpfApp_IC.Pages
             else if (VM.WorkState == WorkState.Pause)
                 await VM.WorkContinue();
         }
-        private async void Report_Click(object sender, RoutedEventArgs e) => await VM.Report();
-        private void Exit_Click(object sender, RoutedEventArgs e) => VM.Exit();
+        private async void Exit_Click(object sender, RoutedEventArgs e) => await VM.Exit();
+
+        private void SHRATT(object sender, RoutedEventArgs e) => MessageBox.Show("EBALUGA!!!");
     }
 }

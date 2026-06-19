@@ -10,6 +10,7 @@
     <GridStepY>18.89644746787604</GridStepY>
     <ShowGrid>true</ShowGrid>
   </LabelArea>
+  <Preview>false</Preview>
   <Fields>
     <Field xsi:type="BarcodeField">
       <MinWidth>3.7792894935752077</MinWidth>
@@ -53,10 +54,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>17.06.26</Text>
+      <Text>18.06.26</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-06-17T15:10:28.0511016+05:00</Date>
+      <Date>2026-06-18T09:54:14.5563188+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -80,10 +81,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>17.06.27</Text>
+      <Text>18.06.27</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-06-17T15:10:28.0511659+05:00</Date>
+      <Date>2027-06-18T09:54:14.556646+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -98,7 +99,7 @@
       <DataType>Current</DataType>
       <FieldName>Время изготовления</FieldName>
       <InitialSize>
-        <Width>81.84333333333333</Width>
+        <Width>128.09333333333333</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
       <X>37.79289493575208</X>
@@ -110,13 +111,13 @@
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>19.333604343892542</W>
+      <W>30.25910266472947</W>
       <H>8.692365835222978</H>
-      <Text>15:10</Text>
+      <Text>09:54:14</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-06-17T15:10:28.0512265+05:00</Time>
-      <TimeFormat>HH$mm</TimeFormat>
+      <Time>2026-06-18T09:54:14.5569377+05:00</Time>
+      <TimeFormat>HH$mm$ss</TimeFormat>
       <Separator>58</Separator>
     </Field>
     <Field xsi:type="TextField">
@@ -233,7 +234,7 @@
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>8.408106023055616</W>
+      <W>8.408106023055618</W>
       <H>8.692365835222978</H>
       <Text>00</Text>
       <TextFontFamily>Arial</TextFontFamily>

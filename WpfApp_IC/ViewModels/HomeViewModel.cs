@@ -12,6 +12,7 @@ namespace WpfApp_IC.ViewModels
         {
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, $"LabelTemplates/Horizontal.xml")) ?? new();
+            model.DesignerViewModel.Preview = true;
             mainViewModel.CurrentViewModel = model;
         }
         public void Settings() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<SettingsViewModel>();

@@ -7,6 +7,7 @@ namespace WpfApp_IC.ViewModels
 {
     public enum WorkState
     {
+        Initiating,
         Ready,
         Active,
         Pause,
@@ -24,7 +25,8 @@ namespace WpfApp_IC.ViewModels
     /// </summary>
     public class LabelingViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel, LogViewModel logViewModel) : ObservableObject
     {
-        private WorkState _workState = WorkState.Ready;
+        private CancellationTokenSource? _workInitiateCts;
+        private WorkState _workState = WorkState.Initiating;
         private ErrorState _errorState = ErrorState.None;
 
         public WorkState WorkState
@@ -44,8 +46,21 @@ namespace WpfApp_IC.ViewModels
 
         public async Task WorkInitiate()
         {
-            await LabelPrintingViewModel.PrintInitiate();
-            CameraViewModel.Start();
+            _workInitiateCts = new();
+            await Task.Run(async () =>
+            {
+                LabelPrintingViewModel.PrintInitiate();
+                CameraViewModel.Start();
+
+                while (!LabelPrintingViewModel.Ready && !_workInitiateCts.IsCancellationRequested)
+                    continue;
+
+                WorkState = WorkState.Ready;
+            }, _workInitiateCts.Token);
+        }
+        public async Task WorkStart()
+        {
+            await labelPrintingViewModel.PrintStart();
             WorkState = WorkState.Active;
         }
         public async Task WorkPause()
@@ -66,12 +81,12 @@ namespace WpfApp_IC.ViewModels
             CameraViewModel.Stop();
             WorkState = WorkState.Finished;
         }
-        public async Task Report()
+        public async Task Exit()
         {
-            
-        }
-        public void Exit()
-        {
+            if (WorkState != WorkState.Finished)
+                await WorkTerminate();
+
+            _workInitiateCts?.Cancel();
             LabelingSession.Reset();
             LogViewModel.Entries.Clear();
             mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();

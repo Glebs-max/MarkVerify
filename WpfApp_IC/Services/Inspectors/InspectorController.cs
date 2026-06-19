@@ -47,7 +47,7 @@ namespace WpfApp_IC.Services.Inspectors
         public int RejectDelayMs { get; set; } = 200;
 
         /// <summary> SensorFilterCount - Периодичность стабильного сигнала, фильтр дребезга датчика /// </summary>
-        public int SensorFilterCount { get; set; } = 2;
+        public int SensorFilterCount { get; set; } = 0;
 
         /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
         public int SensorPollIntervalMs { get; set; } = 10;

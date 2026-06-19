@@ -31,7 +31,7 @@
                       Width="5"/>
             <pages:DataInput Grid.Column="2" DataContext="{Binding DesignerViewModel}"/>
         </Grid>
-        <Button Content="Запуск печати" Height="50" Margin="0,10,0,0" Click="PrintLabel_Click" Grid.Row="1"/>
+        <Button Content="Продолжить" Height="50" Margin="0,10,0,0" Click="PrintLabel_Click" Grid.Row="1"/>
         <Button Content="Назад" Height="50" Margin="0,10,0,0" Click="GetBack_Click" Grid.Row="2"/>
     </Grid>
 </UserControl>

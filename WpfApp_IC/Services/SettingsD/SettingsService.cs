@@ -40,7 +40,7 @@ namespace WpfApp_IC.Services.SettingsD
             // Принтер
             printer.IP = s.PrinterIp;
             printer.PortTextComms = s.PrinterPortTextComms;
-            printer.PortZplEmulation = s.PrinterPortZpl;
+            printer.PortZpl = s.PrinterPortZpl;
 
             // Modbus + катушки
             inspector.ModbusIp = s.ModbusIp;

@@ -16,20 +16,25 @@ namespace WpfApp_IC.ViewModels
 {
     public class LabelPrintingViewModel (VideojetErrorsViewModel videojetErrorsViewModel, VideojetPrinter videojetPrinter, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory) : ObservableObject
     {
-        private readonly DispatcherTimer _printerStatusCheck = new() { Interval = TimeSpan.FromMilliseconds(750) };
         private DesignerViewModel _designerViewModel = new();
-        private bool _initiated, _queueLock;
+        private bool _queueLock;
 
         public DesignerViewModel DesignerViewModel
         {
             get => _designerViewModel;
             set => Set(ref _designerViewModel, value);
         }
+        public bool Ready { get; set; }
         public VideojetPrinter VideojetPrinter => videojetPrinter;
         public VideojetErrorsViewModel VideojetErrorsViewModel => videojetErrorsViewModel;
         public LabelingSession LabelingSession => labelingSession;
 
-        public async Task PrintInitiate()
+        public void PrintInitiate()
+        {
+            VideojetPrinter.ConnectionEstablished += OnConnectionEstablished;
+            VideojetPrinter.Connect();
+        }
+        public async Task PrintStart()
         {
             try
             {
@@ -42,46 +47,16 @@ namespace WpfApp_IC.ViewModels
                 MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            VideojetPrinter.ConnectionEstablished += async () =>
-            {
-                _printerStatusCheck.Start();
-                
-                if (!_initiated)
-                {
-                    await VideojetPrinter.ClearQueueAsync();
-                    await QueueLabel(VideojetPrinter.MaxQueueSize);
-                    _initiated = true;
-                }
-
-                await VideojetPrinter.StartAsync();
-            };
-            VideojetPrinter.ConnectionLost += _printerStatusCheck.Stop;
-            VideojetPrinter.QueueSizeChanged += async (size) =>
-            {
-                if (!_queueLock && VideojetPrinter.Connected && size < VideojetPrinter.MaxQueueSize / 2)
-                {
-                    _queueLock = true;
-                    await QueueLabel(VideojetPrinter.MaxQueueSize - size);
-                    _queueLock = false;
-                }
-            };
-            _printerStatusCheck.Tick += async (s, e) =>
-            {
-                if (VideojetPrinter.Connected)
-                {
-                    await VideojetPrinter.GetQueueSizeAsync();
-                    await VideojetPrinter.GetStateAsync();
-                    await VideojetPrinter.GetAllFaultsAsync();
-                    await VideojetPrinter.GetAllWarningsAsync();
-                }
-            };
-
-            VideojetPrinter.Connect();
+            VideojetPrinter.QueueLow += OnQueueLow;
+            await VideojetPrinter.ClearQueueAsync();
+            await VideojetPrinter.StartAsync();
         }
         public async Task PrintPause() => await VideojetPrinter.StopAsync();
         public async Task PrintContinue() => await VideojetPrinter.StartAsync();
         public async Task PrintTerminate()
         {
+            VideojetPrinter.ConnectionEstablished -= OnConnectionEstablished;
+            VideojetPrinter.QueueLow -= OnQueueLow;
             await VideojetPrinter.StopAsync();
             VideojetPrinter.Disconnect();
 
@@ -121,7 +96,7 @@ namespace WpfApp_IC.ViewModels
                         });
 
                         await VideojetPrinter.SendZplAsync(zpl);
-                        await File.WriteAllTextAsync(Path.Combine(AppContext.BaseDirectory, $"TestZPL/{LabelingSession.Count}.txt"), zpl);
+                        //await File.WriteAllTextAsync(Path.Combine(AppContext.BaseDirectory, $"TestZPL/{LabelingSession.Count}.txt"), zpl);
 
                         code.StatusId = 1;
                         code.DatePrint = DateTime.Now;
@@ -141,5 +116,23 @@ namespace WpfApp_IC.ViewModels
                 }
             }
         }
+        private async void OnQueueLow(int qsz)
+        {
+            if (_queueLock)
+                return;
+
+            _queueLock = true;
+
+            try
+            {
+                if (VideojetPrinter.Connected)
+                    await QueueLabel(VideojetPrinter.MaxQueueSize - qsz);
+            }
+            finally
+            {
+                _queueLock = false;
+            }
+        }
+        private void OnConnectionEstablished() => Ready = true;
     }
 }

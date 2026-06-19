@@ -36,6 +36,16 @@ namespace WpfApp_IC.Converters
 
                 switch (printerState)
                 {
+                    case WorkState.Initiating:
+                        result.StatusText = "Подключение устройств";
+                        result.StatusColor = Brushes.LightBlue;
+                        result.PauseEnabled = false;
+                        result.ReportEnabled = false;
+                        result.ExitEnabled = true;
+                        result.StartStopEnabled = false;
+                        result.PauseText = "Пауза";
+                        result.StartStopText = "Подождите";
+                        break;
                     case WorkState.Ready:
                         result.StatusText = "Готов к работе";
                         result.StatusColor = Brushes.WhiteSmoke;

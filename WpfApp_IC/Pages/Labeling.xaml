@@ -132,7 +132,6 @@
                     <Binding Path="Tag.PauseText" RelativeSource="{RelativeSource Self}"/>
                 </Button.Content>
             </Button>
-            <!-- <Button x:Name="Report" Tag="{Binding WorkState, Converter={StaticResource WorkStateConverter}}" Content="Отчёт" IsEnabled="{Binding Tag.ReportEnabled, RelativeSource={RelativeSource Self}}" Width="180" Height="60" Margin="15" Click="Report_Click"/> -->
             <Button x:Name="Exit" Width="180" Height="60" Margin="15" Content="Выход" Click="Exit_Click">
                 <Button.Tag>
                     <MultiBinding Converter="{StaticResource WorkStatusConverter}">
@@ -144,6 +143,7 @@
                     <Binding Path="Tag.ExitEnabled" RelativeSource="{RelativeSource Self}"/>
                 </Button.IsEnabled>
             </Button>
+            <Button Width="180" Height="60" Margin="15" Content="PUK" Click="SHRATT"/>
         </WrapPanel>
     </Grid>
 </UserControl>

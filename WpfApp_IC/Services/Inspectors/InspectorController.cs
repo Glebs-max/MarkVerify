@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using WpfApp_IC.Data;
 using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
@@ -34,7 +35,6 @@ namespace WpfApp_IC.Services.Inspectors
     {
         private CancellationTokenSource? _cts;
         private BitmapSource? _lastFrame;
-        private long _frameCounter = 0;
         private DateTime _signalStartTime;
 
         public string ModbusIp { get; set; } = "192.168.0.127";
@@ -59,22 +59,13 @@ namespace WpfApp_IC.Services.Inspectors
         private int _stableSignal = -1;
         private int _previousSignal = -1;
         private int _sameCount = 0;
-        //private const int FILTER_COUNT = 2;
-
+        //private int FILTER_COUNT = 2;
         private bool _triggerInProgress = false;
 
-        // События для ViewModel
-        public event Action<int>? SignalChanged;
         public event Action<DataMatrixResult>? DataMatrixRead;
-        public event Action<string>? ErrorOccurred;
         public event Action<string?, BitmapSource>? FrameReceived;
         public event Action<string, bool>? CodeChecked;
-
-        /// <summary>
-        /// Событие результата проверки DataMatrix.
-        /// ViewModel подписывается на него для подсчёта OK/BRK.
-        /// </summary>
-        public event Action<ValidationResult>? CodeValidated;
+        public event Action? MotionDetected;
 
         /// <summary>
         /// Запускает инспекцию: подключает Modbus, открывает камеру и запускает цикл чтения датчика.
@@ -106,16 +97,60 @@ namespace WpfApp_IC.Services.Inspectors
             _sameCount = 0;
             _triggerInProgress = false;
 
-            _cts = new CancellationTokenSource();
-            Task.Run(() => Loop(_cts.Token));
+            MotionDetected += Inspect;
 
+            _cts = new();
+            Task.Run(() => ListenSensorAsync(_cts.Token));
             log.Info("Инспекция запущена");
+        }
+
+        private void Inspect()
+        {
+            Task.Run(async () =>
+            {
+                DispatcherTimer rejectTimer = new() { Interval = TimeSpan.FromMilliseconds(RejectDelayMs) };
+                rejectTimer.Tick += (s, e) => rejector.Activate();
+                rejectTimer.Start();
+
+                var swCamera = Stopwatch.StartNew();
+                DataMatrixResult? dm = TriggerCamera();
+                swCamera.Stop();
+                log.Info($"[PERF Камера: {swCamera.ElapsedMilliseconds} мс");
+
+                var swTotal = Stopwatch.StartNew();
+                if (dm != null)
+                    DataMatrixRead?.Invoke(dm);
+
+                var swDb = Stopwatch.StartNew();
+                ValidationResult result = await ValidateAsync(dm?.Raw);
+                swDb.Stop();
+
+                if (result.IsOk)
+                {
+                    rejectTimer.Stop();
+                    labelingSession.Verified++;
+                }
+                else
+                {
+                    if (_lastFrame != null)
+                        imageSaver.SaveReject(_lastFrame, dm?.Normalized);
+
+                    if (result.ErrorCode != "NO_READ")
+                        labelingSession.Rejected++;
+                }
+
+                CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
+
+                swTotal.Stop();
+                log.Info($"[PERF Валидация в БД: {swDb.ElapsedMilliseconds} мс, всего: {swTotal.ElapsedMilliseconds} мс");
+                log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] -> {(result.IsOk ? "OK" : "BRK")}");
+            });
         }
 
         /// <summary>
         /// Основной цикл: читает датчик, фильтрует дребезг, вызывает триггер камеры.
         /// </summary>
-        private async Task Loop(CancellationToken token)
+        private async Task ListenSensorAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -123,7 +158,6 @@ namespace WpfApp_IC.Services.Inspectors
                 {
                     int rawSignal = sensor.Read();
 
-                    // Фильтрация дребезга
                     if (rawSignal == _stableSignal)
                         _sameCount++;
                     else
@@ -137,87 +171,27 @@ namespace WpfApp_IC.Services.Inspectors
                     if (_stableSignal != _previousSignal && _sameCount >= SensorFilterCount)
                     {
                         _previousSignal = _stableSignal;
-                        SignalChanged?.Invoke(_stableSignal);
                         log.Info($"Сигнал датчика: {_stableSignal}");
 
-                        if (_stableSignal == 1 && !_triggerInProgress)
+                        if (_stableSignal == 1)
                         {
-                            _triggerInProgress = true;
+                            MotionDetected?.Invoke();
+
                             var filterDelay = (DateTime.Now - _signalStartTime).TotalMilliseconds;
-
-                            long frameId = Interlocked.Increment(ref _frameCounter);
-                            log.Info($"[PERF #{frameId}] Задержка фильтра датчика: {filterDelay:F1} мс");
-                            log.Info($"[PERF #{frameId}] Старт триггера");
-
-                            var swCamera = Stopwatch.StartNew();
-                            var (dm, frame) = camera.TriggerAndRead();
-                            swCamera.Stop();
-
-                            log.Info($"[PERF #{frameId}] Камера: {swCamera.ElapsedMilliseconds} мс");
-
-                            if (frame != null)
-                            {
-                                _lastFrame = frame;
-                                FrameReceived?.Invoke(dm?.Raw, frame);
-                            }
-
-                            await HandleDataMatrixAsync(dm, frameId);
+                            log.Info($"[PERF Задержка фильтра датчика: {filterDelay:F1} мс");
+                            log.Info($"[PERF Старт триггера");
                         }
-
-                        if (_stableSignal == 0)
-                            _triggerInProgress = false;
                     }
 
                     await Task.Delay(SensorPollIntervalMs, token);
                 }
-                catch (TaskCanceledException)
-                {
-                    return;
-                }
                 catch (Exception ex)
                 {
                     log.Error("Ошибка в цикле инспекции", ex);
-                    ErrorOccurred?.Invoke(ex.Message);
                 }
             }
         }
 
-        /// <summary>
-        /// Обрабатывает считанный DataMatrix: вызывает валидатор и генерирует события.
-        /// </summary>
-        private async Task HandleDataMatrixAsync(DataMatrixResult? dm, long frameId = 0)
-        {
-
-            var swTotal = Stopwatch.StartNew();
-            if (dm != null)
-                DataMatrixRead?.Invoke(dm);
-
-            var swDb = Stopwatch.StartNew();
-            var result = await ValidateAsync(dm?.Raw);
-            swDb.Stop();
-
-            CodeValidated?.Invoke(result);
-            CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
-
-            swTotal.Stop();
-            log.Info($"[PERF #{frameId}] Валидация в БД: {swDb.ElapsedMilliseconds} мс, всего: {swTotal.ElapsedMilliseconds} мс");
-
-            log.Info($"[#{frameId}] Проверка: [{dm?.Normalized ?? "<NO READ>"}] -> {(result.IsOk ? "OK" : "BRK")}");
-
-            if (result.IsOk)
-            {
-                labelingSession.Verified++;
-            }
-            else
-            {
-                if (_lastFrame != null)
-                    imageSaver.SaveReject(_lastFrame, dm?.Normalized);
-
-                RejectWithDelay();
-                ErrorOccurred?.Invoke(result.ErrorMessage ?? "Ошибка проверки DataMatrix");
-                labelingSession.Rejected++;
-            }
-        }
         private async Task<ValidationResult> ValidateAsync(string? dm)
         {
             try
@@ -260,22 +234,11 @@ namespace WpfApp_IC.Services.Inspectors
         }
 
         /// <summary>
-        /// Активирует отбраковщик с задержкой.
-        /// </summary>
-        public void RejectWithDelay()
-        {
-            Task.Run(() =>
-            {
-                Thread.Sleep(RejectDelayMs);
-                rejector.Activate();
-            });
-        }
-
-        /// <summary>
         /// Останавливает инспекцию.
         /// </summary>
         public void Stop()
         {
+            MotionDetected -= Inspect;
             _cts?.Cancel();
             Thread.Sleep(100);
             camera.Close();
@@ -293,43 +256,37 @@ namespace WpfApp_IC.Services.Inspectors
         /// Ручной триггер камеры — для тестирования без датчика.
         /// Запускает снимок напрямую, минуя цикл опроса датчика.
         /// </summary>
-        public async Task TriggerManual()
+        public DataMatrixResult? TriggerCamera()
         {
             if (_triggerInProgress)
             {
                 log.Warning("Триггер уже выполняется.");
-                return;
+                return null;
             }
 
             _triggerInProgress = true;
 
-            await Task.Run(async () =>
+            try
             {
-                try
-                {
-                    log.Info("Ручной триггер камеры");
-                    var (dm, frame) = camera.TriggerAndRead();
+                log.Info("Ручной триггер камеры");
+                var (dm, frame) = camera.TriggerAndRead();
+                _triggerInProgress = false;
 
-                    if (frame != null)
-                    {
-                        _lastFrame = frame;
-                        FrameReceived?.Invoke(dm?.Raw, frame);
-                    }
-                    else
-                        log.Warning("Кадр не получен");
+                if (frame != null)
+                {
+                    _lastFrame = frame;
+                    FrameReceived?.Invoke(dm?.Raw, frame);
+                }
+                else
+                    log.Warning("Кадр не получен");
 
-                    await HandleDataMatrixAsync(dm);
-                }
-                catch (Exception ex)
-                {
-                    log.Error("Ошибка ручного триггера", ex);
-                    ErrorOccurred?.Invoke(ex.Message);
-                }
-                finally
-                {
-                    _triggerInProgress = false;
-                }
-            });
+                return dm;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Ошибка ручного триггера", ex);
+                return null;
+            }
         }
     }
 }

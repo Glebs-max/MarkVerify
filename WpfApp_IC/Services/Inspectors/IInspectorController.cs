@@ -19,15 +19,12 @@ namespace WpfApp_IC.Services.Inspectors
         int SignalCoil { get; set; } 
         int RejectCoil { get; set; }
 
-        event Action<int>? SignalChanged;
         event Action<DataMatrixResult>? DataMatrixRead;
-        event Action<string>? ErrorOccurred;
         event Action<string?, BitmapSource>? FrameReceived;
         event Action<string, bool>? CodeChecked;
-        event Action<ValidationResult>? CodeValidated;
 
         void Start();
         void Stop();
-        Task TriggerManual();
+        DataMatrixResult? TriggerCamera();
     }
 }

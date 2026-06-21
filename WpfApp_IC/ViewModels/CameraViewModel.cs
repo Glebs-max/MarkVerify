@@ -77,10 +77,10 @@ namespace WpfApp_IC.ViewModels
             _controller.Stop();
             IsRunning = false;
         }
-        public async Task TriggerManual()
+        public void TriggerManual()
         {
             if (IsRunning)
-                await _controller.TriggerManual();
+                _controller.TriggerCamera();
         }
 
         // === UI dispatcher ===

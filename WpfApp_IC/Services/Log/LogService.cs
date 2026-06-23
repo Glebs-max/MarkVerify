@@ -8,7 +8,7 @@
     public class LogService
     {
         // Ограничение на максимальное количество записей
-        private const int MaxEntries = 500;
+        private const int MaxEntries = 3000;
 
         public event Action? EntriesChanged;
 

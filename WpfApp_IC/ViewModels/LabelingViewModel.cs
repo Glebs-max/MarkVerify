@@ -2,6 +2,7 @@
 using Observable;
 using System.IO;
 using WpfApp_IC.Data;
+using WpfApp_IC.Models;
 
 namespace WpfApp_IC.ViewModels
 {

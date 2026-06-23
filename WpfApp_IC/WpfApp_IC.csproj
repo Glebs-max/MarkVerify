@@ -97,9 +97,6 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <None Update="label.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="LabelTemplates\default.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

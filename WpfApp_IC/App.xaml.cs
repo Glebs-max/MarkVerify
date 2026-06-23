@@ -5,7 +5,8 @@ using Microsoft.Extensions.Hosting;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Windows;
 using WpfApp_IC.Data;
-using WpfApp_IC.Devices;
+using WpfApp_IC.Models;
+using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Services;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
@@ -13,6 +14,7 @@ using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.Services.SettingsD;
 using WpfApp_IC.ViewModels;
+using WpfApp_IC.Views;
 
 namespace WpfApp_IC
 {

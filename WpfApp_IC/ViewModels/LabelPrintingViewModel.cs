@@ -8,9 +8,10 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using WpfApp_IC.Data;
-using WpfApp_IC.Devices;
 using WpfApp_IC.Models;
-using WpfApp_IC.Pages;
+using WpfApp_IC.Models.DbContext;
+using WpfApp_IC.Models.Devices;
+using WpfApp_IC.Views;
 
 namespace WpfApp_IC.ViewModels
 {

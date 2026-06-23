@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using WpfApp_IC.Devices;
-using WpfApp_IC.Models;
 using WpfApp_IC.ViewModels;
 
 namespace WpfApp_IC.Converters

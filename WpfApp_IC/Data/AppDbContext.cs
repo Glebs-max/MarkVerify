@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using WpfApp_IC.Models;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+using WpfApp_IC.Models.DbContext;
 
 namespace WpfApp_IC.Data;
 

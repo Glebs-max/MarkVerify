@@ -2,7 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
-using WpfApp_IC.Devices;
+using WpfApp_IC.Models;
+using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.Services.SettingsD

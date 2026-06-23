@@ -3,18 +3,17 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Observable;
 using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using WpfApp_IC.Data;
-using WpfApp_IC.Devices;
-using WpfApp_IC.Models;
-using WpfApp_IC.Pages;
+using WpfApp_IC.Models.DbContext;
+using WpfApp_IC.Models.Devices;
+using WpfApp_IC.Views;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
+using WpfApp_IC.Models;
 
 namespace WpfApp_IC.Services.Inspectors
 {
@@ -35,7 +34,6 @@ namespace WpfApp_IC.Services.Inspectors
     {
         private CancellationTokenSource? _cts;
         private BitmapSource? _lastFrame;
-        private DateTime _signalStartTime;
 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
@@ -48,7 +46,7 @@ namespace WpfApp_IC.Services.Inspectors
         public int RejectDelayMs { get; set; } = 200;
 
         /// <summary> SensorFilterCount - Периодичность стабильного сигнала, фильтр дребезга датчика /// </summary>
-        public int SensorFilterCount { get; set; } = 0;
+        public int SensorFilterCount { get; set; } = 2;
 
         /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
         public int SensorPollIntervalMs { get; set; } = 10;
@@ -65,7 +63,8 @@ namespace WpfApp_IC.Services.Inspectors
         public event Action<DataMatrixResult>? DataMatrixRead;
         public event Action<string?, BitmapSource>? FrameReceived;
         public event Action<string, bool>? CodeChecked;
-        public event Action? MotionDetected;
+
+        public event EventHandler? MotionDetected;
 
         /// <summary>
         /// Запускает инспекцию: подключает Modbus, открывает камеру и запускает цикл чтения датчика.
@@ -97,7 +96,7 @@ namespace WpfApp_IC.Services.Inspectors
             _sameCount = 0;
             _triggerInProgress = false;
 
-            MotionDetected += Inspect;
+            MotionDetected += (s, e) => Inspect();
 
             _cts = new();
             Task.Run(() => ListenSensorAsync(_cts.Token));
@@ -108,14 +107,23 @@ namespace WpfApp_IC.Services.Inspectors
         {
             Task.Run(async () =>
             {
-                DispatcherTimer rejectTimer = new() { Interval = TimeSpan.FromMilliseconds(RejectDelayMs) };
-                rejectTimer.Tick += (s, e) => rejector.Activate();
-                rejectTimer.Start();
+                CancellationTokenSource rejectCts = new();
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(RejectDelayMs, rejectCts.Token);
+                        await rejector.Activate();
+                        log.Info("REJECTOR ACTIVATED");
+                    }
+                    catch { }
+                }, rejectCts.Token);
 
                 var swCamera = Stopwatch.StartNew();
                 DataMatrixResult? dm = TriggerCamera();
                 swCamera.Stop();
-                log.Info($"[PERF Камера: {swCamera.ElapsedMilliseconds} мс");
+                //log.Info($"[PERF Камера: {swCamera.ElapsedMilliseconds} мс");
 
                 var swTotal = Stopwatch.StartNew();
                 if (dm != null)
@@ -127,7 +135,7 @@ namespace WpfApp_IC.Services.Inspectors
 
                 if (result.IsOk)
                 {
-                    rejectTimer.Stop();
+                    rejectCts.Cancel();
                     labelingSession.Verified++;
                 }
                 else
@@ -142,8 +150,8 @@ namespace WpfApp_IC.Services.Inspectors
                 CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
 
                 swTotal.Stop();
-                log.Info($"[PERF Валидация в БД: {swDb.ElapsedMilliseconds} мс, всего: {swTotal.ElapsedMilliseconds} мс");
-                log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] -> {(result.IsOk ? "OK" : "BRK")}");
+                //log.Info($"[PERF Валидация в БД: {swDb.ElapsedMilliseconds} мс, всего: {swTotal.ElapsedMilliseconds} мс");
+                //log.Info($"Проверка: [{dm?.Normalized ?? "<NO READ>"}] -> {(result.IsOk ? "OK" : "BRK")}");
             });
         }
 
@@ -164,22 +172,16 @@ namespace WpfApp_IC.Services.Inspectors
                     {
                         _sameCount = 0;
                         _stableSignal = rawSignal;
-                        if (rawSignal == 1)
-                            _signalStartTime = DateTime.Now;
                     }
 
                     if (_stableSignal != _previousSignal && _sameCount >= SensorFilterCount)
                     {
                         _previousSignal = _stableSignal;
-                        log.Info($"Сигнал датчика: {_stableSignal}");
 
                         if (_stableSignal == 1)
                         {
-                            MotionDetected?.Invoke();
-
-                            var filterDelay = (DateTime.Now - _signalStartTime).TotalMilliseconds;
-                            log.Info($"[PERF Задержка фильтра датчика: {filterDelay:F1} мс");
-                            log.Info($"[PERF Старт триггера");
+                            MotionDetected?.Invoke(this, EventArgs.Empty);
+                            log.Info("MOTION DETECTED");
                         }
                     }
 
@@ -209,7 +211,7 @@ namespace WpfApp_IC.Services.Inspectors
                     await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2) != null)
                     return ValidationResult.Duplicate();
 
-                tmp_main verified1 = new()
+                tmp_main verified = new()
                 {
                     Code = code.Code,
                     StatusId = 2,
@@ -221,7 +223,7 @@ namespace WpfApp_IC.Services.Inspectors
                     OrderID = code.OrderID
                 };
 
-                db.tmp_mains.Add(verified1);
+                db.tmp_mains.Add(verified);
                 await db.SaveChangesAsync();
 
                 return ValidationResult.Ok();
@@ -238,7 +240,7 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         public void Stop()
         {
-            MotionDetected -= Inspect;
+            MotionDetected -= (s, e) => Inspect();
             _cts?.Cancel();
             Thread.Sleep(100);
             camera.Close();
@@ -258,17 +260,13 @@ namespace WpfApp_IC.Services.Inspectors
         /// </summary>
         public DataMatrixResult? TriggerCamera()
         {
-            if (_triggerInProgress)
-            {
-                log.Warning("Триггер уже выполняется.");
-                return null;
-            }
-
-            _triggerInProgress = true;
+            while (_triggerInProgress)
+                continue;
 
             try
             {
-                log.Info("Ручной триггер камеры");
+                log.Info("CAMERA TRIGGERED");
+                _triggerInProgress = true;
                 var (dm, frame) = camera.TriggerAndRead();
                 _triggerInProgress = false;
 
@@ -284,7 +282,7 @@ namespace WpfApp_IC.Services.Inspectors
             }
             catch (Exception ex)
             {
-                log.Error("Ошибка ручного триггера", ex);
+                log.Error("Ошибка триггера камеры", ex);
                 return null;
             }
         }

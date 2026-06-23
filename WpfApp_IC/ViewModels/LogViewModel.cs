@@ -17,16 +17,20 @@ namespace WpfApp_IC.ViewModels
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    foreach (LogEntry entry in Entries.ToList())
+                    try
                     {
-                        if (!_log.Entries.Contains(entry))
-                            Entries.Remove(entry);
+                        foreach (LogEntry entry in Entries.ToList())
+                        {
+                            if (!_log.Entries.Contains(entry))
+                                Entries.Remove(entry);
+                        }
+                        foreach (LogEntry entry in _log.Entries.ToList())
+                        {
+                            if (!Entries.Contains(entry))
+                                Entries.Insert(0, entry);
+                        }
                     }
-                    foreach (LogEntry entry in _log.Entries.ToList())
-                    {
-                        if (!Entries.Contains(entry))
-                            Entries.Insert(0, entry);
-                    }
+                    catch { }
                 });
             };
         }

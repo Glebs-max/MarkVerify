@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
+using WpfApp_IC.Models.DbContext;
 using WpfApp_IC.Services;
 
 namespace WpfApp_IC.ViewModels

@@ -1,7 +1,7 @@
 ﻿using LabelDesigner.Services;
 using Observable;
 using System.IO;
-using WpfApp_IC.Pages;
+using WpfApp_IC.Views;
 
 namespace WpfApp_IC.ViewModels
 {

@@ -1,6 +1,8 @@
 ﻿using LabelDesigner;
 using WpfApp_IC.Models;
 using Observable;
+using WpfApp_IC.Models.Devices;
+using System.Windows;
 
 namespace WpfApp_IC.ViewModels
 {

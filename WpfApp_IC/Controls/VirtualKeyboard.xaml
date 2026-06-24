@@ -5,5 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WpfApp_IC.Controls"
              mc:Ignorable="d">
-    <StackPanel x:Name="Base" Background="LightGray"/>
+    <Grid>
+        <StackPanel x:Name="KeyboardBase" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray"/>
+    </Grid>
 </UserControl>

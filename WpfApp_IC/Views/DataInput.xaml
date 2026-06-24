@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=designer:DesignerViewModel}"
-             mc:Ignorable="d" Background="#F4F4F4" FontSize="30">
+             mc:Ignorable="d" Background="#F4F4F4" FontSize="28">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

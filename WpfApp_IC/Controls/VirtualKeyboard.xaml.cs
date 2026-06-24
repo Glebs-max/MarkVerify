@@ -1,6 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System.Globalization;
+using System.Windows.Controls;
 using System.Windows.Input;
-using WpfApp_IC.Models;
+using WpfApp_IC.Models.VirtualKeyboard;
 
 namespace WpfApp_IC.Controls
 {
@@ -34,52 +35,163 @@ namespace WpfApp_IC.Controls
             ['ф','ы','в','а','п','р','о','л','д','ж','э'],
             ['я','ч','с','м','и','т','ь','б','ю',',']
         ];
-        private readonly StackPanel[] _rows = new StackPanel[4];
+        private readonly StackPanel[] _rows = new StackPanel[5];
+        private readonly List<KeyboardSymbolKey> _keys = [];
 
         public VirtualKeyboard()
         {
             InitializeComponent();
+            InitializeRows();
+            InitializeSymbolKeys();
+            InitializeSpecialKeys();
+        }
 
+        private void InitializeRows()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                _rows[i] = new() { Margin = new(1), Orientation = Orientation.Horizontal };
+                KeyboardBase.Children.Add(_rows[i]);
+            }
+        }
+        private void InitializeSymbolKeys()
+        {
             for (int i = 0; i < 4; i++)
             {
-                _rows[i] = new() { Margin = new(0.4), Orientation = Orientation.Horizontal };
                 for (int j = 0; j < _eng[i].Length; j++)
                 {
-                    KeyboardKey key = new(_eng[i][j], _rus[i][j], _shiftENG[i][j], _shiftRUS[i][j]);
-                    key.PressAction = () =>
+                    KeyboardSymbolKey key = new(_eng[i][j], _rus[i][j], _shiftENG[i][j], _shiftRUS[i][j])
                     {
-                        if (Keyboard.FocusedElement is TextBox input)
-                        {
-                            input.SelectedText = key.KeyValue.ToString();
-                            input.SelectionStart += 1;
-                            input.SelectionLength = 0;
-                        }
+                        Width = 1,
+                        Height = 1
                     };
-                    _rows[i].Children.Add(new VirtualKey()
+                    _rows[i].Children.Add(new VirtualSymbolKey()
                     {
-                        Margin = new(0.4),
                         DataContext = key
                     });
+                    _keys.Add(key);
                 }
-                Base.Children.Add(_rows[i]);
             }
 
-            KeyboardKey space = new('␣', '␣', '␣', '␣')
+            KeyboardSymbolKey space = new(' ', ' ', ' ', ' ', "␣")
             {
-                PressAction = () =>
+                Width = 9,
+                Height = 1
+            };
+            _rows[4].Children.Add(new VirtualSymbolKey()
+            {
+                DataContext = space
+            });
+            _keys.Add(space);
+        }
+        private void InitializeSpecialKeys()
+        {
+            KeyboardSpecialKey capsLock = new()
+            {
+                KeyDisplay = "CapsLock",
+                Width = 2,
+                Height = 1
+            };
+            capsLock.KeyAction = () =>
+            {
+                if (!capsLock.IsPressed)
+                {
+                    capsLock.IsPressed = true;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.CapsLock = true;
+                }
+                else
+                {
+                    capsLock.IsPressed = false;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.CapsLock = false;
+                }
+            };
+            _rows[2].Children.Add(new VirtualSpecialKey()
+            {
+                DataContext = capsLock
+            });
+
+            KeyboardSpecialKey shift = new()
+            {
+                KeyDisplay = "Shift",
+                Width = 3,
+                Height = 1
+            };
+            shift.KeyAction = () =>
+            {
+                if (!shift.IsPressed)
+                {
+                    shift.IsPressed = true;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.Shift = true;
+                }
+                else
+                {
+                    shift.IsPressed = false;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.Shift = false;
+                }
+            };
+            _rows[3].Children.Add(new VirtualSpecialKey()
+            {
+                DataContext = shift
+            });
+
+            KeyboardSpecialKey culture = new()
+            {
+                KeyDisplay = "ENG/RUS",
+                Width = 2,
+                Height = 1
+            };
+            culture.KeyAction = () =>
+            {
+                if (culture.KeyboardCulture == KeyboardCulture.ENG)
+                {
+                    culture.KeyboardCulture = KeyboardCulture.RUS;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.KeyboardCulture = KeyboardCulture.RUS;
+                }
+                else
+                {
+                    culture.KeyboardCulture = KeyboardCulture.ENG;
+                    foreach (KeyboardSymbolKey key in _keys)
+                        key.KeyboardCulture = KeyboardCulture.ENG;
+                }
+            };
+            _rows[4].Children.Add(new VirtualSpecialKey()
+            {
+                DataContext = culture
+            });
+
+            KeyboardSpecialKey backspace = new()
+            {
+                KeyDisplay = "⬅",
+                KeyAction = () =>
                 {
                     if (Keyboard.FocusedElement is TextBox input)
                     {
-                        input.SelectedText = " ";
-                        input.SelectionStart += 1;
-                        input.SelectionLength = 0;
+                        int selectionStart = input.SelectionStart;
+                        int selectionLength = input.SelectionLength;
+
+                        if (selectionLength > 0)
+                        {
+                            input.Text = input.Text.Remove(selectionStart, selectionLength);
+                            input.SelectionStart = selectionStart;
+                        }
+                        else if (selectionStart > 0)
+                        {
+                            input.Text = input.Text.Remove(selectionStart - 1, 1);
+                            input.SelectionStart = selectionStart - 1;
+                        }
                     }
-                }
+                },
+                Width = 2,
+                Height = 1,
             };
-            Base.Children.Add(new VirtualKey()
+            _rows[4].Children.Add(new VirtualSpecialKey()
             {
-                Margin = new(0.4),
-                DataContext = space
+                DataContext = backspace
             });
         }
     }

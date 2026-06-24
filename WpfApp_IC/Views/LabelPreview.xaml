@@ -10,37 +10,28 @@
              d:DataContext="{d:DesignInstance Type=vm:LabelPreviewViewModel}"
              mc:Ignorable="d" Background="#F4F4F4" FontSize="24">
     <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="150"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*" MinWidth="150"/>
-            </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                
-                <designer:DesignerCanvas Background="White" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
-                <controls:VirtualKeyboard Grid.Row="1"/>
-            </Grid>
-            <GridSplitter Grid.Column="1"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"
-                      ResizeBehavior="PreviousAndNext"
-                      ShowsPreview="True"
-                      Background="MediumVioletRed"
-                      Width="5"/>
-            <Views:DataInput Grid.Column="2" DataContext="{Binding DesignerViewModel}"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <designer:DesignerCanvas Background="White" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
+            <controls:VirtualKeyboard Grid.Row="1" FontFamily="Consolas"/>
         </Grid>
-        <Button Content="Продолжить" Height="50" Margin="0,10,0,0" Click="PrintLabel_Click" Grid.Row="1"/>
-        <Button Content="Назад" Height="50" Margin="0,10,0,0" Click="GetBack_Click" Grid.Row="2"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Views:DataInput DataContext="{Binding DesignerViewModel}"/>
+            <Button Content="Продолжить" Height="60" Margin="10,5" Click="PrintLabel_Click" Grid.Row="1"/>
+            <Button Content="Назад" Height="60" Margin="10,5" Click="GetBack_Click" Grid.Row="2"/>
+        </Grid>
     </Grid>
 </UserControl>

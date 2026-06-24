@@ -47,6 +47,7 @@ namespace WpfApp_IC
                     services.AddTransient<SettingsViewModel>();
 
                     services.AddSingleton<VideojetPrinter>();
+                    services.AddSingleton<MindeoScanner>();
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
                     services.AddSingleton<LabelingSession>();

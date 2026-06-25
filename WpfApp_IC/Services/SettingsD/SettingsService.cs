@@ -51,7 +51,7 @@ namespace WpfApp_IC.Services.SettingsD
 
             // Инспекция
             inspector.RejectDelayMs = s.RejectDelay;
-            inspector.SensorFilterCount = s.SensorFilterCount;
+            inspector.SensorOnFilter = s.SensorFilterCount;
             inspector.SensorPollIntervalMs = s.SensorPollInterval;
 
             sensor.Coil = s.SignalCoil;

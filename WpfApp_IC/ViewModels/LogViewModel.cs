@@ -36,5 +36,7 @@ namespace WpfApp_IC.ViewModels
         }
 
         public ObservableCollection<LogEntry> Entries { get; set; } = [];
+
+        public void ClearLog() => _log.Entries.Clear();
     }
 }

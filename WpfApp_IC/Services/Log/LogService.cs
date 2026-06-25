@@ -7,7 +7,6 @@
     /// </summary>
     public class LogService
     {
-        // Ограничение на максимальное количество записей
         private const int MaxEntries = 3000;
 
         public event Action? EntriesChanged;
@@ -22,8 +21,8 @@
         {
             Entries.Add(entry);
 
-            while (Entries.Count > MaxEntries)
-                Entries.RemoveAt(0);
+            if (Entries.Count > MaxEntries)
+                Entries.RemoveRange(0, 1000);
 
             EntriesChanged?.Invoke();
         }

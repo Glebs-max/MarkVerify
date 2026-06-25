@@ -113,7 +113,6 @@ namespace LabelDesigner
                     field.Y = y / Scale;
                     field.H = LabelArea.H * 0.5 / Scale;
                     field.ZIndex = Fields.Count;
-                    SelectedField = field;
                 };
                 field.Visual.MouseLeftButtonDown += (s, e) =>
                 {
@@ -139,6 +138,7 @@ namespace LabelDesigner
                 LabelModel.Children.Add(field.Visual);
                 LabelModel.Children.Add(field.Adorner);
                 SelectedTool = ToolboxItemType.None;
+                SelectedField = field;
             }
         }
         public void RemoveField(Field? field)

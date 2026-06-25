@@ -10,6 +10,7 @@
     <GridStepY>18.89644746787604</GridStepY>
     <ShowGrid>true</ShowGrid>
   </LabelArea>
+  <Preview>false</Preview>
   <Fields>
     <Field xsi:type="BarcodeField">
       <MinWidth>3.7792894935752077</MinWidth>
@@ -53,10 +54,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>17.06.26</Text>
+      <Text>25.06.26</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2026-06-17T15:10:23.4956652+05:00</Date>
+      <Date>2026-06-25T15:20:55.7330469+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
     </Field>
@@ -80,10 +81,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>29.393599840968733</W>
       <H>8.683257028592749</H>
-      <Text>17.06.27</Text>
+      <Text>25.06.27</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Date>2027-06-17T15:10:23.495748+05:00</Date>
+      <Date>2027-06-25T15:20:55.7331409+05:00</Date>
       <DateFormat>dd$MM$yy</DateFormat>
       <Separator>46</Separator>
       <DateCalculation>
@@ -112,10 +113,10 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>19.333604343892542</W>
       <H>8.692365835222978</H>
-      <Text>15:10</Text>
+      <Text>15:20</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
-      <Time>2026-06-17T15:10:23.495818+05:00</Time>
+      <Time>2026-06-25T15:20:55.7332292+05:00</Time>
       <TimeFormat>HH$mm</TimeFormat>
       <Separator>58</Separator>
     </Field>
@@ -128,7 +129,7 @@
         <Width>17.796666666666667</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>37.79289493575208</X>
+      <X>43.4618291761149</X>
       <Y>26.455026455026456</Y>
       <ZIndex>4</ZIndex>
       <Orientation>0</Orientation>
@@ -139,7 +140,7 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>4.204053011527809</W>
       <H>8.692365835222978</H>
-      <Text>1</Text>
+      <Text>5</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
     </Field>
@@ -233,7 +234,7 @@
       <Inverted>false</Inverted>
       <Transparent>false</Transparent>
       <KeepAspectRatio>true</KeepAspectRatio>
-      <W>8.408106023055616</W>
+      <W>8.408106023055618</W>
       <H>8.692365835222978</H>
       <Text>00</Text>
       <TextFontFamily>Arial</TextFontFamily>
@@ -248,7 +249,7 @@
         <Width>17.796666666666667</Width>
         <Height>36.79666666666667</Height>
       </InitialSize>
-      <X>43.4618291761149</X>
+      <X>37.79289493575209</X>
       <Y>26.455026455026456</Y>
       <ZIndex>5</ZIndex>
       <Orientation>0</Orientation>
@@ -259,7 +260,7 @@
       <KeepAspectRatio>true</KeepAspectRatio>
       <W>4.204053011527809</W>
       <H>8.692365835222978</H>
-      <Text>5</Text>
+      <Text>2</Text>
       <TextFontFamily>Arial</TextFontFamily>
       <Bold>true</Bold>
     </Field>

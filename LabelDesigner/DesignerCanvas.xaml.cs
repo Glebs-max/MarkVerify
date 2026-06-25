@@ -47,7 +47,6 @@ namespace LabelDesigner
                 if (DataContext is DesignerViewModel)
                 {
                     VM.LabelModel = CanvasArea;
-                    VM.SelectedField = null;
 
                     if (VM.Preview)
                     {
@@ -87,6 +86,8 @@ namespace LabelDesigner
                             CanvasArea.Children.Add(field.Visual);
                             CanvasArea.Children.Add(field.Adorner);
                         }
+
+                        VM.SelectedField = null;
                     }
                 }
             };

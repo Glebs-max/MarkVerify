@@ -89,7 +89,7 @@ namespace WpfApp_IC.ViewModels
 
             _workInitiateCts?.Cancel();
             LabelingSession.Reset();
-            LogViewModel.Entries.Clear();
+            LogViewModel.ClearLog();
             mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
         }
     }

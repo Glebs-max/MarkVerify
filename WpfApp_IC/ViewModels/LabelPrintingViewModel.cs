@@ -117,22 +117,25 @@ namespace WpfApp_IC.ViewModels
                 }
             }
         }
-        private async void OnQueueLow(int qsz)
+        private void OnQueueLow(int qsz)
         {
-            if (_queueLock)
-                return;
-
-            _queueLock = true;
-
-            try
+            Task.Run(async () =>
             {
-                if (VideojetPrinter.Connected)
-                    await QueueLabel(VideojetPrinter.MaxQueueSize - qsz);
-            }
-            finally
-            {
-                _queueLock = false;
-            }
+                if (_queueLock)
+                    return;
+
+                _queueLock = true;
+
+                try
+                {
+                    if (VideojetPrinter.Connected)
+                        await QueueLabel(VideojetPrinter.MaxQueueSize - qsz);
+                }
+                finally
+                {
+                    _queueLock = false;
+                }
+            });
         }
         private void OnConnectionEstablished() => Ready = true;
     }

@@ -8,10 +8,11 @@ namespace WpfApp_IC.Services.Inspectors
     /// Работает с одним ожидаемым кодом.
     /// Подписать поля
     /// </summary>
-    public interface IInspectorController : IDisposable
+    public interface IInspectorController
     {
         int RejectDelayMs { get; set; }
-        int SensorFilterCount { get; set; }
+        int SensorOnFilter { get; set; }
+        int SensorOffFilter { get; set; }
         int SensorPollIntervalMs { get; set; }
         string CameraIp { get; set; }
         string ModbusIp { get; set; }

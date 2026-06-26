@@ -1,6 +1,7 @@
 ﻿using LabelDesigner.Services;
 using Observable;
 using System.IO;
+using System.Windows;
 using WpfApp_IC.Views;
 
 namespace WpfApp_IC.ViewModels
@@ -16,5 +17,6 @@ namespace WpfApp_IC.ViewModels
             mainViewModel.CurrentViewModel = model;
         }
         public void Settings() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<SettingsViewModel>();
+        public static void Exit() => Application.Current.Shutdown();
     }
 }

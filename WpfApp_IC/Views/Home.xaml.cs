@@ -28,5 +28,6 @@ namespace WpfApp_IC.Views
         private void Start_Click(object sender, RoutedEventArgs e) => VM.Start();
         private void Settings_Click(object sender, RoutedEventArgs e) => VM.Settings();
         private void Camera_Click(object sender, RoutedEventArgs e) => VM.Camera();
+        private void Exit_Click(object sender, RoutedEventArgs e) => HomeViewModel.Exit();
     }
 }

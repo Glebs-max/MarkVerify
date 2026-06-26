@@ -7,6 +7,6 @@
              xmlns:kb="clr-namespace:WpfApp_IC.Models.VirtualKeyboard"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=kb:KeyboardSpecialKey}">
     <Border Width="{Binding Width}" Height="{Binding Height}" Background="{Binding Background}" BorderThickness="1" Cursor="Hand" MouseDown="Key_Click" MouseEnter="Key_Hover" MouseLeave="Key_Leave">
-        <TextBlock Text="{Binding KeyDisplay}" FontSize="28" VerticalAlignment="Center" TextAlignment="Center"/>
+        <TextBlock Text="{Binding KeyDisplay}" FontSize="26" VerticalAlignment="Center" TextAlignment="Center"/>
     </Border>
 </UserControl>

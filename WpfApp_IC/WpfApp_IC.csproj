@@ -14,9 +14,11 @@
     <None Remove="Assets\disconnected.png" />
     <None Remove="Assets\fair mark.png" />
     <None Remove="Assets\fault.png" />
+    <None Remove="Assets\fullscreen.png" />
     <None Remove="Assets\good.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\logo.png" />
+    <None Remove="Assets\minimize.png" />
     <None Remove="Assets\nastr.png" />
     <None Remove="Assets\Next.png" />
     <None Remove="Assets\return.png" />
@@ -46,7 +48,13 @@
     <Resource Include="Assets\fault.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\fullscreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\good.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\minimize.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\smart logo.png">

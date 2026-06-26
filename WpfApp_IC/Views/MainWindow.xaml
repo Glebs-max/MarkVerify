@@ -8,29 +8,46 @@
         xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         mc:Ignorable="d" Title="Честный Знак" Icon='/Assets/fair mark.png'
-        FontFamily="Bahnschrift" FontSize="17"
-        Height="1024" Width="1280" WindowState="Maximized">
-    <ContentPresenter Content="{Binding CurrentViewModel}">
-        <ContentPresenter.Resources>
-            <DataTemplate DataType="{x:Type vm:HomeViewModel}">
-                <Views:Home/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
-                <Views:Products/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
-                <Views:LabelPreview/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:LabelingViewModel}">
-                <Views:Labeling/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
-                <Views:Settings/>
-            </DataTemplate>
+        FontFamily="Bahnschrift" FontSize="17" WindowStyle="None"
+        Height="1024" Width="1024" WindowState="Maximized">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <DataTemplate DataType="{x:Type vm:CameraViewModel}">
-                <Views:CameraBasic/>
-            </DataTemplate>
-        </ContentPresenter.Resources>
-    </ContentPresenter>
+        <WrapPanel Orientation="Horizontal" FlowDirection="RightToLeft" Background="#FFFF8834">
+            <Grid Width="60" MouseDown="Fullscreen_Click" MouseEnter="Tray_MouseEnter" MouseLeave="Tray_MouseLeave">
+                <Image Source="/Assets/fullscreen.png" Margin="0,5"/>
+                <Border Background="White" Opacity="0"/>
+            </Grid>
+            <Grid Width="60" MouseDown="Minimize_Click" MouseEnter="Tray_MouseEnter" MouseLeave="Tray_MouseLeave">
+                <Image Source="/Assets/minimize.png" Margin="0,5"/>
+                <Border Background="White" Opacity="0"/>
+            </Grid>
+        </WrapPanel>
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentViewModel}">
+            <ContentPresenter.Resources>
+                <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+                    <Views:Home/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+                    <Views:Products/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:LabelPreviewViewModel}">
+                    <Views:LabelPreview/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:LabelingViewModel}">
+                    <Views:Labeling/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                    <Views:Settings/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type vm:CameraViewModel}">
+                    <Views:CameraBasic/>
+                </DataTemplate>
+            </ContentPresenter.Resources>
+        </ContentPresenter>
+    </Grid>
 </Window>

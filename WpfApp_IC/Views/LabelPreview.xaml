@@ -9,29 +9,31 @@
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=vm:LabelPreviewViewModel}"
              mc:Ignorable="d" Background="#F4F4F4" FontSize="24">
-    <Grid Margin="20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
             <designer:DesignerCanvas Background="White" Panel.ZIndex="-1" DataContext="{Binding DesignerViewModel}"/>
-            <controls:VirtualKeyboard Grid.Row="1" FontFamily="Consolas"/>
+            <Views:DataInput Grid.Column="1" DataContext="{Binding DesignerViewModel}"/>
         </Grid>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Views:DataInput DataContext="{Binding DesignerViewModel}"/>
-            <Button Content="Продолжить" Height="60" Margin="10,5" Click="PrintLabel_Click" Grid.Row="1"/>
-            <Button Content="Назад" Height="60" Margin="10,5" Click="GetBack_Click" Grid.Row="2"/>
+        <controls:VirtualKeyboard Grid.Row="1" FontFamily="Consolas" Margin="4"/>
+        <Grid Margin="4" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Продолжить" Height="50" Margin="7,0" Click="PrintLabel_Click"/>
+            <Button Content="Назад" Height="50" Margin="7,0" Grid.Column="1" Click="GetBack_Click"/>
         </Grid>
     </Grid>
 </UserControl>

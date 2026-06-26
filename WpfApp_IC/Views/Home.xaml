@@ -20,6 +20,7 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
             <Button Content="Старт" Width="400" Height="100" FontSize="40" Margin="10" Background="White" Click="Start_Click"/>
             <Button Content="Настройки" Width="400" Height="100" FontSize="40" Margin="10" Background="White" Click="Settings_Click"/>
+            <Button Content="Выход" Width="400" Height="100" FontSize="40" Margin="10" Background="White" Click="Exit_Click"/>
         </StackPanel>
     </Grid>
 </UserControl>

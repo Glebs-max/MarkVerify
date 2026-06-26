@@ -21,12 +21,12 @@ namespace WpfApp_IC.Models.VirtualKeyboard
         public double Width
         {
             get => _width;
-            set => Set(ref _width, value * 67);
+            set => Set(ref _width, value * 61);
         }
         public double Height
         {
             get => _height;
-            set => Set(ref _height, value * 67);
+            set => Set(ref _height, value * 61);
         }
         public Brush Background
         {

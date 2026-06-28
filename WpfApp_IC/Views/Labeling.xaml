@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:WpfApp_IC.Views"
+             xmlns:controls="clr-namespace:WpfApp_IC.Controls"
              xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
              xmlns:designer="clr-namespace:LabelDesigner;assembly=LabelDesigner"
              d:DataContext="{d:DesignInstance Type=viewmodels:LabelingViewModel}"
-             mc:Ignorable="d" Background="#F4F4F4" FontSize="22">
+             mc:Ignorable="d" Background="#F4F4F4" FontSize="18">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -58,7 +59,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Grid>
@@ -69,7 +70,7 @@
                 </Grid.RowDefinitions>
                 <views:LabelPrinting DataContext="{Binding LabelPrintingViewModel}"/>
                 <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="MediumVioletRed" ResizeBehavior="PreviousAndNext"/>
-                <views:Log Grid.Row="2" DataContext="{Binding LogViewModel}"/>
+                <controls:Log DataContext="{Binding LogService}" Grid.Row="2"/>
             </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="MediumVioletRed" ResizeBehavior="PreviousAndNext"/>
@@ -102,9 +103,17 @@
             </Grid>
         </Grid>
 
-        <!-- Кнопки -->
+        <!-- Управление -->
         <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-            <Button x:Name="StartStop" Width="180" Height="60" Margin="15" Click="StartStop_Click">
+            <StackPanel Margin="10">
+                <TextBlock Text="Режим работы" TextAlignment="Center"/>
+                <ComboBox x:Name="WorkModeBox" SelectedIndex="0" SelectedValuePath="Tag" SelectionChanged="WorkMode_Changed" Text="Режим работы" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="170" Height="45">
+                    <ComboBoxItem Content="Обычный" Tag="Default" Height="45"/>
+                    <ComboBoxItem Content="Без дубликатов" Tag="SkipDuplicates" Height="45"/>
+                </ComboBox>
+            </StackPanel>
+
+            <Button x:Name="StartStop" Width="170" Height="45" Margin="10" VerticalAlignment="Bottom" Click="StartStop_Click">
                 <Button.Tag>
                     <MultiBinding Converter="{StaticResource WorkStatusConverter}">
                         <Binding Path="WorkState"/>
@@ -118,7 +127,7 @@
                     <Binding Path="Tag.StartStopText" RelativeSource="{RelativeSource Self}"/>
                 </Button.Content>
             </Button>
-            <Button x:Name="Pause" Width="180" Height="60" Margin="15" Click="Pause_Click">
+            <Button x:Name="Pause" Width="170" Height="45" Margin="10" VerticalAlignment="Bottom" Click="Pause_Click">
                 <Button.Tag>
                     <MultiBinding Converter="{StaticResource WorkStatusConverter}">
                         <Binding Path="WorkState"/>
@@ -132,7 +141,7 @@
                     <Binding Path="Tag.PauseText" RelativeSource="{RelativeSource Self}"/>
                 </Button.Content>
             </Button>
-            <Button x:Name="Exit" Width="180" Height="60" Margin="15" Content="Выход" Click="Exit_Click">
+            <Button x:Name="Exit" Width="170" Height="45" Margin="10" VerticalAlignment="Bottom" Content="Выход" Click="Exit_Click">
                 <Button.Tag>
                     <MultiBinding Converter="{StaticResource WorkStatusConverter}">
                         <Binding Path="WorkState"/>
@@ -143,6 +152,14 @@
                     <Binding Path="Tag.ExitEnabled" RelativeSource="{RelativeSource Self}"/>
                 </Button.IsEnabled>
             </Button>
+
+            <StackPanel Margin="10">
+                <TextBlock Text="Режим сканера" TextAlignment="Center"/>
+                <ComboBox x:Name="ScannerModeBox" SelectedIndex="0" SelectedValuePath="Tag" SelectionChanged="ScannerMode_Changed" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="170" Height="45">
+                    <ComboBoxItem Content="Верификация" Tag="Verify" Height="45"/>
+                    <ComboBoxItem Content="Отбраковка" Tag="Reject" Height="45"/>
+                </ComboBox>
+            </StackPanel>
         </WrapPanel>
     </Grid>
 </UserControl>

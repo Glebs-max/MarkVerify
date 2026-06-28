@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WpfApp_IC.Controls"
-             mc:Ignorable="d">
-    <Border>
-        <TextBlock x:Name="Log"/>
-    </Border>
+             xmlns:services="clr-namespace:WpfApp_IC.Services"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=services:LogService}">
+    <ScrollViewer Background="White" Padding="8" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+        <TextBlock x:Name="LogBox" FontFamily="Consolas" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+    </ScrollViewer>
 </UserControl>

@@ -10,7 +10,6 @@ using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Services;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
-using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.Services.SettingsD;
 using WpfApp_IC.ViewModels;
@@ -39,7 +38,6 @@ namespace WpfApp_IC
                     services.AddSingleton<HomeViewModel>();
                     services.AddSingleton<ProductsViewModel>();
                     services.AddSingleton<VideojetErrorsViewModel>();
-                    services.AddSingleton<LogViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelingViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();

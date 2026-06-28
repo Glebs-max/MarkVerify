@@ -3,6 +3,7 @@ using Observable;
 using System.IO;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
+using WpfApp_IC.Services;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -21,10 +22,7 @@ namespace WpfApp_IC.ViewModels
         Errors
     }
 
-    /// <summary>
-    /// Модель печати и проверки маркировок
-    /// </summary>
-    public class LabelingViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel, LogViewModel logViewModel) : ObservableObject
+    public class LabelingViewModel(MainViewModel mainViewModel, LogService logService, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel) : ObservableObject
     {
         private CancellationTokenSource? _workInitiateCts;
         private WorkState _workState = WorkState.Initiating;
@@ -40,10 +38,10 @@ namespace WpfApp_IC.ViewModels
             get => _errorState;
             set => Set(ref _errorState, value);
         }
+        public LogService LogService => logService;
         public LabelingSession LabelingSession => labelingSession;
         public CameraViewModel CameraViewModel => cameraViewModel;
         public LabelPrintingViewModel LabelPrintingViewModel => labelPrintingViewModel;
-        public LogViewModel LogViewModel => logViewModel;
 
         public async Task WorkInitiate()
         {
@@ -88,8 +86,8 @@ namespace WpfApp_IC.ViewModels
                 await WorkTerminate();
 
             _workInitiateCts?.Cancel();
+            LogService.ClearEntries();
             LabelingSession.Reset();
-            LogViewModel.ClearLog();
             mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
         }
     }

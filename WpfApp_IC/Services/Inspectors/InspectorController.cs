@@ -11,7 +11,6 @@ using WpfApp_IC.Models.DbContext;
 using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Views;
 using WpfApp_IC.Services.Camera;
-using WpfApp_IC.Services.Log;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.Models;
 using System.Linq.Expressions;
@@ -67,29 +66,26 @@ namespace WpfApp_IC.Services.Inspectors
 
         public event EventHandler? MotionDetected;
 
-        /// <summary>
-        /// Запускает инспекцию: подключает Modbus, открывает камеру и запускает цикл чтения датчика.
-        /// </summary>
         public void Start()
         {
             try
             {
                 modbus.Connect(ModbusIp, ModbusPort);
-                log.Info($"Modbus подключён: {ModbusIp}:{ModbusPort}");
+                log.AddEntry($"MODBUS модуль подключен: {ModbusIp}:{ModbusPort}");
             }
-            catch (Exception ex)
+            catch
             {
-                log.Error("Ошибка подключения Modbus", ex);
+                log.AddEntry("Не удалось подключиться к модулю MODBUS", LogColorCode.Red);
             }
 
             try
             {
                 camera.Open(CameraIp);
-                log.Info($"Камера [{CameraIp}] открыта");
+                log.AddEntry($"Соединение с камерой установлено [{CameraIp}]");
             }
-            catch (Exception ex)
+            catch
             {
-                log.Error($"Ошибка открытия камеры [{CameraIp}]", ex);
+                log.AddEntry($"Не удалось установить соединение с камерой [{CameraIp}]", LogColorCode.Red);
             }
 
             _stableSignal = 0;
@@ -101,7 +97,38 @@ namespace WpfApp_IC.Services.Inspectors
 
             _cts = new();
             Task.Run(() => ListenSensorAsync(_cts.Token));
-            log.Info("Инспекция запущена");
+        }
+        public void Stop()
+        {
+            MotionDetected -= (s, e) => Inspect();
+            _cts?.Cancel();
+            Thread.Sleep(500);
+            camera.Close();
+            modbus?.Disconnect();
+        }
+        public DataMatrixResult? TriggerCamera()
+        {
+            if (_triggerInProgress)
+                return null;
+
+            try
+            {
+                _triggerInProgress = true;
+                var (dm, frame) = camera.TriggerAndRead();
+                _triggerInProgress = false;
+
+                if (frame != null)
+                {
+                    _lastFrame = frame;
+                    FrameReceived?.Invoke(dm?.Raw, frame);
+                }
+
+                return dm;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void Inspect()
@@ -116,6 +143,7 @@ namespace WpfApp_IC.Services.Inspectors
                     {
                         await Task.Delay(RejectDelayMs, rejectCts.Token);
                         await rejector.Activate();
+                        labelingSession.Rejected++;
                     }
                     catch { }
                 }, rejectCts.Token);
@@ -134,32 +162,28 @@ namespace WpfApp_IC.Services.Inspectors
                 }
                 else
                 {
-                    if (_lastFrame != null)
-                        imageSaver.SaveReject(_lastFrame, dm?.Normalized);
-
                     switch (result.ErrorCode)
                     {
                         case "NO_READ":
-                            log.Info($"Код не считан: NULL");
+                            log.AddEntry($"Код не считан: NULL", LogColorCode.Yellow);
                             break;
                         case "NOT_FOUND":
-                            log.Info($"Неверный код: {dm?.Raw}");
-                            labelingSession.Rejected++;
+                            log.AddEntry($"Неверный код: {dm?.Raw}", LogColorCode.Red);
                             break;
                         case "DUPLICATE":
-                            log.Info($"Дубликат: {dm?.Raw}");
-                            labelingSession.Rejected++;
+                            if (labelingSession.WorkMode == WorkMode.SkipDuplicates)
+                                rejectCts.Cancel();
+                            log.AddEntry($"Дубликат: {dm?.Raw}", LogColorCode.Red);
                             break;
                     }
+
+                    if (_lastFrame != null)
+                        imageSaver.SaveReject(_lastFrame, dm?.Normalized);
                 }
 
                 CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
             });
         }
-
-        /// <summary>
-        /// Основной цикл: читает датчик, фильтрует дребезг, вызывает триггер камеры.
-        /// </summary>
         private async Task ListenSensorAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -186,13 +210,9 @@ namespace WpfApp_IC.Services.Inspectors
 
                     await Task.Delay(SensorPollIntervalMs, token);
                 }
-                catch (Exception ex)
-                {
-                    log.Error("Ошибка в цикле инспекции", ex);
-                }
+                catch { }
             }
         }
-
         private async Task<ValidationResult> ValidateAsync(string? dm)
         {
             try
@@ -231,51 +251,6 @@ namespace WpfApp_IC.Services.Inspectors
             {
                 MessageBox.Show($"Возникла ошибка при валидации кода в базе данных.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return ValidationResult.NotFound();
-            }
-        }
-
-        /// <summary>
-        /// Останавливает инспекцию.
-        /// </summary>
-        public void Stop()
-        {
-            MotionDetected -= (s, e) => Inspect();
-            _cts?.Cancel();
-            Thread.Sleep(500);
-            camera.Close();
-            modbus?.Disconnect();
-            log.Info("Инспекция остановлена");
-        }
-
-        /// <summary>
-        /// Ручной триггер камеры — для тестирования без датчика.
-        /// Запускает снимок напрямую, минуя цикл опроса датчика.
-        /// </summary>
-        public DataMatrixResult? TriggerCamera()
-        {
-            if (_triggerInProgress)
-                return null;
-
-            try
-            {
-                _triggerInProgress = true;
-                var (dm, frame) = camera.TriggerAndRead();
-                _triggerInProgress = false;
-
-                if (frame != null)
-                {
-                    _lastFrame = frame;
-                    FrameReceived?.Invoke(dm?.Raw, frame);
-                }
-                else
-                    log.Warning("Кадр не получен");
-
-                return dm;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Ошибка триггера камеры", ex);
-                return null;
             }
         }
     }

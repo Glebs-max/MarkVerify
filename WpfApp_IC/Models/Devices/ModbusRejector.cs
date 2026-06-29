@@ -26,7 +26,7 @@ namespace WpfApp_IC.Models.Devices
                     _activated = true;
                 }
 
-                await Task.Delay(250, _cts.Token);
+                await Task.Delay(300, _cts.Token);
 
                 modbus.WriteCoil(Coil, false);
                 _activated = false;

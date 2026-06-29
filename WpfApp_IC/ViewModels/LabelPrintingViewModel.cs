@@ -97,7 +97,6 @@ namespace WpfApp_IC.ViewModels
                         });
 
                         await VideojetPrinter.SendZplAsync(zpl);
-                        //await File.WriteAllTextAsync(Path.Combine(AppContext.BaseDirectory, $"TestZPL/{LabelingSession.Count}.txt"), zpl);
 
                         code.StatusId = 1;
                         code.DatePrint = DateTime.Now;
@@ -113,7 +112,7 @@ namespace WpfApp_IC.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Возникла ошибка при обращении к базе данных. Проверьте соединение с сервером.\n\nException message:\n\n{ex.Message}\n\n{ex.InnerException}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -133,6 +132,7 @@ namespace WpfApp_IC.ViewModels
                 }
                 finally
                 {
+                    await Task.Delay(1000);
                     _queueLock = false;
                 }
             });

@@ -186,8 +186,8 @@
                         <TextBox Text="{Binding RejectDelayMs, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource Field}"/>
 
-                        <TextBlock Text="Фильтр дребезга датчика (кол-во совпадений)" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Text="{Binding SensorFilterCount, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBlock Text="Фильтр срабатывания датчика (мс)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding MotionFilterInterval, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource Field}"/>
 
                         <TextBlock Text="Интервал опроса датчика (мс)" Style="{StaticResource FieldLabel}"/>

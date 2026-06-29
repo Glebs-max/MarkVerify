@@ -96,7 +96,7 @@ namespace WpfApp_IC.ViewModels
 
         // Инспекция
         private int _rejectDelayMs;
-        private int _sensorFilterCount;
+        private int _motionFilterInterval;
         private int _sensorPollIntervalMs;
 
         public int RejectDelayMs
@@ -104,10 +104,10 @@ namespace WpfApp_IC.ViewModels
             get => _rejectDelayMs;
             set => Set(ref _rejectDelayMs, value);
         }
-        public int SensorFilterCount
+        public int MotionFilterInterval
         {
-            get => _sensorFilterCount;
-            set => Set(ref _sensorFilterCount, value);
+            get => _motionFilterInterval;
+            set => Set(ref _motionFilterInterval, value);
         }
         public int SensorPollIntervalMs
         {
@@ -193,7 +193,7 @@ namespace WpfApp_IC.ViewModels
             _settings.Settings.RejectDelay = RejectDelayMs;
             _settings.Settings.SignalCoil = SignalCoil;
             _settings.Settings.SensorPollInterval = SensorPollIntervalMs;
-            _settings.Settings.SensorFilterCount = SensorFilterCount;
+            _settings.Settings.MotionFilterInterval = MotionFilterInterval;
             _settings.Settings.ModbusIp = ModbusIp;
             _settings.Settings.ModbusPort = ModbusPort;
             _settings.Settings.CameraIp = CameraIp;
@@ -246,7 +246,7 @@ namespace WpfApp_IC.ViewModels
             CameraIp = s.CameraIp;
 
             RejectDelayMs = s.RejectDelay;
-            SensorFilterCount = s.SensorFilterCount;
+            MotionFilterInterval = s.MotionFilterInterval;
             SensorPollIntervalMs = s.SensorPollInterval;
 
             ValidationMessage = "";
@@ -266,7 +266,7 @@ namespace WpfApp_IC.ViewModels
             if (SensorPollIntervalMs < 1)
                 errors.Add("Интервал опроса датчика должен быть не менее 1 мс.");
 
-            if (SensorFilterCount < 1)
+            if (MotionFilterInterval < 1)
                 errors.Add("Фильтр датчика должен быть не менее 1.");
 
             // Можно добавить проверки IP-адресов

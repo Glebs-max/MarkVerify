@@ -92,11 +92,11 @@ namespace WpfApp_IC.Services.SettingsD
             set => Set(ref _rejectDelay, value);
         }
 
-        private int _sensorFilterCount = 2;
-        public int SensorFilterCount
+        private int _motionFilterInterval = 200;
+        public int MotionFilterInterval
         {
-            get => _sensorFilterCount;
-            set => Set(ref _sensorFilterCount, value);
+            get => _motionFilterInterval;
+            set => Set(ref _motionFilterInterval, value);
         }
 
         private int _sensorPollInterval = 10;

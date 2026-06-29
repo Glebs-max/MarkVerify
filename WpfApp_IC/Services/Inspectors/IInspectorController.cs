@@ -10,10 +10,9 @@ namespace WpfApp_IC.Services.Inspectors
     /// </summary>
     public interface IInspectorController
     {
-        int RejectDelayMs { get; set; }
-        int SensorOnFilter { get; set; }
-        int SensorOffFilter { get; set; }
-        int SensorPollIntervalMs { get; set; }
+        int RejectDelay { get; set; }
+        int MotionFilterInterval { get; set; }
+        int SensorPollInterval { get; set; }
         string CameraIp { get; set; }
         string ModbusIp { get; set; }
         int ModbusPort { get; set; }

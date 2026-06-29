@@ -14,6 +14,7 @@ using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.Models;
 using System.Linq.Expressions;
+using System.Windows.Xps.Packaging;
 
 namespace WpfApp_IC.Services.Inspectors
 {
@@ -43,20 +44,15 @@ namespace WpfApp_IC.Services.Inspectors
         /// <summary>
         /// Задержка перед активацией отбраковщика.
         /// </summary>
-        public int RejectDelayMs { get; set; } = 200;
-
-        /// <summary> SensorFilterCount - Периодичность стабильного сигнала, фильтр дребезга датчика /// </summary>
-        public int SensorOnFilter { get; set; } = 1;
-        public int SensorOffFilter { get; set; } = 3;
-
-        /// <summary> SensorPollIntervalMs - интервал опроса датчика /// </summary>
-        public int SensorPollIntervalMs { get; set; } = 10;
+        public int RejectDelay { get; set; } = 300;
+        public int MotionFilterInterval { get; set; } = 200;
+        public int SensorPollInterval { get; set; } = 10;
 
         public string CameraIp { get; set; } = "";
 
         // Фильтрация дребезга
-        private int _stableSignal = -1;
-        private int _previousSignal = -1;
+        private DateTime _motionDetectedTime;
+        private int _currentSignal = 0;
         private int _sameCount = 0;
         private bool _triggerInProgress = false;
 
@@ -88,8 +84,6 @@ namespace WpfApp_IC.Services.Inspectors
                 log.AddEntry($"Не удалось установить соединение с камерой [{CameraIp}]", LogColorCode.Red);
             }
 
-            _stableSignal = 0;
-            _previousSignal = -1;
             _sameCount = 0;
             _triggerInProgress = false;
 
@@ -141,7 +135,7 @@ namespace WpfApp_IC.Services.Inspectors
                 {
                     try
                     {
-                        await Task.Delay(RejectDelayMs, rejectCts.Token);
+                        await Task.Delay(RejectDelay, rejectCts.Token);
                         await rejector.Activate();
                         labelingSession.Rejected++;
                     }
@@ -192,23 +186,14 @@ namespace WpfApp_IC.Services.Inspectors
                 {
                     int signal = sensor.Read();
 
-                    if (_stableSignal != signal)
+                    if (signal == 1 && _currentSignal == 0 && (DateTime.Now - _motionDetectedTime).TotalMilliseconds > MotionFilterInterval)
                     {
-                        _sameCount++;
-
-                        if (_sameCount >= (_stableSignal == 0 ? SensorOnFilter : SensorOffFilter))
-                        {
-                            if (signal == 1)
-                                MotionDetected?.Invoke(this, EventArgs.Empty);
-
-                            _stableSignal = signal;
-                            _sameCount = 0;
-                        }
+                        MotionDetected?.Invoke(this, EventArgs.Empty);
+                        _motionDetectedTime = DateTime.Now;
                     }
-                    else
-                        _sameCount = 0;
 
-                    await Task.Delay(SensorPollIntervalMs, token);
+                    _currentSignal = signal;
+                    await Task.Delay(SensorPollInterval, token);
                 }
                 catch { }
             }
@@ -226,8 +211,10 @@ namespace WpfApp_IC.Services.Inspectors
                 if (code == null)
                     return ValidationResult.NotFound();
 
-                if (await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2) != null ||
-                    await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2) != null)
+                main? checkMain = await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
+                tmp_main? checkTmp = await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
+
+                if (checkMain != null || checkTmp != null)
                     return ValidationResult.Duplicate();
 
                 tmp_main verified = new()
@@ -243,6 +230,7 @@ namespace WpfApp_IC.Services.Inspectors
                 };
 
                 db.tmp_mains.Add(verified);
+
                 await db.SaveChangesAsync();
 
                 return ValidationResult.Ok();

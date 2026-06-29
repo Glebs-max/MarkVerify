@@ -22,14 +22,6 @@ namespace WpfApp_IC.ViewModels
                     DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
                 });
             };
-            _controller.DataMatrixRead += dm =>
-            {
-                DispatchUI(() =>
-                {
-                    DataMatrix = dm.Normalized;
-                    DataMatrixBrush = Brushes.LimeGreen;
-                });
-            };
             _controller.FrameReceived += (dm, frame) =>
             {
                 if (frame != null)

@@ -22,7 +22,7 @@ namespace WpfApp_IC.ViewModels
         Errors
     }
 
-    public class LabelingViewModel(MainViewModel mainViewModel, LogService logService, LabelingSession labelingSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel) : ObservableObject
+    public class LabelingViewModel(MainViewModel mainViewModel, LogService logService, WorkSession workSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel) : ObservableObject
     {
         private CancellationTokenSource? _workInitiateCts;
         private WorkState _workState = WorkState.Initiating;
@@ -39,7 +39,7 @@ namespace WpfApp_IC.ViewModels
             set => Set(ref _errorState, value);
         }
         public LogService LogService => logService;
-        public LabelingSession LabelingSession => labelingSession;
+        public WorkSession WorkSession => workSession;
         public CameraViewModel CameraViewModel => cameraViewModel;
         public LabelPrintingViewModel LabelPrintingViewModel => labelPrintingViewModel;
 
@@ -87,7 +87,7 @@ namespace WpfApp_IC.ViewModels
 
             _workInitiateCts?.Cancel();
             LogService.ClearEntries();
-            LabelingSession.Reset();
+            WorkSession.Reset();
             mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
         }
     }

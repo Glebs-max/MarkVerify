@@ -89,15 +89,19 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="25,10">
                         <TextBlock Text="Остаток: "/>
-                        <TextBlock Text="{Binding LabelingSession.GTIN.CountAviable}"/>
+                        <TextBlock Text="{Binding WorkSession.GTIN.CountAviable}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="25,10">
                         <TextBlock Text="Верифицировано: "/>
-                        <TextBlock Text="{Binding LabelingSession.Verified}"/>
+                        <TextBlock Text="{Binding WorkSession.Verified}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="25,10">
                         <TextBlock Text="Отбраковано: "/>
-                        <TextBlock Text="{Binding LabelingSession.Rejected}"/>
+                        <TextBlock Text="{Binding WorkSession.Rejected}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="25,10">
+                        <TextBlock Text="Всего: "/>
+                        <TextBlock Text="{Binding WorkSession.TotalCount}"/>
                     </StackPanel>
                 </WrapPanel>
             </Grid>

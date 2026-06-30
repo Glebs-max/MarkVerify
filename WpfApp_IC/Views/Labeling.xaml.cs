@@ -42,10 +42,10 @@ namespace WpfApp_IC.Views
             switch (WorkModeBox.SelectedValue)
             {
                 case "Default":
-                    VM.LabelingSession.WorkMode = WorkMode.Default;
+                    VM.WorkSession.WorkMode = WorkMode.Default;
                     break;
                 case "SkipDuplicates":
-                    VM.LabelingSession.WorkMode = WorkMode.SkipDuplicates;
+                    VM.WorkSession.WorkMode = WorkMode.SkipDuplicates;
                     break;
             }
         }
@@ -57,10 +57,10 @@ namespace WpfApp_IC.Views
             switch (ScannerModeBox.SelectedValue)
             {
                 case "Verify":
-                    VM.LabelingSession.ScannerMode = ScannerMode.Verify;
+                    VM.WorkSession.ScannerMode = ScannerMode.Verify;
                     break;
                 case "Reject":
-                    VM.LabelingSession.ScannerMode = ScannerMode.Reject;
+                    VM.WorkSession.ScannerMode = ScannerMode.Reject;
                     break;
             }
         }

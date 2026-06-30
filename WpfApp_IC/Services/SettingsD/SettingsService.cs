@@ -8,7 +8,7 @@ using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.Services.SettingsD
 {
-    public class SettingsService(ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, IInspectorController inspector, ImageSaverService imageSaver, LabelingSession labelingSession)
+    public class SettingsService(ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, IInspectorController inspector, ImageSaverService imageSaver, WorkSession workSession)
     {
         private static readonly string _settingsPath = Path.Combine(AppContext.BaseDirectory, "settings.json");
 
@@ -36,7 +36,7 @@ namespace WpfApp_IC.Services.SettingsD
 
         private void Apply(AppSettings s)
         {
-            labelingSession.MachineName = s.MachineName;
+            workSession.MachineName = s.MachineName;
 
             // Принтер
             printer.IP = s.PrinterIp;

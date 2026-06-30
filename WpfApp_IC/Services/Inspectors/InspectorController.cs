@@ -24,7 +24,7 @@ namespace WpfApp_IC.Services.Inspectors
     /// Не зависит от UI и не содержит логики отображения.
     /// </summary>
     public class InspectorController(
-        LabelingSession labelingSession,
+        WorkSession workSession,
         LogService log,
         ICameraService camera,
         ModbusSensor sensor,
@@ -53,7 +53,6 @@ namespace WpfApp_IC.Services.Inspectors
         // Фильтрация дребезга
         private DateTime _motionDetectedTime;
         private int _currentSignal = 0;
-        private int _sameCount = 0;
         private bool _triggerInProgress = false;
 
         public event Action<DataMatrixResult>? DataMatrixRead;
@@ -84,7 +83,6 @@ namespace WpfApp_IC.Services.Inspectors
                 log.AddEntry($"Не удалось установить соединение с камерой [{CameraIp}]", LogColorCode.Red);
             }
 
-            _sameCount = 0;
             _triggerInProgress = false;
 
             MotionDetected += (s, e) => Inspect();
@@ -137,10 +135,11 @@ namespace WpfApp_IC.Services.Inspectors
                     {
                         await Task.Delay(RejectDelay, rejectCts.Token);
                         await rejector.Activate();
-                        labelingSession.Rejected++;
                     }
                     catch { }
                 }, rejectCts.Token);
+
+                workSession.TotalCount++;
 
                 DataMatrixResult? dm = TriggerCamera();
 
@@ -152,7 +151,7 @@ namespace WpfApp_IC.Services.Inspectors
                 if (result.IsOk)
                 {
                     rejectCts.Cancel();
-                    labelingSession.Verified++;
+                    workSession.Verified++;
                 }
                 else
                 {
@@ -165,11 +164,13 @@ namespace WpfApp_IC.Services.Inspectors
                             log.AddEntry($"Неверный код: {dm?.Raw}", LogColorCode.Red);
                             break;
                         case "DUPLICATE":
-                            if (labelingSession.WorkMode == WorkMode.SkipDuplicates)
+                            if (workSession.WorkMode == WorkMode.SkipDuplicates)
                                 rejectCts.Cancel();
                             log.AddEntry($"Дубликат: {dm?.Raw}", LogColorCode.Red);
                             break;
                     }
+
+                    workSession.Rejected++;
 
                     if (_lastFrame != null)
                         imageSaver.SaveReject(_lastFrame, dm?.Normalized);
@@ -206,32 +207,56 @@ namespace WpfApp_IC.Services.Inspectors
                     return ValidationResult.NoRead();
 
                 await using var db = await dbContextFactory.CreateDbContextAsync();
-                printer_base? code = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 1);
-
-                if (code == null)
-                    return ValidationResult.NotFound();
-
-                main? checkMain = await db.mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
-                tmp_main? checkTmp = await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == dm && c.GtinId == labelingSession.GTIN.GtinId && c.StatusId == 2);
-
-                if (checkMain != null || checkTmp != null)
+                if (db.tmp_mains.Any(c => c.Code == dm))
                     return ValidationResult.Duplicate();
 
-                tmp_main verified = new()
+                /*if (!workSession.Codes.TryGetValue(dm, out bool status))
+                    return ValidationResult.NotFound();
+
+                if (status)
+                    return ValidationResult.Duplicate();
+
+                workSession.Codes[dm] = true;*/
+
+                _ = Task.Run(() =>
                 {
-                    Code = code.Code,
-                    StatusId = 2,
-                    DateImport = code.DateImport,
-                    DatePrint = code.DatePrint,
-                    DateVerify = DateTime.Now,
-                    GtinId = code.GtinId,
-                    OperatorName = code.OperatorName,
-                    OrderID = code.OrderID
-                };
+                    using var db = dbContextFactory.CreateDbContext();
+                    printer_base? code = db.printer_bases.First(c => c.Code == dm);
 
-                db.tmp_mains.Add(verified);
+                    db.tmp_mains.Add(new()
+                    {
+                        Code = code.Code,
+                        StatusId = 2,
+                        DateImport = code.DateImport,
+                        DatePrint = code.DatePrint,
+                        DateVerify = DateTime.Now,
+                        GtinId = code.GtinId,
+                        OperatorName = code.OperatorName,
+                        OrderID = code.OrderID
+                    });
 
-                await db.SaveChangesAsync();
+                    try { db.SaveChanges(); }
+                    catch { log.AddEntry($"Код уже верифицирован: {code.Code}", LogColorCode.Red); }
+                });
+                //_ = Task.Run(async () =>
+                //{
+                //    await using var db = await dbContextFactory.CreateDbContextAsync();
+                //    printer_base? code = await db.printer_bases.FirstAsync(c => c.Code == dm);
+
+                //    db.tmp_mains.Add(new()
+                //    {
+                //        Code = code.Code,
+                //        StatusId = 2,
+                //        DateImport = code.DateImport,
+                //        DatePrint = code.DatePrint,
+                //        DateVerify = DateTime.Now,
+                //        GtinId = code.GtinId,
+                //        OperatorName = code.OperatorName,
+                //        OrderID = code.OrderID
+                //    });
+
+                //    await db.SaveChangesAsync();
+                //});
 
                 return ValidationResult.Ok();
             }

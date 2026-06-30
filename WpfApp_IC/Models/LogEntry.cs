@@ -18,6 +18,13 @@ namespace WpfApp_IC.Models
         public LogColorCode ColorCode { get; } = colorCode;
         public string Message { get; } = message;
 
+        public Brush Foreground => ColorCode switch
+        {
+            LogColorCode.Green => Brushes.DarkGreen,
+            LogColorCode.Yellow => Brushes.Gold,
+            LogColorCode.Red => Brushes.DarkRed,
+            _ => Brushes.Black,
+        };
         public override string ToString() => $"[{Time:HH:mm:ss}] {Message}";
     }
 }

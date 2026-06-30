@@ -14,7 +14,7 @@ namespace WpfApp_IC.ViewModels
     /// <summary>
     /// Модель просмотра и выбора продукции для печати
     /// </summary>
-    public class ProductsViewModel(MainViewModel mainViewModel, LabelingSession labelingSession, IDbContextFactory<AppDbContext> dbContextFactory, DebugService debugService) : ObservableObject
+    public class ProductsViewModel(MainViewModel mainViewModel, WorkSession workSession, IDbContextFactory<AppDbContext> dbContextFactory, DebugService debugService) : ObservableObject
     {
         public ObservableCollection<gtin> GTINs { get; } = [];
 
@@ -41,7 +41,7 @@ namespace WpfApp_IC.ViewModels
 
             await debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Выбрана продукция для маркировки: {product.GtinId}");
 
-            labelingSession.GTIN = product;
+            workSession.GTIN = product;
 
             LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
             model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, $"LabelTemplates/{GetLabelTemplate(product)}")) ?? new();

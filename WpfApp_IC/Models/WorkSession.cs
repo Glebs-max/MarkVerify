@@ -14,12 +14,12 @@ namespace WpfApp_IC.Models
         Reject
     }
 
-    public class LabelingSession : ObservableObject
+    public class WorkSession : ObservableObject
     {
         private string? _machineName;
         private gtin _gtin = new();
         private printer_task _currentTask = new();
-        private int _verified = 0, _rejected = 0, _count = 0;
+        private int _verified = 0, _rejected = 0, _printCount = 0, _totalCount = 0;
         private WorkMode _workMode;
         private ScannerMode _scannerMode;
 
@@ -48,10 +48,15 @@ namespace WpfApp_IC.Models
             get => _rejected;
             set => Set(ref _rejected, value);
         }
-        public int Count
+        public int PrintCount
         {
-            get => _count;
-            set => Set(ref _count, value);
+            get => _printCount;
+            set => Set(ref _printCount, value);
+        }
+        public int TotalCount
+        {
+            get => _totalCount;
+            set => Set(ref _totalCount, value);
         }
         public WorkMode WorkMode
         {
@@ -63,16 +68,19 @@ namespace WpfApp_IC.Models
             get => _scannerMode;
             set => Set(ref _scannerMode, value);
         }
+        public Dictionary<string, bool> Codes = [];
 
         public void Reset()
         {
             Verified = 0;
             Rejected = 0;
-            Count = 0;
+            PrintCount = 0;
+            TotalCount = 0;
             WorkMode = WorkMode.Default;
             ScannerMode = ScannerMode.Verify;
             GTIN = new();
             CurrentTask = new();
+            Codes.Clear();
         }
     }
 }

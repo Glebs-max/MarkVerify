@@ -48,7 +48,7 @@ namespace WpfApp_IC
                     services.AddSingleton<MindeoScanner>();
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
-                    services.AddSingleton<LabelingSession>();
+                    services.AddSingleton<WorkSession>();
 
                     services.AddSingleton<LogService>();
                     services.AddSingleton<SettingsService>();

@@ -6,7 +6,21 @@
              xmlns:local="clr-namespace:WpfApp_IC.Controls"
              xmlns:services="clr-namespace:WpfApp_IC.Services"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=services:LogService}">
-    <ScrollViewer Background="White" Padding="8" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
-        <TextBlock x:Name="LogBox" FontFamily="Consolas" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+    <ScrollViewer Background="White" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+        <ListBox ItemsSource="{Binding Entries}" Background="White" Padding="8" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Mode=OneWay}" Foreground="{Binding Foreground}" FontFamily="Consolas" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </ScrollViewer>
 </UserControl>

@@ -27,7 +27,7 @@ namespace WpfApp_IC.ViewModels
                 GTINs.Clear();
                 foreach (gtin gtin in gtins) GTINs.Add(gtin);
 
-                await debugService.CreateDebugEntryAsync(DebugType.Info, "ProductsViewModel.cs", $"Выборка записей из таблицы gtin. Количество записей: {gtins.Count}");
+                _ = debugService.CreateDebugEntryAsync(DebugType.Info, "ProductsViewModel.cs", $"Выборка записей из таблицы gtin. Количество записей: {gtins.Count}");
             }
             catch (Exception ex)
             {
@@ -39,19 +39,18 @@ namespace WpfApp_IC.ViewModels
             if (product == null || product.CountAviable <= 0)
                 return;
 
-            await debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Выбрана продукция для маркировки: {product.GtinId}");
+            _ = debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Выбрана продукция для маркировки: {product.GtinId}");
 
             workSession.GTIN = product;
 
-            LabelPreviewViewModel model = mainViewModel.GetViewModel<LabelPreviewViewModel>();
+            LabelPreviewViewModel model = mainViewModel.SetViewModel<LabelPreviewViewModel>();
             model.DesignerViewModel = DesignerService.LoadLabel(Path.Combine(AppContext.BaseDirectory, $"LabelTemplates/{GetLabelTemplate(product)}")) ?? new();
             model.DesignerViewModel.Preview = true;
-            mainViewModel.CurrentViewModel = model;
         }
-        public async void GetBack()
+        public void GetBack()
         {
-            await debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Возврат на главную страницу");
-            mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+            _ = debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Возврат на главную страницу");
+            mainViewModel.SetViewModel<HomeViewModel>();
         }
 
         private static string GetLabelTemplate(gtin product)

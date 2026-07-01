@@ -142,8 +142,6 @@ namespace WpfApp_IC.Services.Inspectors
                     catch { }
                 }, rejectCts.Token);
 
-                workSession.TotalCount++;
-
                 DataMatrixResult? dm = TriggerCamera();
 
                 if (dm != null)
@@ -165,15 +163,15 @@ namespace WpfApp_IC.Services.Inspectors
                             break;
                         case "NOT_FOUND":
                             log.AddEntry($"Неверный код: {dm?.Raw}", LogColorCode.Red);
+                            workSession.Rejected++;
                             break;
                         case "DUPLICATE":
                             if (workSession.WorkMode == WorkMode.SkipDuplicates)
                                 rejectCts.Cancel();
                             log.AddEntry($"Дубликат: {dm?.Raw}", LogColorCode.Red);
+                            workSession.Rejected++;
                             break;
                     }
-
-                    workSession.Rejected++;
 
                     if (_lastFrame != null)
                         imageSaver.SaveReject(_lastFrame, dm?.Normalized);

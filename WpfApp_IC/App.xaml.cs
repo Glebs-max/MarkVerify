@@ -70,15 +70,10 @@ namespace WpfApp_IC
                 {
                     await AppHost.StartAsync();
                     AppHost.Services.GetRequiredService<SettingsService>().Load();
-
-                    MainViewModel mainVm = AppHost.Services.GetRequiredService<MainViewModel>();
-                    mainVm.CurrentViewModel = AppHost.Services.GetRequiredService<HomeViewModel>();
-
-                    MainWindow mw = AppHost.Services.GetRequiredService<MainWindow>();
-                    mw.Show();
+                    AppHost.Services.GetRequiredService<MainViewModel>().SetViewModel<HomeViewModel>();
+                    AppHost.Services.GetRequiredService<MainWindow>().Show();
 
                     base.OnStartup(e);
-                    await AppHost.Services.GetRequiredService<DebugService>().CreateDebugEntryAsync(DebugType.Info, "App.xaml", "Запуск приложения");
                 }
                 catch (Exception ex)
                 {
@@ -92,7 +87,6 @@ namespace WpfApp_IC
         {
             if (AppHost != null)
             {
-                await AppHost.Services.GetRequiredService<DebugService>().CreateDebugEntryAsync(DebugType.Info, "App.xaml", "Остановка приложения");
                 await AppHost.StopAsync();
                 AppHost.Dispose();
                 base.OnExit(e);

@@ -205,13 +205,13 @@ namespace WpfApp_IC.ViewModels
 
             _settings.Save();
 
-            NavigateBack();
+            GetBack();
         }
 
         public void Cancel()
         {
             LoadFromCurrent(); // откатываем несохранённые изменения
-            NavigateBack();
+            GetBack();
         }
 
         /// <summary>Открывает диалог выбора IDMVS.exe</summary>
@@ -301,7 +301,6 @@ namespace WpfApp_IC.ViewModels
             }
         }
 
-        private void NavigateBack() =>
-            _main.CurrentViewModel = _main.GetViewModel<HomeViewModel>();
+        private void GetBack() => _main.SetViewModel<HomeViewModel>();
     }
 }

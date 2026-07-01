@@ -1,8 +1,5 @@
 ﻿using LabelDesigner;
-using WpfApp_IC.Models;
 using Observable;
-using WpfApp_IC.Models.Devices;
-using System.Windows;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -21,11 +18,10 @@ namespace WpfApp_IC.ViewModels
 
         public void PrintLabel()
         {
-            LabelingViewModel model = mainViewModel.GetViewModel<LabelingViewModel>();
+            LabelingViewModel model = mainViewModel.SetViewModel<LabelingViewModel>();
             model.LabelPrintingViewModel.DesignerViewModel = DesignerViewModel;
-            model.LabelPrintingViewModel.DesignerViewModel.Scale = 3.0;
-            mainViewModel.CurrentViewModel = model;
+
         }
-        public void GetBack() => mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<ProductsViewModel>();
+        public void GetBack() => mainViewModel.SetViewModel<ProductsViewModel>();
     }
 }

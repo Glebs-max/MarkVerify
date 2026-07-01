@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Observable;
-using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
 {
@@ -17,12 +16,12 @@ namespace WpfApp_IC.ViewModels
         public ObservableObject? CurrentViewModel
         {
             get => _currentViewModel;
-            set => Set(ref _currentViewModel, value);
+            private set => Set(ref _currentViewModel, value);
         }
 
         /// <summary>
-        /// Получение требуемой ViewModel, зарегистрированной в App()
+        /// Устанавливает текущую ViewModel, зарегистрированную в App()
         /// </summary>
-        public T GetViewModel<T>() where T : ObservableObject => provider.GetRequiredService<T>();
+        public T SetViewModel<T>() where T : ObservableObject => (T)(CurrentViewModel = provider.GetRequiredService<T>());
     }
 }

@@ -86,9 +86,10 @@ namespace WpfApp_IC.ViewModels
                 await WorkTerminate();
 
             _workInitiateCts?.Cancel();
-            LogService.ClearEntries();
-            WorkSession.Reset();
-            mainViewModel.CurrentViewModel = mainViewModel.GetViewModel<HomeViewModel>();
+            logService.ClearEntries();
+            workSession.Reset();
+
+            mainViewModel.SetViewModel<HomeViewModel>();
         }
     }
 }

@@ -1,20 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Observable;
-using System;
-using System.Diagnostics;
 using System.Timers;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WpfApp_IC.Data;
+using WpfApp_IC.Models;
 using WpfApp_IC.Models.DbContext;
 using WpfApp_IC.Models.Devices;
-using WpfApp_IC.Views;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.ModbusT;
-using WpfApp_IC.Models;
-using System.Linq.Expressions;
-using System.Windows.Xps.Packaging;
+using Timer = System.Timers.Timer;
 
 namespace WpfApp_IC.Services.Inspectors
 {
@@ -33,7 +27,8 @@ namespace WpfApp_IC.Services.Inspectors
         IDbContextFactory<AppDbContext> dbContextFactory,
         ImageSaverService imageSaver) : IInspectorController
     {
-        private CancellationTokenSource? _cts;
+        private Timer? _sensorPollTimer;
+        private bool _filter;
         private BitmapSource? _lastFrame;
 
         public string ModbusIp { get; set; } = "192.168.0.127";
@@ -51,7 +46,6 @@ namespace WpfApp_IC.Services.Inspectors
         public string CameraIp { get; set; } = "";
 
         // Фильтрация дребезга
-        private DateTime _motionDetectedTime;
         private int _currentSignal = 0;
         private bool _triggerInProgress = false;
 
@@ -85,16 +79,25 @@ namespace WpfApp_IC.Services.Inspectors
 
             _triggerInProgress = false;
 
-            MotionDetected += (s, e) => Inspect();
+            MotionDetected += Inspect;
 
-            _cts = new();
-            Task.Run(() => ListenSensorAsync(_cts.Token));
+            _sensorPollTimer = new Timer(SensorPollInterval);
+            _sensorPollTimer.Elapsed += PollSensor;
+            _sensorPollTimer.AutoReset = true;
+            _sensorPollTimer.Start();
         }
         public void Stop()
         {
-            MotionDetected -= (s, e) => Inspect();
-            _cts?.Cancel();
-            Thread.Sleep(500);
+            MotionDetected -= Inspect;
+
+            if (_sensorPollTimer != null)
+            {
+                _sensorPollTimer.Stop();
+                _sensorPollTimer.Elapsed -= PollSensor;
+                _sensorPollTimer.Dispose();
+                _sensorPollTimer = null;
+            }
+
             camera.Close();
             modbus?.Disconnect();
         }
@@ -123,7 +126,7 @@ namespace WpfApp_IC.Services.Inspectors
             }
         }
 
-        private void Inspect()
+        private void Inspect(object? sender, EventArgs e)
         {
             Task.Run(async () =>
             {
@@ -179,25 +182,23 @@ namespace WpfApp_IC.Services.Inspectors
                 CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
             });
         }
-        private async Task ListenSensorAsync(CancellationToken token)
+        private void PollSensor(object? sender, ElapsedEventArgs e)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                try
+                int signal = sensor.Read();
+
+                if (signal == 1 && _currentSignal == 0 && !_filter)
                 {
-                    int signal = sensor.Read();
-
-                    if (signal == 1 && _currentSignal == 0 && (DateTime.Now - _motionDetectedTime).TotalMilliseconds > MotionFilterInterval)
-                    {
-                        MotionDetected?.Invoke(this, EventArgs.Empty);
-                        _motionDetectedTime = DateTime.Now;
-                    }
-
-                    _currentSignal = signal;
-                    await Task.Delay(SensorPollInterval, token);
+                    MotionDetected?.Invoke(this, EventArgs.Empty);
+                    _filter = true;
                 }
-                catch { }
+
+                _currentSignal = signal;
+
+                Task.Delay(MotionFilterInterval).ContinueWith(_ => _filter = false);
             }
+            catch { }
         }
         private async Task<ValidationResult> ValidateAsync(string? dm)
         {
@@ -206,22 +207,18 @@ namespace WpfApp_IC.Services.Inspectors
                 if (string.IsNullOrWhiteSpace(dm))
                     return ValidationResult.NoRead();
 
-                await using var db = await dbContextFactory.CreateDbContextAsync();
-                if (db.tmp_mains.Any(c => c.Code == dm))
-                    return ValidationResult.Duplicate();
-
-                /*if (!workSession.Codes.TryGetValue(dm, out bool status))
+                if (!workSession.Codes.TryGetValue(dm, out bool status))
                     return ValidationResult.NotFound();
 
                 if (status)
                     return ValidationResult.Duplicate();
 
-                workSession.Codes[dm] = true;*/
+                workSession.Codes[dm] = true;
 
-                _ = Task.Run(() =>
+                _ = Task.Run(async () =>
                 {
-                    using var db = dbContextFactory.CreateDbContext();
-                    printer_base? code = db.printer_bases.First(c => c.Code == dm);
+                    await using var db = await dbContextFactory.CreateDbContextAsync();
+                    printer_base? code = await db.printer_bases.FirstAsync(c => c.Code == dm);
 
                     db.tmp_mains.Add(new()
                     {
@@ -235,28 +232,8 @@ namespace WpfApp_IC.Services.Inspectors
                         OrderID = code.OrderID
                     });
 
-                    try { db.SaveChanges(); }
-                    catch { log.AddEntry($"Код уже верифицирован: {code.Code}", LogColorCode.Red); }
+                    await db.SaveChangesAsync();
                 });
-                //_ = Task.Run(async () =>
-                //{
-                //    await using var db = await dbContextFactory.CreateDbContextAsync();
-                //    printer_base? code = await db.printer_bases.FirstAsync(c => c.Code == dm);
-
-                //    db.tmp_mains.Add(new()
-                //    {
-                //        Code = code.Code,
-                //        StatusId = 2,
-                //        DateImport = code.DateImport,
-                //        DatePrint = code.DatePrint,
-                //        DateVerify = DateTime.Now,
-                //        GtinId = code.GtinId,
-                //        OperatorName = code.OperatorName,
-                //        OrderID = code.OrderID
-                //    });
-
-                //    await db.SaveChangesAsync();
-                //});
 
                 return ValidationResult.Ok();
             }

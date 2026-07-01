@@ -85,6 +85,9 @@ namespace WpfApp_IC.ViewModels
 
                     foreach (printer_base code in codes)
                     {
+                        try { workSession.Codes.Add(code.Code, false); }
+                        catch { continue; }
+
                         await VideojetPrinter.SendZplAsync(Application.Current.Dispatcher.Invoke(() =>
                         {
                             DesignerViewModel.DataMatrix.BarcodeData = code.Code;
@@ -99,7 +102,6 @@ namespace WpfApp_IC.ViewModels
                         gtin.CountAviable--;
 
                         workSession.GTIN.CountAviable--;
-                        workSession.Codes.Add(code.Code, false);
                     }
 
                     await db.SaveChangesAsync();

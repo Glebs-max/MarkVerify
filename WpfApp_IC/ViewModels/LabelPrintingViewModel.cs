@@ -81,7 +81,7 @@ namespace WpfApp_IC.ViewModels
                 {
                     await using var db = await dbContextFactory.CreateDbContextAsync();
                     List<printer_base> codes = await db.printer_bases.Where(c => c.GtinId == workSession.GTIN.GtinId && c.StatusId == 0).Take(count ?? VideojetPrinter.MaxQueueSize).ToListAsync();
-                    gtin gtin = await db.gtins.FirstAsync(g => g.GtinId == workSession.GTIN.GtinId);
+                    db.Attach(workSession.GTIN);
 
                     foreach (printer_base code in codes)
                     {
@@ -99,8 +99,6 @@ namespace WpfApp_IC.ViewModels
                         code.OperatorName = workSession.MachineName;
                         code.task_id = workSession.CurrentTask.id;
                         code.code_number = ++workSession.PrintCount;
-                        gtin.CountAviable--;
-
                         workSession.GTIN.CountAviable--;
                     }
 

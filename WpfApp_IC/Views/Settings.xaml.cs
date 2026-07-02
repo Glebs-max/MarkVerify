@@ -8,14 +8,18 @@ namespace WpfApp_IC.Views
     {
         private SettingsViewModel VM => (SettingsViewModel)DataContext;
 
-        public Settings() => InitializeComponent();
+        public Settings()
+        {
+            InitializeComponent();
 
+            Loaded += (s, e) => VM.ScanAvailableCameras();
+        }
+
+        private void RejectsBrowse_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private void Save_Click(object sender, RoutedEventArgs e) => VM.Save();
-        private void Cancel_Click(object sender, RoutedEventArgs e) => VM.Cancel();
-        private void BrowseIdmvs_Click(object sender, RoutedEventArgs e) => VM.BrowseIdmvs();
-
-        private void RefreshCameras_Click(object sender, RoutedEventArgs e) => VM.RefreshCameras();
-
-        private void BrowseRejectImages_Click(object sender, RoutedEventArgs e) => VM.BrowseRejectImagesPath();
+        private void GetBack_Click(object sender, RoutedEventArgs e) => VM.GetBack();
     }
 }

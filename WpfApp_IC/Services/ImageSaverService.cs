@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Imaging;
-using WpfApp_IC.Services.SettingsD;
+using WpfApp_IC.Services;
 
 namespace WpfApp_IC.Services
 {

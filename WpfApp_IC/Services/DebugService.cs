@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using WpfApp_IC.Data;
-using WpfApp_IC.Services.SettingsD;
+using WpfApp_IC.Models;
 
 namespace WpfApp_IC.Services
 {
@@ -12,7 +12,7 @@ namespace WpfApp_IC.Services
         UserAction = 2
     }
 
-    public class DebugService(SettingsService settingsService, IDbContextFactory<AppDbContext> dbContextFactory)
+    public class DebugService(IDbContextFactory<AppDbContext> dbContextFactory, WorkSession workSession)
     {
         public async Task CreateDebugEntryAsync(DebugType type, string source, string? info = null)
         {
@@ -24,7 +24,7 @@ namespace WpfApp_IC.Services
                     timestamp = DateTime.Now,
                     type = GetDebugType(type),
                     source = source,
-                    machine = settingsService.Settings.MachineName,
+                    machine = workSession.MachineName,
                     info = info
                 });
                 await db.SaveChangesAsync();

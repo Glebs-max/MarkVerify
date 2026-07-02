@@ -8,9 +8,9 @@ namespace WpfApp_IC.ViewModels
 {
     public class CameraViewModel : ObservableObject
     {
-        private readonly IInspectorController _controller;
+        private readonly InspectorController _controller;
 
-        public CameraViewModel(IInspectorController controller)
+        public CameraViewModel(InspectorController controller)
         {
             _controller = controller;
 

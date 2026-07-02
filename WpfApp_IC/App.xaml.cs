@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using System.IO;
 using System.Windows;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
@@ -11,7 +12,6 @@ using WpfApp_IC.Services;
 using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
 using WpfApp_IC.Services.ModbusT;
-using WpfApp_IC.Services.SettingsD;
 using WpfApp_IC.ViewModels;
 using WpfApp_IC.Views;
 
@@ -19,6 +19,8 @@ namespace WpfApp_IC
 {
     public partial class App : Application
     {
+        private IConfiguration? _configuration;
+
         public static IHost? AppHost { get; private set; }
 
         public App()
@@ -27,34 +29,35 @@ namespace WpfApp_IC
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                    _configuration = config.Build();
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    string? conn = context.Configuration.GetConnectionString("DefaultConnection");
-
-                    services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(conn, ServerVersion.Create(new(10, 7, 3), ServerType.MariaDb)));
+                    services.AddDbContextFactory<AppDbContext>(options => options.UseMySql(_configuration?.GetConnectionString("DefaultConnection"), ServerVersion.Create(new(10, 7, 3), ServerType.MariaDb)));
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
+                    services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<ProductsViewModel>();
                     services.AddSingleton<VideojetErrorsViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelingViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
                     services.AddTransient<CameraViewModel>();
-                    services.AddTransient<SettingsViewModel>();
 
                     services.AddSingleton<VideojetPrinter>();
                     services.AddSingleton<MindeoScanner>();
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
                     services.AddSingleton<WorkSession>();
+                    services.AddSingleton<AppSettings>();
 
                     services.AddSingleton<LogService>();
                     services.AddSingleton<SettingsService>();
                     services.AddSingleton<IModbusService, ModbusService>();
-                    services.AddSingleton<ICameraService, CameraService>();
-                    services.AddSingleton<IInspectorController, InspectorController>();
+                    services.AddSingleton<CameraService>();
+                    services.AddSingleton<InspectorController>();
                     services.AddSingleton<ImageSaverService>();
                     services.AddSingleton<DebugService>();
 
@@ -69,7 +72,12 @@ namespace WpfApp_IC
                 try
                 {
                     await AppHost.StartAsync();
-                    AppHost.Services.GetRequiredService<SettingsService>().Load();
+
+                    if (!File.Exists(_configuration?.GetValue<string>("SettingsPath")))
+                        AppHost.Services.GetRequiredService<SettingsService>().Save();
+                    else
+                        AppHost.Services.GetRequiredService<SettingsService>().Load();
+
                     AppHost.Services.GetRequiredService<MainViewModel>().SetViewModel<HomeViewModel>();
                     AppHost.Services.GetRequiredService<MainWindow>().Show();
 
@@ -87,6 +95,9 @@ namespace WpfApp_IC
         {
             if (AppHost != null)
             {
+                if (AppHost.Services.GetRequiredService<MainViewModel>().CurrentViewModel is LabelingViewModel lvm)
+                    await lvm.Exit();
+
                 await AppHost.StopAsync();
                 AppHost.Dispose();
                 base.OnExit(e);

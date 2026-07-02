@@ -3,230 +3,149 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewmodels="clr-namespace:WpfApp_IC.ViewModels"
-             xmlns:converters="clr-namespace:WpfApp_IC.Converters"
-             d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
-             mc:Ignorable="d">
-
-    <UserControl.Resources>
-        <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
-        <Style x:Key="SectionHeader" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-        </Style>
-        <Style x:Key="FieldLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#AAAAAA"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style x:Key="Field" TargetType="TextBox">
-            <Setter Property="Width" Value="240"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="Background" Value="#4A4A4A"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#666666"/>
-        </Style>
-        <Style x:Key="Card" TargetType="Border">
-            <Setter Property="Background" Value="#3A3A3A"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="Margin" Value="0,0,0,14"/>
-        </Style>
-        <Style x:Key="Toggle" TargetType="CheckBox">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="0,0,0,14"/>
-        </Style>
-    </UserControl.Resources>
-
-    <Grid Background="#2B2B2B">
+             xmlns:local="clr-namespace:WpfApp_IC.Views"
+             xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
+             xmlns:controls="clr-namespace:WpfApp_IC.Controls"
+             d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+             mc:Ignorable="d" Background="#F4F4F4" FontSize="20">
+    <Grid Margin="10,0,10,10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="66"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
-        <Border Grid.Row="0" Background="#222222" Padding="24,0">
-            <TextBlock Text="Настройки" Foreground="White"
-                       FontSize="20" FontWeight="Bold"
-                       VerticalAlignment="Center"/>
-        </Border>
+        <TabControl>
+            <TabItem Header="Общие настройки" Height="45">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-        <!-- Содержимое -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            
-            <StackPanel Width="560" HorizontalAlignment="Center" Margin="0,20,0,20">
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
-                        <TextBlock Text="Наименование упаковочного автомата" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Text="{Binding MachineName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Field}"/>
-                    </StackPanel>
-                </Border>
-                <!-- ПРИНТЕР -->
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
-                        <TextBlock Text="Принтер" Style="{StaticResource SectionHeader}"/>
-
-                        <StackPanel>
-                            <TextBlock Text="IP-адрес" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Text="{Binding PrinterIp, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource Field}"/>
-
-                            <TextBlock Text="Порт TextComms" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Text="{Binding PrinterPortTextComms, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource Field}"/>
-
-                            <TextBlock Text="Порт ZPL Emulation" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Text="{Binding PrinterPortZpl, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource Field}"/>
+                        <StackPanel Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Идентификатор машины оператора" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.MachineName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Задержка активации отбраковщика (мс)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.RejectorDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- MODBUS -->
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
-                        <TextBlock Text="Modbus контроллер" Style="{StaticResource SectionHeader}"/>
-
-                        <StackPanel>
-                            <TextBlock Text="IP-адрес" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Text="{Binding ModbusIp, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource Field}"/>
-
-                            <TextBlock Text="Порт" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Text="{Binding ModbusPort, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource Field}"/>
+                        <StackPanel Margin="5" Grid.Column="4">
+                            <StackPanel>
+                                <TextBlock Text="Интервал опроса датчика движения (мс)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.SensorPollInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Фильтр срабатывания датчика движения (мс)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.MotionFilterInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Настройки контроллера MODBUS" Height="45">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- КАМЕРА -->
-                <!-- Заменить блок КАМЕРЫ на этот: -->
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
-                        <TextBlock Text="Камера" Style="{StaticResource SectionHeader}"/>
+                        <StackPanel Margin="5">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="IP-адрес MODBUS" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.ModbusIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Катушка датчика движения" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.MotionSensorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Margin="5" Grid.Column="1">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Порт MODBUS" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.ModbusPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Катушка отбраковщика" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.RejectorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Настройки принтера Videojet" Height="45">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                        <StackPanel>
+                        <StackPanel Margin="5">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="IP-адрес принтера" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.PrinterIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Порт TextComms (текстовые команды)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.TextCommsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Margin="5" Grid.Column="1">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Максимальный размер очереди" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.MaxQueueSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Порт ZPL (изображения этикеток)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.ZPLImagePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Настройки камеры HIKROBOT" Height="45">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                            <!-- Список найденных камер -->
-                            <DockPanel Margin="0,0,0,8">
-                                <Button Content="Найти камеры"
-                                        Width="140" Height="32"
-                                        DockPanel.Dock="Right"
-                                        Click="RefreshCameras_Click"/>
-                                <TextBlock Text="Доступные камеры"
-                                       Style="{StaticResource FieldLabel}"
-                                       VerticalAlignment="Center"/>
-                            </DockPanel>
-
-                            <ListBox ItemsSource="{Binding AvailableCameras}"
-                                     SelectedItem="{Binding SelectedCamera}"
-                                     Height="120"
-                                     Margin="0,0,0,12"
-                                     Background="#4A4A4A"
-                                     Foreground="White"
-                                     BorderBrush="#666666">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Margin="4,6">
-                                            <TextBlock FontWeight="SemiBold" Foreground="White"><Run Text="["/>
-                                                            <Run Text="{Binding Index}"/><Run Text="]  "/>
-                                                            <Run Text="{Binding Model}"/>
-                                            </TextBlock>
-                                            <TextBlock Foreground="#88CCFF" FontSize="12"><Run Text="IP: "/>
-                                                            <Run Text="{Binding IP}"/>
-                                            </TextBlock>
-                                            <TextBlock Foreground="#AAAAAA" FontSize="11">
-                                                                <Run Text="S/N: "/>
-                                                                <Run Text="{Binding SerialNumber}"/>
-                                                                <Run Text="   FW: "/><Run Text="{Binding Firmware}"/>
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-
-                            <!-- Папка сохранения отбракованных -->
-                            <TextBlock Text="Папка отбракованных изображений"
-                                       Style="{StaticResource FieldLabel}"
-                                       Margin="0,8,0,4"/>
+                        <StackPanel Margin="5">
                             
-                            <DockPanel Margin="0,0,0,12">
-                                <Button Content="Обзор..."
-                                        Width="80" Height="32"
-                                        DockPanel.Dock="Right"
-                                        Margin="8,0,0,0"
-                                        Click="BrowseRejectImages_Click"/>
-                                <TextBox Text="{Binding RejectImagesPath, UpdateSourceTrigger=PropertyChanged}"
-                                         Height="32" Padding="8,4"
-                                         FontSize="13"
-                                         Background="#4A4A4A"
-                                         Foreground="White"
-                                         BorderBrush="#666666"
-                                         ToolTip="Папка для сохранения изображений при отбраковке"/>
-                            </DockPanel>
-
                         </StackPanel>
-                    </StackPanel>
-                </Border>
+                        <StackPanel Margin="5" Grid.Column="1">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Путь к изображениям отбраковки" TextWrapping="Wrap"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding AppSettings.RejectImagesPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" IsReadOnly="True" Padding="8"/>
+                                    <Button Grid.Column="1" Content="Обзор" Padding="32,0" Margin="7,0" FontSize="22" Height="45" Click="RejectsBrowse_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+        <controls:VirtualKeyboard Grid.Row="1" Margin="5"/>
+        <Grid Margin="5" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- ИНСПЕКЦИЯ -->
-                <Border Style="{StaticResource Card}">
-                    <StackPanel>
-                        <TextBlock Text="Инспекция" Style="{StaticResource SectionHeader}"/>
-
-                        <TextBlock Text="Задержка отбраковщика (мс)" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Text="{Binding RejectDelayMs, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource Field}"/>
-
-                        <TextBlock Text="Фильтр срабатывания датчика (мс)" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Text="{Binding MotionFilterInterval, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource Field}"/>
-
-                        <TextBlock Text="Интервал опроса датчика (мс)" Style="{StaticResource FieldLabel}"/>
-                        <TextBox Text="{Binding SensorPollIntervalMs, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource Field}"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Ошибка валидации -->
-                <Border>
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasValidationError}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <TextBlock Text="{Binding ValidationMessage}" Foreground="#FF8080"/>
-                </Border>
-
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Кнопки -->
-        <Border Grid.Row="2" Background="#222222" Padding="24,0">
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                <Button Content="Отмена"
-                        Width="110" Height="38"
-                        Margin="0,0,12,0"
-                        Click="Cancel_Click"/>
-                <Button Content="Сохранить"
-                        Width="130" Height="38"
-                        Click="Save_Click"/>
-            </StackPanel>
-        </Border>
+            <Button Content="Сохранить" FontSize="24" Height="50" Margin="7,0" Click="Save_Click"/>
+            <Button Content="Назад" FontSize="24" Height="50" Margin="7,0" Grid.Column="1" Click="GetBack_Click"/>
+        </Grid>
     </Grid>
 </UserControl>

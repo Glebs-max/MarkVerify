@@ -11,12 +11,11 @@ namespace WpfApp_IC.Services.Camera
     /// Реализация работы с камерой через SDK  MvCoderReader
     /// Всю логику работы с unmanaged-кодом изолируем тут
     /// </summary>
-    public class CameraService : ICameraService
+    public class CameraService
     {
+        private readonly uint _frameTimeoutMs = 200;
         private MvCodeReader? _reader;
         private bool _isOpened;
-
-        public uint FrameTimeoutMs { get; set; } = 200;
 
         /// <summary>
         /// Инициализация камеры: поиск, создание handle (дескриптор), настройка параметров
@@ -61,53 +60,43 @@ namespace WpfApp_IC.Services.Camera
             throw new Exception($"Камера {cameraIp} не найдена в сети");
         }
 
-        /// <summary>
-        /// Получение информации с камеры
-        /// </summary>
-        public IReadOnlyList<CameraDeviceInfo> GetAvailableDevices()
+        public static List<CameraDeviceInfo> ScanAvailableDevices()
         {
-            var result = new List<CameraDeviceInfo>();
+            List<CameraDeviceInfo> cameras = [];
 
-            var list = new MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST
+            MvCodeReader.MV_CODEREADER_DEVICE_INFO_LIST list = new()
             {
                 pDeviceInfo = new IntPtr[MvCodeReader.MV_CODEREADER_MAX_DEVICE_NUM]
             };
 
-            int ret = MvCodeReader.MV_CODEREADER_EnumDevices_NET(
-                ref list,
-                MvCodeReader.MV_CODEREADER_GIGE_DEVICE);
-
-            if (ret != MvCodeReader.MV_CODEREADER_OK)
-                return result;
+            if (MvCodeReader.MV_CODEREADER_EnumDevices_NET(ref list, MvCodeReader.MV_CODEREADER_GIGE_DEVICE) != MvCodeReader.MV_CODEREADER_OK)
+                return cameras;
 
             for (int i = 0; i < list.nDeviceNum; i++)
             {
-                var devInfo = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(
-                    list.pDeviceInfo[i]);
+                byte[] g = Marshal.PtrToStructure<MvCodeReader.MV_CODEREADER_DEVICE_INFO>(list.pDeviceInfo[i]).SpecialInfo.stGigEInfo;
 
-                // stGigEInfo — сырой byte[540], разбираем вручную
-                byte[] g = devInfo.SpecialInfo.stGigEInfo;
-
-                result.Add(new CameraDeviceInfo
+                cameras.Add(new()
                 {
                     Index = i,
-                    IP = ParseIp(g, 8),    // текущий IP
-                    StaticIP = ParseIp(g, 196),  // статический IP
-                    Gateway = ParseIp(g, 16),   // шлюз
-                    Manufacturer = ParseString(g, 20, 32),  // "Hikrobot"
-                    Model = ParseString(g, 52, 32),  // "MV-ID3013PM-06M-SENSOTEC"
-                    Firmware = ParseString(g, 84, 32),  // "V3.1.4.C 250519"
-                    SerialNumber = ParseString(g, 164, 32), // "02DA6864011"
+                    IP = ParseIp(g, 8),
+                    StaticIP = ParseIp(g, 196),
+                    Gateway = ParseIp(g, 16),
+                    Manufacturer = ParseString(g, 20, 32),
+                    Model = ParseString(g, 52, 32),
+                    Firmware = ParseString(g, 84, 32),
+                    SerialNumber = ParseString(g, 164, 32)
                 });
             }
 
-            return result;
+            return cameras;
         }
 
-        // IP хранится в формате: byte[offset]=last, byte[offset+1]=..., обратный порядок
         private static string ParseIp(byte[] data, int offset)
         {
-            if (offset + 3 >= data.Length) return "";
+            if (offset + 3 >= data.Length)
+                return "";
+
             // Порядок байт: [offset+3].[offset+2].[offset+1].[offset]
             return $"{data[offset + 3]}.{data[offset + 2]}.{data[offset + 1]}.{data[offset]}";
         }
@@ -140,15 +129,10 @@ namespace WpfApp_IC.Services.Camera
             _isOpened= false;
         }
 
-        /// <summary>
-        /// используем софт-триггер, получаем кадр и пытаемся извлечь DataMatrix.
-        /// </summary>
         public  (DataMatrixResult? dm, BitmapSource? frame) TriggerAndRead()
         {
             if (!_isOpened || _reader == null)
                 throw new InvalidOperationException("Камера не открыта");
-
-            // Софт-триггер 
 
             _reader.MV_CODEREADER_SetCommandValue_NET("TriggerSoftware");
 
@@ -158,8 +142,7 @@ namespace WpfApp_IC.Services.Camera
 
             try
             {
-                // Получаем кадр 
-                int ret = _reader.MV_CODEREADER_GetOneFrameTimeout_NET(ref pData, pInfo, FrameTimeoutMs);
+                int ret = _reader.MV_CODEREADER_GetOneFrameTimeout_NET(ref pData, pInfo, _frameTimeoutMs);
                 if (ret != MvCodeReader.MV_CODEREADER_OK) 
                     return (null, null);
 

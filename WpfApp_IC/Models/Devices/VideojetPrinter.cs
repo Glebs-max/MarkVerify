@@ -83,7 +83,7 @@ namespace WpfApp_IC.Models.Devices
         public int MaxQueueSize
         {
             get => _maxQueueSize;
-            private set => Set(ref _maxQueueSize, value);
+            set => Set(ref _maxQueueSize, value);
         }
         public string IP
         {

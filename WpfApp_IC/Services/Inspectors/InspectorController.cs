@@ -20,12 +20,12 @@ namespace WpfApp_IC.Services.Inspectors
     public class InspectorController(
         WorkSession workSession,
         LogService log,
-        ICameraService camera,
+        CameraService camera,
         ModbusSensor sensor,
         ModbusRejector rejector,
         IModbusService modbus,
         IDbContextFactory<AppDbContext> dbContextFactory,
-        ImageSaverService imageSaver) : IInspectorController
+        ImageSaverService imageSaver)
     {
         private Timer? _sensorPollTimer;
         private bool _filter;
@@ -33,8 +33,6 @@ namespace WpfApp_IC.Services.Inspectors
 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
-        public int SignalCoil { get; set; } = 12;
-        public int RejectCoil { get; set; } = 10;
 
         /// <summary>
         /// Задержка перед активацией отбраковщика.

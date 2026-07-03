@@ -1,10 +1,9 @@
-﻿using System.Diagnostics;
-using WpfApp_IC.Services.ModbusT;
+﻿using WpfApp_IC.Services.ModbusT;
 
 namespace WpfApp_IC.Models.Devices
 {
     /// <summary>
-    /// Отбраковщик, управляемый через Modbus coil.
+    /// Отбраковщик, управляемый через Modbus coil
     /// </summary>
     public class ModbusRejector(IModbusService modbus)
     {
@@ -12,6 +11,7 @@ namespace WpfApp_IC.Models.Devices
         private bool _activated;
 
         public int Coil { get; set; }
+        public int ActiveTime { get; set; } = 300;
 
         public async Task Activate()
         {
@@ -26,7 +26,7 @@ namespace WpfApp_IC.Models.Devices
                     _activated = true;
                 }
 
-                await Task.Delay(300, _cts.Token);
+                await Task.Delay(ActiveTime, _cts.Token);
 
                 modbus.WriteCoil(Coil, false);
                 _activated = false;

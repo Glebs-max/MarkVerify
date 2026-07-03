@@ -7,7 +7,7 @@
              xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
              xmlns:controls="clr-namespace:WpfApp_IC.Controls"
              d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
-             mc:Ignorable="d" Background="#F4F4F4" FontSize="20">
+             mc:Ignorable="d" Background="#F4F4F4" FontFamily="Consolas" FontSize="20">
     <Grid Margin="10,0,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -25,21 +25,25 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="5">
-                            <StackPanel>
+                            <StackPanel Margin="5">
                                 <TextBlock Text="Идентификатор машины оператора" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.MachineName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
-                            <StackPanel>
+                            <StackPanel Margin="5">
                                 <TextBlock Text="Задержка активации отбраковщика (мс)" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.RejectorDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Время работы отбраковщика (мс)" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding AppSettings.RejectorActiveTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="4">
-                            <StackPanel>
+                            <StackPanel Margin="5">
                                 <TextBlock Text="Интервал опроса датчика движения (мс)" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.SensorPollInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
-                            <StackPanel>
+                            <StackPanel Margin="5">
                                 <TextBlock Text="Фильтр срабатывания датчика движения (мс)" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.MotionFilterInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
@@ -47,7 +51,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Настройки контроллера MODBUS" Height="45">
+            <TabItem Header="Настройки контроллера" Height="45">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -57,7 +61,7 @@
 
                         <StackPanel Margin="5">
                             <StackPanel Margin="5">
-                                <TextBlock Text="IP-адрес MODBUS" TextWrapping="Wrap"/>
+                                <TextBlock Text="IP-адрес контроллера" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.ModbusIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
@@ -67,7 +71,7 @@
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="1">
                             <StackPanel Margin="5">
-                                <TextBlock Text="Порт MODBUS" TextWrapping="Wrap"/>
+                                <TextBlock Text="Порт контроллера" TextWrapping="Wrap"/>
                                 <TextBox Text="{Binding AppSettings.ModbusPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
@@ -78,7 +82,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Настройки принтера Videojet" Height="45">
+            <TabItem Header="Настройки принтера" Height="45">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -109,7 +113,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Настройки камеры HIKROBOT" Height="45">
+            <TabItem Header="Настройки камеры" Height="45">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -118,7 +122,33 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Margin="5">
-                            
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Используемая камера"/>
+                                <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedValue="{Binding AppSettings.CameraIP, Mode=TwoWay}" SelectedValuePath="IP" VerticalContentAlignment="Center" Height="45">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}" Margin="2,6"/>
+                                                <Grid Margin="2,6">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock FontSize="16">
+                                                        <Run Text="S/N: "/>
+                                                        <Run Text="{Binding SerialNumber}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="16" Grid.Column="1">
+                                                        <Run Text="F/W: "/>
+                                                        <Run Text="{Binding Firmware}"/>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="1">
                             <StackPanel Margin="5">
@@ -136,6 +166,24 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="Настройки сканера" Height="45">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Margin="5">
+                        <StackPanel Margin="5">
+                            <TextBlock Text="COM порт сканера" TextWrapping="Wrap"/>
+                            <ComboBox ItemsSource="{Binding AvailableCOMPorts}" SelectedItem="{Binding AppSettings.ScannerCOMPort}" VerticalContentAlignment="Center" Height="45"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        
+                    </StackPanel>
+                </Grid>
+            </TabItem>
         </TabControl>
         <controls:VirtualKeyboard Grid.Row="1" Margin="5"/>
         <Grid Margin="5" Grid.Row="2">
@@ -145,7 +193,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Content="Сохранить" FontSize="24" Height="50" Margin="7,0" Click="Save_Click"/>
-            <Button Content="Назад" FontSize="24" Height="50" Margin="7,0" Grid.Column="1" Click="GetBack_Click"/>
+            <Button Content="Отмена" FontSize="24" Height="50" Margin="7,0" Grid.Column="1" Click="Cancel_Click"/>
         </Grid>
     </Grid>
 </UserControl>

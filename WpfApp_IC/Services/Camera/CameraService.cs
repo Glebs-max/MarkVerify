@@ -78,7 +78,6 @@ namespace WpfApp_IC.Services.Camera
 
                 cameras.Add(new()
                 {
-                    Index = i,
                     IP = ParseIp(g, 8),
                     StaticIP = ParseIp(g, 196),
                     Gateway = ParseIp(g, 16),
@@ -217,7 +216,6 @@ namespace WpfApp_IC.Services.Camera
     /// </summary>
     public class CameraDeviceInfo
     {
-        public int Index { get; set; }
         public string IP { get; set; } = "";
         public string StaticIP { get; set; } = "";
         public string Gateway { get; set; } = "";
@@ -226,6 +224,6 @@ namespace WpfApp_IC.Services.Camera
         public string Firmware { get; set; } = "";
         public string SerialNumber { get; set; } = "";
 
-        public override string ToString() => $"[{Index}] {Model} — {IP}";
+        public override string ToString() => $"[{IP}] {Manufacturer} - {Model}";
     }
 }

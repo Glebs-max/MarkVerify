@@ -7,15 +7,17 @@ using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.Services
 {
-    public class SettingsService(IConfiguration config, AppSettings appSettings, WorkSession workSession, ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, MindeoScanner scanner, InspectorController inspector, ImageSaverService imageSaver)
+    public class SettingsService(IConfiguration config, WorkSession workSession, ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, MindeoScanner scanner, InspectorController inspector, ImageSaverService imageSaver)
     {
         private readonly string _settingsPath = Path.Combine(AppContext.BaseDirectory, config.GetValue<string>("SettingsPath") ?? "settings.json");
+
+        public AppSettings AppSettings { get; private set; } = new();
 
         public void Save()
         {
             try
             {
-                File.WriteAllText(_settingsPath, JsonSerializer.Serialize(appSettings));
+                File.WriteAllText(_settingsPath, JsonSerializer.Serialize(AppSettings));
                 ApplySettings();
             }
             catch { }
@@ -24,7 +26,7 @@ namespace WpfApp_IC.Services
         {
             try
             {
-                appSettings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_settingsPath)) ?? new();
+                AppSettings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_settingsPath)) ?? new();
                 ApplySettings();
             }
             catch { }
@@ -32,30 +34,31 @@ namespace WpfApp_IC.Services
 
         private void ApplySettings()
         {
-            workSession.MachineName = appSettings.MachineName;
+            workSession.MachineName = AppSettings.MachineName;
 
-            scanner.ComPort = appSettings.ScannerCOMPort;
+            scanner.ComPort = AppSettings.ScannerCOMPort;
 
             // Принтер
-            printer.IP = appSettings.PrinterIP;
-            printer.PortTextComms = appSettings.TextCommsPort;
-            printer.PortZpl = appSettings.ZPLImagePort;
-            printer.MaxQueueSize = appSettings.MaxQueueSize;
+            printer.IP = AppSettings.PrinterIP;
+            printer.PortTextComms = AppSettings.TextCommsPort;
+            printer.PortZpl = AppSettings.ZPLImagePort;
+            printer.MaxQueueSize = AppSettings.MaxQueueSize;
 
             // Modbus + катушки
-            inspector.ModbusIp = appSettings.ModbusIP;
-            inspector.ModbusPort = appSettings.ModbusPort;
-            sensor.Coil = appSettings.MotionSensorCoil;
-            rejector.Coil = appSettings.RejectorCoil;
+            inspector.ModbusIp = AppSettings.ModbusIP;
+            inspector.ModbusPort = AppSettings.ModbusPort;
+            sensor.Coil = AppSettings.MotionSensorCoil;
+            rejector.Coil = AppSettings.RejectorCoil;
+            rejector.ActiveTime = AppSettings.RejectorActiveTime;
 
             // Инспекция
-            inspector.RejectDelay = appSettings.RejectorDelay;
-            inspector.MotionFilterInterval = appSettings.MotionFilterInterval;
-            inspector.SensorPollInterval = appSettings.SensorPollInterval;
+            inspector.RejectDelay = AppSettings.RejectorDelay;
+            inspector.MotionFilterInterval = AppSettings.MotionFilterInterval;
+            inspector.SensorPollInterval = AppSettings.SensorPollInterval;
 
             // Камера 
-            inspector.CameraIp = appSettings.CameraIP;
-            imageSaver.SavePath = appSettings.RejectImagesPath;
+            inspector.CameraIp = AppSettings.CameraIP;
+            imageSaver.SavePath = AppSettings.RejectImagesPath;
         }
     }
 }

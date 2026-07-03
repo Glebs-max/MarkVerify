@@ -101,11 +101,18 @@ namespace WpfApp_IC.Models
 
         /* --- Inspection --- */
 
-        private int _rejectorDelay = 300;
+        private int _rejectorDelay = 350;
         public int RejectorDelay
         {
             get => _rejectorDelay;
             set => Set(ref _rejectorDelay, value);
+        }
+
+        private int _rejectorActiveTime = 300;
+        public int RejectorActiveTime
+        {
+            get => _rejectorActiveTime;
+            set => Set(ref _rejectorActiveTime, value);
         }
 
         private int _motionFilterInterval = 200;

@@ -38,9 +38,9 @@ namespace WpfApp_IC
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<HomeViewModel>();
-                    services.AddSingleton<SettingsViewModel>();
                     services.AddSingleton<ProductsViewModel>();
                     services.AddSingleton<VideojetErrorsViewModel>();
+                    services.AddTransient<SettingsViewModel>();
                     services.AddTransient<LabelPreviewViewModel>();
                     services.AddTransient<LabelingViewModel>();
                     services.AddTransient<LabelPrintingViewModel>();
@@ -51,7 +51,6 @@ namespace WpfApp_IC
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
                     services.AddSingleton<WorkSession>();
-                    services.AddSingleton<AppSettings>();
 
                     services.AddSingleton<LogService>();
                     services.AddSingleton<SettingsService>();

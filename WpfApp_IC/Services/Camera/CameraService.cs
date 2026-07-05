@@ -69,8 +69,15 @@ namespace WpfApp_IC.Services.Camera
                 pDeviceInfo = new IntPtr[MvCodeReader.MV_CODEREADER_MAX_DEVICE_NUM]
             };
 
-            if (MvCodeReader.MV_CODEREADER_EnumDevices_NET(ref list, MvCodeReader.MV_CODEREADER_GIGE_DEVICE) != MvCodeReader.MV_CODEREADER_OK)
+            try
+            {
+                if (MvCodeReader.MV_CODEREADER_EnumDevices_NET(ref list, MvCodeReader.MV_CODEREADER_GIGE_DEVICE) != MvCodeReader.MV_CODEREADER_OK)
+                    return cameras;
+            }
+            catch
+            {
                 return cameras;
+            }
 
             for (int i = 0; i < list.nDeviceNum; i++)
             {

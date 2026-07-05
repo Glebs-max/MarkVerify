@@ -15,7 +15,7 @@ namespace WpfApp_IC.Views
         public Settings()
         {
             InitializeComponent();
-
+            
             _updateTimer.Tick += (s, e) =>
             {
                 VM.ScanAvailableCameras();

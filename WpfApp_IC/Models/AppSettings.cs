@@ -7,7 +7,7 @@ namespace WpfApp_IC.Models
     /// </summary>
     public class AppSettings : ObservableObject
     {
-        private string _machineName = "Dev";
+        private string _machineName = "DEV";
         public string MachineName
         {
             get => _machineName;
@@ -16,7 +16,7 @@ namespace WpfApp_IC.Models
 
         /* --- Modbus --- */
 
-        private string _modbusIP = "172.19.43.21";
+        private string _modbusIP = "";
         public string ModbusIP
         {
             get => _modbusIP;
@@ -46,7 +46,7 @@ namespace WpfApp_IC.Models
 
         /* --- Printer --- */
 
-        private string _printerIP = "172.19.43.5";
+        private string _printerIP = "";
         public string PrinterIP
         {
             get => _printerIP;
@@ -92,7 +92,7 @@ namespace WpfApp_IC.Models
 
         /* --- Scanner --- */
 
-        private string _scannerComPort = "COM3";
+        private string _scannerComPort = "";
         public string ScannerCOMPort
         {
             get => _scannerComPort;

@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:WpfApp_IC.Views"
              xmlns:vm="clr-namespace:WpfApp_IC.ViewModels"
              xmlns:controls="clr-namespace:WpfApp_IC.Controls"
+             xmlns:xceed="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:link="clr-namespace:Link.WPF.Toolkit;assembly=Link.WPF.Toolkit"
              d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
              mc:Ignorable="d" Background="#F4F4F4" FontFamily="Consolas" FontSize="20">
     <Grid Margin="10,0,10,10">
@@ -27,25 +29,25 @@
                         <StackPanel Margin="5">
                             <StackPanel Margin="5">
                                 <TextBlock Text="Идентификатор машины оператора" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.MachineName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <TextBox Text="{Binding AppSettings.MachineName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="64" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Задержка активации отбраковщика (мс)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.RejectorDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.RejectorDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="10000" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Время работы отбраковщика (мс)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.RejectorActiveTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.RejectorActiveTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="100" Maximum="1000" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="4">
                             <StackPanel Margin="5">
                                 <TextBlock Text="Интервал опроса датчика движения (мс)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.SensorPollInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.SensorPollInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="100" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Фильтр срабатывания датчика движения (мс)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.MotionFilterInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.MotionFilterInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="1000" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -62,21 +64,21 @@
                         <StackPanel Margin="5">
                             <StackPanel Margin="5">
                                 <TextBlock Text="IP-адрес контроллера" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.ModbusIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <link:IPAddrBox Text="{Binding AppSettings.ModbusIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" HorizontalContentAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Катушка датчика движения" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.MotionSensorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:ByteUpDown Value="{Binding AppSettings.MotionSensorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="1">
                             <StackPanel Margin="5">
                                 <TextBlock Text="Порт контроллера" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.ModbusPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.ModbusPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Катушка отбраковщика" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.RejectorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:ByteUpDown Value="{Binding AppSettings.RejectorCoil, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -93,21 +95,21 @@
                         <StackPanel Margin="5">
                             <StackPanel Margin="5">
                                 <TextBlock Text="IP-адрес принтера" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.PrinterIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <link:IPAddrBox Text="{Binding AppSettings.PrinterIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" HorizontalContentAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Порт TextComms (текстовые команды)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.TextCommsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.TextCommsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="1">
                             <StackPanel Margin="5">
                                 <TextBlock Text="Максимальный размер очереди" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.MaxQueueSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:ByteUpDown Value="{Binding AppSettings.MaxQueueSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="20" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                             <StackPanel Margin="5">
                                 <TextBlock Text="Порт ZPL (изображения этикеток)" TextWrapping="Wrap"/>
-                                <TextBox Text="{Binding AppSettings.ZPLImagePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.ZPLImagePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Padding="8"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

@@ -6,7 +6,6 @@ using WpfApp_IC.Data;
 using WpfApp_IC.Models;
 using WpfApp_IC.Models.DbContext;
 using WpfApp_IC.Models.Devices;
-using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.ModbusT;
 using Timer = System.Timers.Timer;
 
@@ -20,7 +19,7 @@ namespace WpfApp_IC.Services.Inspectors
     public class InspectorController(
         WorkSession workSession,
         LogService log,
-        CameraService camera,
+        HikrobotCamera camera,
         ModbusSensor sensor,
         ModbusRejector rejector,
         IModbusService modbus,
@@ -30,27 +29,15 @@ namespace WpfApp_IC.Services.Inspectors
         private Timer? _sensorPollTimer;
         private bool _filter;
         private BitmapSource? _lastFrame;
+        private int _currentSignal = 0;
 
         public string ModbusIp { get; set; } = "192.168.0.127";
         public int ModbusPort { get; set; } = 502;
-
-        /// <summary>
-        /// Задержка перед активацией отбраковщика.
-        /// </summary>
         public int RejectDelay { get; set; } = 300;
         public int MotionFilterInterval { get; set; } = 200;
         public int SensorPollInterval { get; set; } = 10;
 
-        public string CameraIp { get; set; } = "";
-
-        // Фильтрация дребезга
-        private int _currentSignal = 0;
-        private bool _triggerInProgress = false;
-
-        public event Action<DataMatrixResult>? DataMatrixRead;
-        public event Action<string?, BitmapSource>? FrameReceived;
         public event Action<string, bool>? CodeChecked;
-
         public event EventHandler? MotionDetected;
 
         public void Start()
@@ -67,26 +54,29 @@ namespace WpfApp_IC.Services.Inspectors
 
             try
             {
-                camera.Open(CameraIp);
-                log.AddEntry($"Соединение с камерой установлено [{CameraIp}]");
+                camera.Connect();
+                log.AddEntry($"Соединение с камерой установлено [{camera.IP}]");
             }
             catch
             {
-                log.AddEntry($"Не удалось установить соединение с камерой [{CameraIp}]", LogColorCode.Red);
+                log.AddEntry($"Не удалось установить соединение с камерой [{camera.IP}]", LogColorCode.Red);
             }
 
-            _triggerInProgress = false;
-
             MotionDetected += Inspect;
+
+            camera.FrameReceived += CaptureLastFrame;
 
             _sensorPollTimer = new Timer(SensorPollInterval);
             _sensorPollTimer.Elapsed += PollSensor;
             _sensorPollTimer.AutoReset = true;
             _sensorPollTimer.Start();
         }
+
         public void Stop()
         {
             MotionDetected -= Inspect;
+
+            camera.FrameReceived -= CaptureLastFrame;
 
             if (_sensorPollTimer != null)
             {
@@ -96,32 +86,8 @@ namespace WpfApp_IC.Services.Inspectors
                 _sensorPollTimer = null;
             }
 
-            camera.Close();
+            camera.Disconnect();
             modbus?.Disconnect();
-        }
-        public DataMatrixResult? TriggerCamera()
-        {
-            if (_triggerInProgress)
-                return null;
-
-            try
-            {
-                _triggerInProgress = true;
-                var (dm, frame) = camera.TriggerAndRead();
-                _triggerInProgress = false;
-
-                if (frame != null)
-                {
-                    _lastFrame = frame;
-                    FrameReceived?.Invoke(dm?.Raw, frame);
-                }
-
-                return dm;
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         private void Inspect(object? sender, EventArgs e)
@@ -129,7 +95,6 @@ namespace WpfApp_IC.Services.Inspectors
             Task.Run(async () =>
             {
                 CancellationTokenSource rejectCts = new();
-
                 _ = Task.Run(async () =>
                 {
                     try
@@ -140,12 +105,12 @@ namespace WpfApp_IC.Services.Inspectors
                     catch { }
                 }, rejectCts.Token);
 
-                DataMatrixResult? dm = TriggerCamera();
+                string? code = null;
 
-                if (dm != null)
-                    DataMatrixRead?.Invoke(dm);
+                try { code = camera.TriggerSnapshot(); }
+                catch { }
 
-                ValidationResult result = await ValidateAsync(dm?.Raw);
+                ValidationResult result = await ValidateAsync(code);
 
                 if (result.IsOk)
                 {
@@ -160,22 +125,22 @@ namespace WpfApp_IC.Services.Inspectors
                             log.AddEntry($"Код не считан: NULL", LogColorCode.Yellow);
                             break;
                         case "NOT_FOUND":
-                            log.AddEntry($"Неверный код: {dm?.Raw}", LogColorCode.Red);
+                            log.AddEntry($"Неверный код: {code}", LogColorCode.Red);
                             workSession.Rejected++;
                             break;
                         case "DUPLICATE":
                             if (workSession.WorkMode == WorkMode.SkipDuplicates)
                                 rejectCts.Cancel();
-                            log.AddEntry($"Дубликат: {dm?.Raw}", LogColorCode.Red);
+                            log.AddEntry($"Дубликат: {code}", LogColorCode.Red);
                             workSession.Rejected++;
                             break;
                     }
 
                     if (_lastFrame != null)
-                        imageSaver.SaveReject(_lastFrame, dm?.Normalized);
+                        imageSaver.SaveReject(_lastFrame, code);
                 }
 
-                CodeChecked?.Invoke(dm?.Normalized ?? "<NO READ>", result.IsOk);
+                CodeChecked?.Invoke(code ?? "<NO READ>", result.IsOk);
             });
         }
         private void PollSensor(object? sender, ElapsedEventArgs e)
@@ -239,5 +204,6 @@ namespace WpfApp_IC.Services.Inspectors
                 return ValidationResult.NotFound();
             }
         }
+        private void CaptureLastFrame(BitmapSource frame) => _lastFrame = frame;
     }
 }

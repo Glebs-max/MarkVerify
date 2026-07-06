@@ -7,7 +7,7 @@ using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.Services
 {
-    public class SettingsService(IConfiguration config, WorkSession workSession, ModbusSensor sensor, ModbusRejector rejector, VideojetPrinter printer, MindeoScanner scanner, InspectorController inspector, ImageSaverService imageSaver)
+    public class SettingsService(IConfiguration config, WorkSession workSession, ModbusSensor sensor, ModbusRejector rejector, HikrobotCamera camera, VideojetPrinter printer, MindeoScanner scanner, InspectorController inspector, ImageSaverService imageSaver)
     {
         private readonly string _settingsPath = Path.Combine(AppContext.BaseDirectory, config.GetValue<string>("SettingsPath") ?? "settings.json");
 
@@ -57,7 +57,8 @@ namespace WpfApp_IC.Services
             inspector.SensorPollInterval = AppSettings.SensorPollInterval;
 
             // Камера 
-            inspector.CameraIp = AppSettings.CameraIP;
+            camera.IP = AppSettings.CameraIP;
+            camera.FrameTimeout = AppSettings.FrameTimeout;
             imageSaver.SavePath = AppSettings.RejectImagesPath;
         }
     }

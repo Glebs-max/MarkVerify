@@ -83,6 +83,13 @@ namespace WpfApp_IC.Models
             set => Set(ref _cameraIP, value);
         }
 
+        private uint _frameTimeout = 200;
+        public uint FrameTimeout
+        {
+            get => _frameTimeout;
+            set => Set(ref _frameTimeout, value);
+        }
+
         private string _rejectImagesPath = "Rejects";
         public string RejectImagesPath
         {

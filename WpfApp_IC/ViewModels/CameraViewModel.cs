@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Services.Inspectors;
 
 namespace WpfApp_IC.ViewModels
@@ -9,10 +10,12 @@ namespace WpfApp_IC.ViewModels
     public class CameraViewModel : ObservableObject
     {
         private readonly InspectorController _controller;
+        private readonly HikrobotCamera _camera;
 
-        public CameraViewModel(InspectorController controller)
+        public CameraViewModel(InspectorController controller, HikrobotCamera camera)
         {
             _controller = controller;
+            _camera = camera;
 
             _controller.CodeChecked += (actual, ok) =>
             {
@@ -22,7 +25,7 @@ namespace WpfApp_IC.ViewModels
                     DataMatrixBrush = ok ? Brushes.LimeGreen : Brushes.Red;
                 });
             };
-            _controller.FrameReceived += (dm, frame) =>
+            _camera.FrameReceived += (frame) =>
             {
                 if (frame != null)
                     DispatchUI(() => Frame = frame);
@@ -72,7 +75,7 @@ namespace WpfApp_IC.ViewModels
         public void TriggerManual()
         {
             if (IsRunning)
-                _controller.TriggerCamera();
+                _camera.TriggerSnapshot();
         }
 
         // === UI dispatcher ===

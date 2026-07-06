@@ -151,6 +151,10 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                             </StackPanel>
+                            <StackPanel Margin="5">
+                                <TextBlock Text="Таймаут ожидания кадра (мс)" TextWrapping="Wrap"/>
+                                <xceed:UShortUpDown Value="{Binding AppSettings.FrameTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="50" Maximum="5000" TextAlignment="Center" Padding="8"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Grid.Column="1">
                             <StackPanel Margin="5">

@@ -9,7 +9,6 @@ using WpfApp_IC.Data;
 using WpfApp_IC.Models;
 using WpfApp_IC.Models.Devices;
 using WpfApp_IC.Services;
-using WpfApp_IC.Services.Camera;
 using WpfApp_IC.Services.Inspectors;
 using WpfApp_IC.Services.ModbusT;
 using WpfApp_IC.ViewModels;
@@ -50,12 +49,13 @@ namespace WpfApp_IC
                     services.AddSingleton<MindeoScanner>();
                     services.AddSingleton<ModbusSensor>();
                     services.AddSingleton<ModbusRejector>();
+                    services.AddSingleton<HikrobotCamera>();
                     services.AddSingleton<WorkSession>();
 
                     services.AddSingleton<LogService>();
                     services.AddSingleton<SettingsService>();
                     services.AddSingleton<IModbusService, ModbusService>();
-                    services.AddSingleton<CameraService>();
+                    services.AddSingleton<HikrobotService>();
                     services.AddSingleton<InspectorController>();
                     services.AddSingleton<ImageSaverService>();
                     services.AddSingleton<DebugService>();

@@ -44,16 +44,15 @@ namespace WpfApp_IC.Services
 
             return Encoding.UTF8.GetString(data, 8, zero - 8);
         }
-        public static BitmapSource DecodeFrame(IntPtr pData, int frameLength)
+        public static BitmapSource DecodeFrame(nint pData, int frameLength)
         {
             byte[] jpeg = new byte[frameLength];
             Marshal.Copy(pData, jpeg, 0, jpeg.Length);
 
-            MemoryStream stream = new(jpeg);
+            using MemoryStream stream = new(jpeg);
             JpegBitmapDecoder decoder = new(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
             BitmapFrame bmp = decoder.Frames[0];
 
-            stream.Dispose();
             bmp.Freeze();
             return bmp;
         }

@@ -99,10 +99,6 @@
                         <TextBlock Text="Отбраковано: "/>
                         <TextBlock Text="{Binding WorkSession.Rejected}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="25,10">
-                        <TextBlock Text="Всего: "/>
-                        <TextBlock Text="{Binding WorkSession.TotalCount}"/>
-                    </StackPanel>
                 </WrapPanel>
             </Grid>
         </Grid>
@@ -113,7 +109,8 @@
                 <TextBlock Text="Режим работы" TextAlignment="Center"/>
                 <ComboBox x:Name="WorkModeBox" SelectedIndex="0" SelectedValuePath="Tag" SelectionChanged="WorkMode_Changed" Text="Режим работы" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="170" Height="45">
                     <ComboBoxItem Content="Обычный" Tag="Default" Height="45"/>
-                    <ComboBoxItem Content="Без дубликатов" Tag="SkipDuplicates" Height="45"/>
+                    <ComboBoxItem Content="Без печати" Tag="NoPrint" Height="45"/>
+                    <ComboBoxItem Content="Прогонка" Tag="SkipDuplicates" Height="45"/>
                 </ComboBox>
             </StackPanel>
 

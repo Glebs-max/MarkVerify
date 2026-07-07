@@ -126,7 +126,7 @@
                         <StackPanel Margin="5">
                             <StackPanel Margin="5">
                                 <TextBlock Text="Используемая камера"/>
-                                <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedValue="{Binding AppSettings.CameraIP, Mode=TwoWay}" SelectedValuePath="IP" VerticalContentAlignment="Center" Height="45">
+                                <ComboBox ItemsSource="{Binding AvailableCameras}" SelectedValue="{Binding AppSettings.CameraIP, Mode=TwoWay}" SelectedValuePath="IP" VerticalContentAlignment="Center" Height="45" DropDownOpened="Camera_DropDown">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel>
@@ -139,11 +139,11 @@
 
                                                     <TextBlock FontSize="16">
                                                         <Run Text="S/N: "/>
-                                                        <Run Text="{Binding SerialNumber}"/>
+                                                        <Run Text="{Binding SerialNumber, Mode=OneWay}"/>
                                                     </TextBlock>
                                                     <TextBlock FontSize="16" Grid.Column="1">
                                                         <Run Text="F/W: "/>
-                                                        <Run Text="{Binding Firmware}"/>
+                                                        <Run Text="{Binding Firmware, Mode=OneWay}"/>
                                                     </TextBlock>
                                                 </Grid>
                                             </StackPanel>
@@ -182,7 +182,7 @@
                     <StackPanel Margin="5">
                         <StackPanel Margin="5">
                             <TextBlock Text="COM порт сканера" TextWrapping="Wrap"/>
-                            <ComboBox ItemsSource="{Binding AvailableCOMPorts}" SelectedItem="{Binding AppSettings.ScannerCOMPort}" VerticalContentAlignment="Center" Height="45"/>
+                            <ComboBox ItemsSource="{Binding AvailableCOMPorts}" SelectedItem="{Binding AppSettings.ScannerCOMPort}" VerticalContentAlignment="Center" Height="45" DropDownOpened="Scanner_DropDown"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1">

@@ -3,6 +3,7 @@ using Observable;
 using System.IO;
 using WpfApp_IC.Data;
 using WpfApp_IC.Models;
+using WpfApp_IC.Models.DbContext;
 using WpfApp_IC.Services;
 
 namespace WpfApp_IC.ViewModels
@@ -22,7 +23,7 @@ namespace WpfApp_IC.ViewModels
         Errors
     }
 
-    public class LabelingViewModel(MainViewModel mainViewModel, LogService logService, WorkSession workSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel) : ObservableObject
+    public class LabelingViewModel(IDbContextFactory<AppDbContext> dbContextFactory, MainViewModel mainViewModel, LogService logService, WorkSession workSession, LabelPrintingViewModel labelPrintingViewModel, CameraViewModel cameraViewModel) : ObservableObject
     {
         private CancellationTokenSource? _workInitiateCts;
         private WorkState _workState = WorkState.Initiating;
@@ -46,6 +47,9 @@ namespace WpfApp_IC.ViewModels
         public async Task WorkInitiate()
         {
             _workInitiateCts = new();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
+            workSession.Verified = await db.tmp_mains.Where(c => c.OperatorName == workSession.MachineName).CountAsync();
+
             await Task.Run(async () =>
             {
                 LabelPrintingViewModel.PrintInitiate();
@@ -82,8 +86,10 @@ namespace WpfApp_IC.ViewModels
         }
         public async Task Exit()
         {
-            if (WorkState != WorkState.Finished)
+            if (WorkState == WorkState.Active || WorkState == WorkState.Pause)
                 await WorkTerminate();
+            else
+                CameraViewModel.Stop();
 
             _workInitiateCts?.Cancel();
             logService.ClearEntries();

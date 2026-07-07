@@ -6,6 +6,7 @@ namespace WpfApp_IC.Models
     public enum WorkMode
     {
         Default,
+        NoPrint,
         SkipDuplicates
     }
     public enum ScannerMode
@@ -16,7 +17,7 @@ namespace WpfApp_IC.Models
 
     public class WorkSession : ObservableObject
     {
-        private string _machineName = "Dev";
+        private string _machineName = "";
         public string MachineName
         {
             get => _machineName;

@@ -22,6 +22,7 @@ namespace WpfApp_IC.Services.Inspectors
         HikrobotCamera camera,
         ModbusSensor sensor,
         ModbusRejector rejector,
+        MindeoScanner scanner,
         IModbusService modbus,
         IDbContextFactory<AppDbContext> dbContextFactory,
         ImageSaverService imageSaver)
@@ -38,7 +39,7 @@ namespace WpfApp_IC.Services.Inspectors
         public int SensorPollInterval { get; set; } = 10;
 
         public event Action<string, bool>? CodeChecked;
-        public event EventHandler? MotionDetected;
+        public event Action? MotionDetected;
 
         public void Start()
         {
@@ -65,6 +66,7 @@ namespace WpfApp_IC.Services.Inspectors
             MotionDetected += Inspect;
 
             camera.FrameReceived += CaptureLastFrame;
+            scanner.DataMatrixRead += ScannerHandler;
 
             _sensorPollTimer = new Timer(SensorPollInterval);
             _sensorPollTimer.Elapsed += PollSensor;
@@ -77,6 +79,7 @@ namespace WpfApp_IC.Services.Inspectors
             MotionDetected -= Inspect;
 
             camera.FrameReceived -= CaptureLastFrame;
+            scanner.DataMatrixRead -= ScannerHandler;
 
             if (_sensorPollTimer != null)
             {
@@ -90,7 +93,7 @@ namespace WpfApp_IC.Services.Inspectors
             modbus?.Disconnect();
         }
 
-        private void Inspect(object? sender, EventArgs e)
+        private void Inspect()
         {
             Task.Run(async () =>
             {
@@ -107,10 +110,13 @@ namespace WpfApp_IC.Services.Inspectors
 
                 string? code = null;
 
-                try { code = camera.TriggerSnapshot(); }
+                try
+                {
+                    code = camera.TriggerSnapshot();
+                }
                 catch { }
 
-                ValidationResult result = await ValidateAsync(code);
+                ValidationResult result = VerifyCode(code);
 
                 if (result.IsOk)
                 {
@@ -129,8 +135,6 @@ namespace WpfApp_IC.Services.Inspectors
                             workSession.Rejected++;
                             break;
                         case "DUPLICATE":
-                            if (workSession.WorkMode == WorkMode.SkipDuplicates)
-                                rejectCts.Cancel();
                             log.AddEntry($"Дубликат: {code}", LogColorCode.Red);
                             workSession.Rejected++;
                             break;
@@ -151,58 +155,149 @@ namespace WpfApp_IC.Services.Inspectors
 
                 if (signal == 1 && _currentSignal == 0 && !_filter)
                 {
-                    MotionDetected?.Invoke(this, EventArgs.Empty);
                     _filter = true;
+                    MotionDetected?.Invoke();
+                    Task.Delay(MotionFilterInterval).ContinueWith(_ => _filter = false);
                 }
 
                 _currentSignal = signal;
-
-                Task.Delay(MotionFilterInterval).ContinueWith(_ => _filter = false);
             }
             catch { }
         }
-        private async Task<ValidationResult> ValidateAsync(string? dm)
+        private ValidationResult VerifyCode(string? code)
         {
-            try
+            if (string.IsNullOrWhiteSpace(code))
+                return ValidationResult.NoRead();
+
+            bool verified;
+
+            switch (workSession.WorkMode)
             {
-                if (string.IsNullOrWhiteSpace(dm))
-                    return ValidationResult.NoRead();
+                case WorkMode.Default:
+                    if (!workSession.Codes.TryGetValue(code, out verified))
+                        return ValidationResult.NotFound();
 
-                if (!workSession.Codes.TryGetValue(dm, out bool status))
-                    return ValidationResult.NotFound();
+                    if (verified)
+                        return ValidationResult.Duplicate();
 
-                if (status)
-                    return ValidationResult.Duplicate();
+                    workSession.Codes[code] = true;
+                    break;
+                case WorkMode.NoPrint:
+                    if (workSession.Codes.TryGetValue(code, out verified) && verified)
+                        return ValidationResult.Duplicate();
 
-                workSession.Codes[dm] = true;
+                    workSession.Codes.Add(code, true);
+                    break;
+                case WorkMode.SkipDuplicates:
+                    return ValidationResult.Ok();
+            }
 
-                _ = Task.Run(async () =>
+            Task.Run(async () =>
+            {
+                try
                 {
                     await using var db = await dbContextFactory.CreateDbContextAsync();
-                    printer_base? code = await db.printer_bases.FirstAsync(c => c.Code == dm);
+                    printer_base? printed = await db.printer_bases.FirstOrDefaultAsync(c => c.Code == code);
 
                     db.tmp_mains.Add(new()
                     {
-                        Code = code.Code,
+                        Code = printed?.Code ?? code,
                         StatusId = 2,
-                        DateImport = code.DateImport,
-                        DatePrint = code.DatePrint,
+                        DateImport = printed?.DateImport,
+                        DatePrint = printed?.DatePrint,
                         DateVerify = DateTime.Now,
-                        GtinId = code.GtinId,
-                        OperatorName = code.OperatorName,
-                        OrderID = code.OrderID
+                        GtinId = printed?.GtinId ?? workSession.GTIN?.GtinId ?? 0,
+                        OperatorName = printed?.OperatorName ?? workSession.MachineName,
+                        OrderID = printed?.OrderID
                     });
 
                     await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при занесении кода в базу данных.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            });
+
+            return ValidationResult.Ok();
+        }
+        private bool RejectCode(string? code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return false;
+
+            if (workSession.Codes.TryGetValue(code, out bool verified) && verified)
+            {
+                workSession.Codes.Remove(code);
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await using var db = await dbContextFactory.CreateDbContextAsync();
+                        tmp_main? reject = await db.tmp_mains.FirstOrDefaultAsync(c => c.Code == code);
+
+                        if (reject != null)
+                        {
+                            db.tmp_mains.Remove(reject);
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при удалении кода из базы данных.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 });
 
-                return ValidationResult.Ok();
+                return true;
             }
-            catch (Exception ex)
+
+            return false;
+        }
+        private void ScannerHandler(string code)
+        {
+            Task.Run(async () =>
             {
-                MessageBox.Show($"Возникла ошибка при валидации кода в базе данных.\n\nException message:\n\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return ValidationResult.NotFound();
-            }
+                switch (workSession.ScannerMode)
+                {
+                    case ScannerMode.Verify:
+                        ValidationResult result = VerifyCode(code);
+
+                        if (result.IsOk)
+                        {
+                            workSession.Verified++;
+                            log.AddEntry($"[СКАНЕР] Код успешно верифицирован: {code}");
+                        }
+                        else
+                        {
+                            switch (result.ErrorCode)
+                            {
+                                case "NO_READ":
+                                    log.AddEntry($"[СКАНЕР] Код не считан: NULL", LogColorCode.Yellow);
+                                    break;
+                                case "NOT_FOUND":
+                                    log.AddEntry($"[СКАНЕР] Неверный код: {code}", LogColorCode.Red);
+                                    break;
+                                case "DUPLICATE":
+                                    log.AddEntry($"[СКАНЕР] Дубликат: {code}", LogColorCode.Red);
+                                    break;
+                            }
+                        }
+                        break;
+                    case ScannerMode.Reject:
+                        if (RejectCode(code))
+                        {
+                            workSession.Rejected++;
+                            log.AddEntry($"[СКАНЕР] Код успешно отбракован: {code}");
+                        }
+                        else
+                        {
+                            log.AddEntry($"[СКАНЕР] Не удалось отбраковать код: {code}");
+                        }
+
+                        break;
+                }
+            });
         }
         private void CaptureLastFrame(BitmapSource frame) => _lastFrame = frame;
     }

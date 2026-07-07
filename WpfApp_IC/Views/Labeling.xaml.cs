@@ -44,6 +44,9 @@ namespace WpfApp_IC.Views
                 case "Default":
                     VM.WorkSession.WorkMode = WorkMode.Default;
                     break;
+                case "NoPrint":
+                    VM.WorkSession.WorkMode = WorkMode.NoPrint;
+                    break;
                 case "SkipDuplicates":
                     VM.WorkSession.WorkMode = WorkMode.SkipDuplicates;
                     break;

@@ -36,7 +36,7 @@ namespace WpfApp_IC.ViewModels
         }
         public async void LoadLabel(gtin? product)
         {
-            if (product == null || product.CountAviable <= 0)
+            if (product == null)
                 return;
 
             _ = debugService.CreateDebugEntryAsync(DebugType.UserAction, "ProductsViewModel.cs", $"Выбрана продукция для маркировки: {product.GtinId}");

@@ -74,8 +74,12 @@ namespace WpfApp_IC.ViewModels
         }
         public void TriggerManual()
         {
-            if (IsRunning)
-                _camera.TriggerSnapshot();
+            try
+            {
+                if (IsRunning)
+                    _camera.TriggerSnapshot();
+            }
+            catch { }
         }
 
         // === UI dispatcher ===

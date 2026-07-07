@@ -13,8 +13,20 @@ namespace WpfApp_IC.ViewModels
         public ObservableCollection<HikrobotDeviceInfo> AvailableCameras { get; set; } = [];
         public ObservableCollection<string> AvailableCOMPorts { get; set; } = [];
 
-        public void GetAvailableCOMPorts() => AvailableCOMPorts = new(SerialPort.GetPortNames());
-        public void ScanAvailableCameras() => AvailableCameras = new(HikrobotService.ScanAvailableDevices());
+        public void GetAvailableCOMPorts()
+        {
+            AvailableCOMPorts.Clear();
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+                AvailableCOMPorts.Add(port);
+        }
+        public void ScanAvailableCameras()
+        {
+            AvailableCameras.Clear();
+            List<HikrobotDeviceInfo> devices = HikrobotService.ScanAvailableDevices();
+            foreach (HikrobotDeviceInfo device in devices)
+                AvailableCameras.Add(device);
+        }
         public void Save()
         {
             settingsService.Save();

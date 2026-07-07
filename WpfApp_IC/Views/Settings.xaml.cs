@@ -8,22 +8,17 @@ namespace WpfApp_IC.Views
 {
     public partial class Settings : UserControl
     {
-        private readonly DispatcherTimer _updateTimer = new() { Interval = TimeSpan.FromMilliseconds(3000) };
-
         private SettingsViewModel VM => (SettingsViewModel)DataContext;
 
         public Settings()
         {
             InitializeComponent();
-            
-            _updateTimer.Tick += (s, e) =>
+
+            Loaded += (s, e) =>
             {
                 VM.ScanAvailableCameras();
                 VM.GetAvailableCOMPorts();
             };
-
-            Loaded += (s, e) => _updateTimer.Start();
-            Unloaded += (s, e) => _updateTimer.Stop();
         }
 
         private void RejectsBrowse_Click(object sender, RoutedEventArgs e)
@@ -39,5 +34,7 @@ namespace WpfApp_IC.Views
         }
         private void Save_Click(object sender, RoutedEventArgs e) => VM.Save();
         private void Cancel_Click(object sender, RoutedEventArgs e) => VM.GetBack();
+        private void Camera_DropDown(object sender, EventArgs e) => VM.ScanAvailableCameras();
+        private void Scanner_DropDown(object sender, EventArgs e) => VM.GetAvailableCOMPorts();
     }
 }
